@@ -5,7 +5,7 @@ import card.KuhnDeck
 import state.terminal.KuhnTerminalStatus
 import ao.learn.mst.example.kuhn.state.{KuhnPosition, KuhnState}
 import util.Random
-import org.specs2.mutable.Specification
+import org.specs2.mutable.{SpecificationWithJUnit, Specification}
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ import org.specs2.mutable.Specification
  * See: http://en.wikipedia.org/wiki/Kuhn_poker -> "In more conventional poker terms".
  */
 class KuhnStateSpec
-    extends Specification
+    extends SpecificationWithJUnit
 {
   //--------------------------------------------------------------------------------------------------------------------
   "Initial state" should {

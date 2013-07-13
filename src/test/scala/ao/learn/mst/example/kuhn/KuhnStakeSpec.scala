@@ -1,6 +1,6 @@
 package ao.learn.mst.example.kuhn
 
-import org.specs2.mutable.Specification
+import org.specs2.mutable.{SpecificationWithJUnit, Specification}
 import state.KuhnStake
 
 
@@ -10,7 +10,7 @@ import state.KuhnStake
  */
 
 class KuhnStakeSpec
-    extends Specification
+    extends SpecificationWithJUnit
 {
   //--------------------------------------------------------------------------
 //  "Both Khun Poker player's stake (amount of money in the pot)"

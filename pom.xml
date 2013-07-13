@@ -18,19 +18,32 @@
 
     <!--===================================================================-->
     <properties>
-        <scala.version>2.9.1</scala.version>
-        <scala-plugin.version>2.15.2</scala-plugin.version>
-        <specs.version>1.6.1</specs.version>
-        <scala-z.version>6.0.3</scala-z.version>
-        <junit.version>4.9</junit.version>
-        <scalacheck.version>1.9</scalacheck.version>
-        <mockito.version>1.9.0</mockito.version>
+        <scala-major.version>2.10</scala-major.version>
+        <scala.version>${scala-major.version}.2</scala.version>
+        <scala-plugin.version>3.1.5</scala-plugin.version>
+        <scalaz.version>7.0.2</scalaz.version>
+        <specs2.version>2.0</specs2.version>
+        <scalacheck.version>1.10.1</scalacheck.version>
+        <junit.version>4.11</junit.version>
+        <scalamock.version>3.0</scalamock.version>
+        <mockito.version>1.9.5</mockito.version>
     </properties>
+
+
+    <!--
+        According to https://github.com/scalaz/scalaz :
+            "You can safely ignore this warning, as the Scala 2.10.x versions are compatible."
+
+        [WARNING]  Expected all dependencies to require Scala version: 2.10.2
+        [WARNING]  ks.ai:operation-d:0.0.1-SNAPSHOT requires scala version: 2.10.2
+        [WARNING]  org.scalaz:scalaz-core_2.10:7.0.2 requires scala version: 2.10.1
+        [WARNING] Multiple versions of scala libraries detected!
+    -->
 
 
     <!--===================================================================-->
     <repositories>
-        <repository>
+        <!--<repository>
             <id>scala-tools.org</id>
             <name>Scala-Tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
@@ -40,74 +53,99 @@
             <id>ObjectWeb</id>
             <name>ObjectWeb repository</name>
             <url>http://maven.ow2.org/maven2</url>
+        </repository>-->
+
+        <repository>
+            <id>oss.sonatype.org</id>
+            <name>releases</name>
+            <url>http://oss.sonatype.org/content/repositories/releases</url>
         </repository>
     </repositories>
 
-    <pluginRepositories>
+    <!--<pluginRepositories>
         <pluginRepository>
             <id>scala-tools.org</id>
             <name>Scala-Tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
         </pluginRepository>
-    </pluginRepositories>
+    </pluginRepositories>-->
 
 
     <!--===================================================================-->
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>org.scalaj</groupId>
-            <artifactId>scalaj-time_2.9.2</artifactId>
+            <artifactId>scalaj-time_${scala-major.version}</artifactId>
             <version>0.6</version>
-        </dependency>
+        </dependency>-->
 
-        <!-- Scala -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.scalaz</groupId>
+            <artifactId>scalaz-core_${scala-major.version}</artifactId>
+            <version>${scalaz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scalaz</groupId>
+            <artifactId>scalaz-concurrent_${scala-major.version}</artifactId>
+            <version>${scalaz.version}</version>
+        </dependency>
 
-        <!-- Testing -->
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2_${scala-major.version}</artifactId>
+            <version>${specs2.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.scalaz</groupId>
+                    <artifactId>scalaz-core_${scala-major.version}</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.scalaz</groupId>
+                    <artifactId>scalaz-concurrent_${scala-major.version}</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.scalacheck</groupId>
+            <artifactId>scalacheck_${scala-major.version}</artifactId>
+            <version>${scalacheck.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
+        <!--<dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
-        </dependency>
-
-        <!-- Scala Testing -->
-        <dependency>
-            <!--<groupId>org.scala-tools.testing</groupId>-->
-            <!--<artifactId>specs_${scala.version}</artifactId>-->
-            <groupId>org.specs2</groupId>
-            <artifactId>specs2_${scala.version}</artifactId>
-            <version>${specs.version}</version>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.scalamock</groupId>
+            <artifactId>scalamock-scalatest-support_${scala-major.version}</artifactId>
+            <version>${scalamock.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-tools.testing</groupId>
-            <artifactId>scalacheck_${scala.version}</artifactId>
-            <version>${scalacheck.version}</version>
-            <scope>test</scope>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
 
-    <!--===================================================================-->
+    <!--=============================================================================================================-->
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>
         <testSourceDirectory>src/test/scala</testSourceDirectory>
 
         <plugins>
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
                 <version>${scala-plugin.version}</version>
                 <executions>
                     <execution>
@@ -121,23 +159,18 @@
                     <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
             </plugin>
-            <!--<plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.15</version>
                 <configuration>
-                    <downloadSources>true</downloadSources>
-                    <buildcommands>
-                        <buildcommand>ch.epfl.lamp.sdt.core.scalabuilder</buildcommand>
-                    </buildcommands>
-                    <additionalProjectnatures>
-                        <projectnature>ch.epfl.lamp.sdt.core.scalanature</projectnature>
-                    </additionalProjectnatures>
-                    <classpathContainers>
-                        <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
-                        <classpathContainer>ch.epfl.lamp.sdt.launching.SCALA_CONTAINER</classpathContainer>
-                    </classpathContainers>
+                    <includes>
+                        <include>**/*Test*.java</include>
+                        <include>**/*Spec*.java</include>
+                    </includes>
                 </configuration>
-            </plugin>-->
+            </plugin>
         </plugins>
     </build>
 

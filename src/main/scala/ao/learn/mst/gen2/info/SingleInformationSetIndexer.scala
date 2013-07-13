@@ -51,6 +51,8 @@ object SingleInformationSetIndexer
             children ::: rest,
             nextAcc)
         }
+
+        case (unknown) => throw new IllegalStateException(unknown.toString())
       }
     }
 

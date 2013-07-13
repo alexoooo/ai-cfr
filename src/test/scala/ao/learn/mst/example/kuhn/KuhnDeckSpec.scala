@@ -2,7 +2,7 @@ package ao.learn.mst.example.kuhn
 
 import ao.learn.mst.example.kuhn.card.KuhnDeck
 import util.Random
-import org.specs2.mutable.Specification
+import org.specs2.mutable.{SpecificationWithJUnit, Specification}
 import org.specs2.ScalaCheck
 
 /**
@@ -11,7 +11,7 @@ import org.specs2.ScalaCheck
  */
 
 class KuhnDeckSpec
-    extends Specification with ScalaCheck
+    extends SpecificationWithJUnit with ScalaCheck
 {
   //--------------------------------------------------------------------------
   "Two distinct cards should be deals from any starting point" ! check {

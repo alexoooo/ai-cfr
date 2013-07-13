@@ -14,7 +14,7 @@ import ao.learn.mst.cfr._
 import ao.learn.mst.gen2.game._
 import zerosum.ZeroSumGame
 import ao.learn.mst.example.kuhn.adapt.KuhnGame
-import org.joda.time.{Duration, LocalTime, DateTime}
+//import org.joda.time.{Duration, LocalTime, DateTime}
 
 
 /**
@@ -137,7 +137,7 @@ object ExtensiveGameSolver
     val startTime = System.currentTimeMillis()
     for (i <- 1 to iterations) {
       if (i % (100 * 1000) == 0) {
-        println(i + " " + new Duration(startTime, System.currentTimeMillis()))
+        println(i + " " + (startTime - System.currentTimeMillis()))
         println(strategyProfile)
       }
 

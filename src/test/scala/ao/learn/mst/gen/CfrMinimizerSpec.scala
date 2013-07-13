@@ -1,6 +1,6 @@
 package ao.learn.mst.gen
 
-import org.specs2.mutable.Specification
+import org.specs2.mutable.{SpecificationWithJUnit, Specification}
 import ao.learn.mst.gen2.game.{ExtensiveGameDecision, ExtensiveGame}
 import ao.learn.mst.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen2.info.{InformationSet, InformationSetIndex, TraversingInformationSetIndexer}
@@ -25,7 +25,7 @@ import ao.learn.mst.example.kuhn.action.KuhnAction.KuhnAction
  *
  */
 class CfrMinimizerSpec
-    extends Specification
+    extends SpecificationWithJUnit
 {
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =

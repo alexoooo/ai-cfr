@@ -17,11 +17,7 @@ trait NExtensiveGame[I <: InformationSet, A <: NExtensiveAction]
 {
   //--------------------------------------------------------------------------------------------------------------------
   /** "A finite set of n (rational) players" */
-  //def rationalPlayers : Set[RationalPlayer]
   def rationalPlayerCount : Int
-
-  //  /** Utility range for each (rational) player */
-  //  def utilityRanges : Map[RationalPlayer, ExtensiveUtilityRange]
 
   /** "A rooted tree, called the game tree" */
   def treeRoot : NExtensiveGameNode[I, A]

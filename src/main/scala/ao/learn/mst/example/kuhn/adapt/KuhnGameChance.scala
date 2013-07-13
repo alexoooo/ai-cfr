@@ -4,7 +4,7 @@ import ao.learn.mst.gen2.player.model.FiniteAction
 import ao.learn.mst.example.kuhn.card.KuhnCard._
 import ao.learn.mst.gen2.prob.ActionProbabilityMass
 import ao.learn.mst.example.kuhn.card.{KuhnCardSequence, KuhnCard}
-import ao.learn.mst.gen2.game.{ExtensiveGameDecision, ExtensiveGameChance, ExtensiveGameNode}
+import ao.learn.mst.gen2.game.ExtensiveGameChance
 import collection.immutable.{SortedSet, SortedMap}
 import ao.learn.mst.example.kuhn.state.KuhnState
 
@@ -19,22 +19,30 @@ object KuhnGameChance
 {
   //--------------------------------------------------------------------------------------------------------------------
   def actions : SortedSet[FiniteAction] = {
-    val cardPermutations =
+    val cardPermutations : Set[(KuhnCard, KuhnCard)] =
       for {
         firstCard  <- KuhnCard.values
         secondCard <- KuhnCard.values
         if secondCard != firstCard
       } yield (firstCard, secondCard)
 
-    val possibilities: Set[Possibility] =
-      for {
-        ((firstCard, secondCard), index)
-        <- cardPermutations.zipWithIndex
-      } yield
-        Possibility(index, firstCard, secondCard)
+    var possibilities = SortedSet[FiniteAction]()
+    for (
+      ((firstCard, secondCard), index) <- cardPermutations.zipWithIndex
+    ) {
+      possibilities += Possibility(index, firstCard, secondCard)
+    }
 
-    SortedSet[FiniteAction]() ++
-      possibilities
+    possibilities
+
+//    val possibilities : Iterable[Possibility] =
+//      for {
+//        ((firstCard, secondCard), index) <- cardPermutations.zipWithIndex
+//      } yield
+//        Possibility(index, firstCard, secondCard)
+//
+//    SortedSet[FiniteAction]() ++
+//      possibilities
 
 //    ( for {
 //        ((firstCard, secondCard), index)
