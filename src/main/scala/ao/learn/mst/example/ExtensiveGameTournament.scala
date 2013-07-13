@@ -1,11 +1,10 @@
 package ao.learn.mst.example
 
 import ao.learn.mst.gen2.game._
-import ao.learn.mst.example.kuhn.adapt.KuhnGame
 import ao.learn.mst.gen2.player.ExtensiveGamePlayer
 import ao.learn.mst.gen2.player.impl.{RandomExtensiveGamePlayer, StrategyProfileExtensiveGamePlayer}
 import ao.learn.mst.gen2.solve.ExpectedValue
-import ao.learn.mst.gen2.player.model.{RationalPlayer, FiniteAction}
+import ao.learn.mst.gen2.player.model.FiniteAction
 import scala.util.Random
 import scala.annotation.tailrec
 import scala.Predef._

@@ -1,6 +1,6 @@
 package ao.learn.mst.example.kuhn
 
-import org.specs2.mutable.{SpecificationWithJUnit, Specification}
+import org.specs2.mutable.SpecificationWithJUnit
 import state.KuhnStake
 
 

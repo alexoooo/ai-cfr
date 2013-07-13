@@ -1,6 +1,5 @@
 package ao.learn.mst.example.kuhn.state.terminal
 
-import ao.learn.mst.example.kuhn.state.KuhnPosition._
 
 /**
  * Date: 10/11/11

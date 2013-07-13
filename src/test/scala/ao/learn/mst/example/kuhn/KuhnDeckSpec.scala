@@ -2,7 +2,7 @@ package ao.learn.mst.example.kuhn
 
 import ao.learn.mst.example.kuhn.card.KuhnDeck
 import util.Random
-import org.specs2.mutable.{SpecificationWithJUnit, Specification}
+import org.specs2.mutable.SpecificationWithJUnit
 import org.specs2.ScalaCheck
 
 /**

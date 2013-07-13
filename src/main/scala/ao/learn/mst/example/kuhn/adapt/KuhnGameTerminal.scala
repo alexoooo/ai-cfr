@@ -1,7 +1,7 @@
 package ao.learn.mst.example.kuhn.adapt
 
 import ao.learn.mst.example.kuhn.state.{KuhnOutcome, KuhnState}
-import ao.learn.mst.gen2.game.{ExtensiveGameTerminal, ExtensiveGameDecision}
+import ao.learn.mst.gen2.game.ExtensiveGameTerminal
 import ao.learn.mst.gen2.solve.ExpectedValue
 
 /**

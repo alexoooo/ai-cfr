@@ -1,10 +1,10 @@
 package ao.learn.mst.gen
 
-import org.specs2.mutable.{SpecificationWithJUnit, Specification}
+import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen2.game.{ExtensiveGameDecision, ExtensiveGame}
 import ao.learn.mst.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen2.info.{InformationSet, InformationSetIndex, TraversingInformationSetIndexer}
-import ao.learn.mst.cfr.{CfrMinimizer, ChanceSampledCfrMinimizer, StrategyProfile}
+import ao.learn.mst.cfr.{ChanceSampledCfrMinimizer, StrategyProfile}
 import ao.learn.mst.example.slot.specific.bin.DeterministicBinaryBanditGame
 import ao.learn.mst.example.slot.specific.k.MarkovBanditGame
 import ao.learn.mst.example.rps.RockPaperScissorsGame

@@ -5,7 +5,7 @@ import card.KuhnDeck
 import state.terminal.KuhnTerminalStatus
 import ao.learn.mst.example.kuhn.state.{KuhnPosition, KuhnState}
 import util.Random
-import org.specs2.mutable.{SpecificationWithJUnit, Specification}
+import org.specs2.mutable.SpecificationWithJUnit
 
 
 //----------------------------------------------------------------------------------------------------------------------

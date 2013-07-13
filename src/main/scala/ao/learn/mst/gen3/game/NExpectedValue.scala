@@ -1,7 +1,5 @@
 package ao.learn.mst.gen3.game
 
-import ao.learn.mst.gen2.player.model.RationalPlayer
-
 
 //----------------------------------------------------------------------------------------------------------------------
 /**

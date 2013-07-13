@@ -2,7 +2,6 @@ package ao.learn.mst.gen2.info
 
 import ao.learn.mst.gen2.game._
 import scala.annotation.tailrec
-import scala.collection.immutable.SortedSet
 import ao.learn.mst.gen2.player.model.FiniteAction
 
 //----------------------------------------------------------------------------------------------------------------------
