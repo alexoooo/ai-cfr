@@ -20,7 +20,7 @@ class KuhnDeckSpec
         new Random(randomSeed)
 
       val cardSequence =
-        new KuhnDeck().deal(randomSource)
+        KuhnDeck.deal(randomSource)
 
       cardSequence.first mustNotEqual
         cardSequence.last

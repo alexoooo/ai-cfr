@@ -1,23 +1,28 @@
 package ao.learn.mst.example.kuhn.card
 
-//import KuhnCard._
 import util.Random
+import ao.learn.mst.example.kuhn.card.KuhnCard._
 
 /**
  * Date: 20/09/11
  * Time: 12:06 AM
  */
-class KuhnDeck
+object KuhnDeck
 {
   //--------------------------------------------------------------------------
-  def deal(random : Random) : KuhnCardSequence =
-  {
-    val cards = KuhnCard.values.toList
+  def deal(random : Random) : KuhnCardSequence = {
+    permutations(random.nextInt(permutations.length))
+  }
 
-    val randomCards = random.shuffle( cards ).tail
 
-    KuhnCardSequence(
-      randomCards(0),
-      randomCards(1))
+  val permutations : Seq[KuhnCardSequence] = {
+    val playerCardCombinations : Iterator[Seq[KuhnCard]] =
+      KuhnCard.values.toSeq.combinations(2)
+
+    val playerHands : Iterator[Seq[KuhnCard]] =
+      playerCardCombinations.flatMap(_.permutations)
+
+    Seq() ++ playerHands.map(p =>
+      KuhnCardSequence(p(0), p(1)))
   }
 }

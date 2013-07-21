@@ -6,7 +6,7 @@ import ao.learn.mst.gen3.NExtensiveAction
 /**
  *
  */
-trait NExtensiveGameTerminal[I <: InformationSet, A <: NExtensiveAction]
+trait NExtensiveGameTerminal[+I <: InformationSet, +A <: NExtensiveAction]
   extends NExtensiveGameNode[I, A]
 {
   //--------------------------------------------------------------------------------------------------------------------

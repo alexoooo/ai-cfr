@@ -1,19 +1,18 @@
-package ao.learn.mst.gen3.game
+package ao.learn.mst.gen3.game.test
 
-import ao.learn.mst.gen2.player.model.ChancePlayer
 import ao.learn.mst.gen2.info.InformationSet
 import ao.learn.mst.gen3.NExtensiveAction
+import ao.learn.mst.gen3.game.NExtensiveGameNode
 
 /**
- * 09/06/13 10:06 PM
+ * 21/07/13 2:27 PM
  */
-trait NExtensiveGameChance[+I <: InformationSet, +A <: NExtensiveAction]
-    extends NExtensiveGameNonTerminal[I, A]
+trait XExtensiveGameNode[+I <: InformationSet, A <: NExtensiveAction]
 {
   //--------------------------------------------------------------------------------------------------------------------
-  override def player = ChancePlayer
+  def actions: Traversable[A]
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def probability[T >: A](action: T): Double
+  def child[T >: A](action : T) : NExtensiveGameNode[I, A]
 }

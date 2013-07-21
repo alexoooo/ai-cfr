@@ -7,7 +7,7 @@ import ao.learn.mst.gen3.NExtensiveAction
 /**
  * 09/06/13 10:03 PM
  */
-trait NExtensiveGameDecision[I <: InformationSet, A <: NExtensiveAction]
+trait NExtensiveGameDecision[+I <: InformationSet, +A <: NExtensiveAction]
   extends NExtensiveGameNonTerminal[I, A]
 {
   //--------------------------------------------------------------------------------------------------------------------

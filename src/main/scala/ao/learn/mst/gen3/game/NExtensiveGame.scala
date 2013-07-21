@@ -13,7 +13,7 @@ import ao.learn.mst.gen2.info.InformationSet
  *  2.1.1 Definitions -> Definition 1 [19, p. 200]
  *    a finite extensive game with imperfect information has the following components...
  */
-trait NExtensiveGame[I <: InformationSet, A <: NExtensiveAction]
+trait NExtensiveGame[+I <: InformationSet, +A <: NExtensiveAction]
 {
   //--------------------------------------------------------------------------------------------------------------------
   /** "A finite set of n (rational) players" */

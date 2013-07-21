@@ -18,7 +18,7 @@ class KuhnStateSpec
   //--------------------------------------------------------------------------------------------------------------------
   "Initial state" should {
     val arbitraryCards =
-      new KuhnDeck().deal(new Random())
+      KuhnDeck.deal(new Random())
 
     val initialState =
       new KuhnState(

@@ -31,7 +31,7 @@ package ao.learn.mst.gen2.info
  * If a game has an information set with more than one member that game is said to have imperfect information.
  *
  */
-class InformationSet(/*index: Int*/)
+trait InformationSet//(/*index: Int*/)
 {
   // equals, hashCode
 }

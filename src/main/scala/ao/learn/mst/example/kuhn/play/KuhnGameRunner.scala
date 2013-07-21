@@ -19,7 +19,7 @@ object KuhnGameRunner
   val outcome = new KuhnDealer().playHand(
     firstPlayer,
     lastPlayer,
-    new KuhnDeck().deal(new Random()))
+    KuhnDeck.deal(new Random()))
 
   println("outcome is: " + outcome)
 }
