@@ -1,6 +1,6 @@
 package ao.learn.mst.gen2.game
 
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 import ao.learn.mst.gen2.info.InformationSet
 
 
@@ -16,7 +16,7 @@ trait ExtensiveGameDecision
   /**
    * @return RationalPlayer, i.e. next to act.
    */
-  override def player : RationalPlayer
+  override def player : DeliberatePlayer
 
 
   //--------------------------------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 package ao.learn.mst.cfr
 
 import ao.learn.mst.gen2.game._
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ object PlayerViewBuilder
   private def expand(
       game        : ExtensiveGame,
       root        : ExtensiveGameNode,
-      protagonist : RationalPlayer
+      protagonist : DeliberatePlayer
       ): PlayerViewNode =
   {
     root match {
@@ -40,8 +40,8 @@ object PlayerViewBuilder
       }
 
       case terminal: ExtensiveGameTerminal => {
-        val rationalPlayers: Seq[RationalPlayer] =
-          (0 until game.rationalPlayerCount).map( RationalPlayer(_) )
+        val rationalPlayers: Seq[DeliberatePlayer] =
+          (0 until game.rationalPlayerCount).map( DeliberatePlayer(_) )
         
         new TerminalNode( rationalPlayers.map(terminal.payoff.outcomes(_)) )
       }

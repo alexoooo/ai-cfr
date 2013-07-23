@@ -3,7 +3,7 @@ package ao.learn.mst.example.rps
 import act.{Scissors, Paper, Rock, RockPaperScissorsAction}
 import ao.learn.mst.gen2.game.ExtensiveGameTerminal
 import ao.learn.mst.gen2.solve.ExpectedValue
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ class RockPaperScissorsTerminal(
     }
 
     ExpectedValue(
-      Map(RationalPlayer(0) -> outcomes._1,
-          RationalPlayer(1) -> outcomes._2))
+      Map(DeliberatePlayer(0) -> outcomes._1,
+          DeliberatePlayer(1) -> outcomes._2))
   }
 }

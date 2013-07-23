@@ -6,7 +6,7 @@ import ao.learn.mst.gen2.info.InformationSet
 import ao.learn.mst.gen3.example.NKuhnAction
 
 /**
- * 09/06/13 9:58 PM
+ * Note: does InformationSet really need to be a generic type?
  */
 trait NExtensiveGameNonTerminal[+I <: InformationSet, +A <: NExtensiveAction]
   extends NExtensiveGameNode[I, A]

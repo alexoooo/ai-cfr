@@ -3,7 +3,7 @@ package ao.learn.mst.example.perfect.complete.terminal
 import scala.Double
 import ao.learn.mst.gen2.game.ExtensiveGameTerminal
 import ao.learn.mst.gen2.solve.ExpectedValue
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -14,8 +14,8 @@ class PerfectCompleteTerminal(
 {
   val payoff = ExpectedValue(
     Map(
-      RationalPlayer(0) -> firstPlayerOutcome,
-      RationalPlayer(1) -> secondPlayerOutcome))
+      DeliberatePlayer(0) -> firstPlayerOutcome,
+      DeliberatePlayer(1) -> secondPlayerOutcome))
 }
 
 

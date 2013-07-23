@@ -8,7 +8,7 @@ import ao.learn.mst.gen2.player.model.FiniteAction
 import scala.util.Random
 import scala.annotation.tailrec
 import scala.Predef._
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 import ao.learn.mst.example.ocp.adapt.OcpGame
 import ao.learn.mst.gen2.info.{TraversingInformationSetIndexer, SingleInformationSetIndexer, InformationSetIndex}
 
@@ -83,7 +83,7 @@ object ExtensiveGameTournament
     println("players: \n" + players.mkString("\n") + "\n")
 
     var outcomeSums =
-      Map[RationalPlayer, Double]()
+      Map[DeliberatePlayer, Double]()
 
     for (iteration <- 1 to iterations) {
       val outcome:ExpectedValue =
@@ -99,9 +99,9 @@ object ExtensiveGameTournament
 
   //--------------------------------------------------------------------------------------------------------------------
   def addOutcome(
-      currentOutcomeSums:Map[RationalPlayer, Double],
+      currentOutcomeSums:Map[DeliberatePlayer, Double],
       outcome:ExpectedValue)
-        :Map[RationalPlayer, Double] =
+        :Map[DeliberatePlayer, Double] =
   {
     var nextOutcomeSums = currentOutcomeSums
     for ((player, reward) <- outcome.outcomes) {
@@ -119,13 +119,13 @@ object ExtensiveGameTournament
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def displayOutcomesIfNeeded(iteration:Int, iterations:Int, outcomeSums:Map[RationalPlayer, Double]) {
+  def displayOutcomesIfNeeded(iteration:Int, iterations:Int, outcomeSums:Map[DeliberatePlayer, Double]) {
     val period:Int = iterations / 1000
     if (period == 0 || (iteration - 1) % period == 0) {
       displayOutcomes(iteration, outcomeSums)
     }
   }
-  def displayOutcomes(iteration:Int, outcomeSums:Map[RationalPlayer, Double]) {
+  def displayOutcomes(iteration:Int, outcomeSums:Map[DeliberatePlayer, Double]) {
     val averageOutcomes = outcomeSums.transform(
       (_, outcomeSum: Double) => outcomeSum / iteration)
 

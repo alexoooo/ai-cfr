@@ -4,7 +4,7 @@ import ao.learn.mst.gen2.game.ExtensiveGameDecision
 import ao.learn.mst.example.incomplete._
 import ao.learn.mst.gen2.info.InformationSet
 import collection.immutable.SortedSet
-import ao.learn.mst.gen2.player.model.{RationalPlayer, FiniteAction}
+import ao.learn.mst.gen2.player.model.{DeliberatePlayer, FiniteAction}
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -16,13 +16,13 @@ abstract class IncompleteDecision extends ExtensiveGameDecision {
 
 abstract class IncompleteDecisionPlayerOne extends IncompleteDecision {
   override def player =
-    RationalPlayer(0)
+    DeliberatePlayer(0)
 }
 
 abstract class IncompleteDecisionPlayerTwo(
     playerOneType : IncompleteType) extends IncompleteDecision {
   override def player =
-    RationalPlayer(1)
+    DeliberatePlayer(1)
 }
 
 

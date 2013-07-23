@@ -7,6 +7,9 @@ import ao.learn.mst.example.kuhn.action.KuhnAction._
 import ao.learn.mst.example.kuhn.action.KuhnActionSequence
 import ao.learn.mst.example.kuhn.action.KuhnActionSequence._
 import ao.learn.mst.example.kuhn.card.KuhnCardSequence
+import ao.learn.mst.example.kuhn.view.KuhnObservation
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
+import ao.learn.mst.example.kuhn.adapt.KuhnGameInfo
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -101,4 +104,12 @@ case class KuhnState(
           new KuhnState(cards, KuhnActionSequence.RaiseCall, stake.incrementLastPlayer)
       }
     }
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  def playerView: KuhnObservation =
+    KuhnObservation(
+      cards.forPlayer( nextToAct.get.id ),
+      actions,
+      stake)
 }

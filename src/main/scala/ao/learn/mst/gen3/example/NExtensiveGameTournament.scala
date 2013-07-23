@@ -4,6 +4,7 @@ import ao.learn.mst.gen3.game.{NExtensiveGameChance, NExtensiveGame}
 import ao.learn.mst.gen2.info.InformationSet
 import ao.learn.mst.gen3.NExtensiveAction
 import ao.learn.mst.example.kuhn.card.{KuhnCardSequence, KuhnCard}
+import scala.xml.PrettyPrinter
 
 /**
  * 13/07/13 8:27 PM
@@ -19,16 +20,18 @@ object NExtensiveGameTournament extends App
   println(s"Initial state: $root")
   println(s"First actions: ${root.actions}")
 
-  root match {
-    case c : NExtensiveGameChance[_, _] => {
-      val illegalAction = Chance(KuhnCardSequence(KuhnCard.King, KuhnCard.King))
-      println(s"Probability of illegal: ${c.probability(illegalAction)}")
+//  root match {
+//    case c : NExtensiveGameChance[_, _] => {
+//      val illegalAction = Chance(KuhnCardSequence(KuhnCard.King, KuhnCard.King))
+//      println(s"Probability of illegal: ${c.probability(illegalAction)}")
+//
+//      val legalAction = Chance(KuhnCardSequence(KuhnCard.King, KuhnCard.Jack))
+//      println(s"Probability of legal: ${c.probability(legalAction)}")
+//
+//      val nextState = c.child(legalAction)
+//      println(s"Next state: $nextState")
+//    }
+//  }
 
-      val legalAction = Chance(KuhnCardSequence(KuhnCard.King, KuhnCard.Jack))
-      println(s"Probability of legal: ${c.probability(legalAction)}")
-
-      val nextState = c.child(legalAction)
-      println(s"Next state: $nextState")
-    }
-  }
+  println(new PrettyPrinter(120, 4).format(NExtensiveGameDisplay.displayExtensiveGameNode(root)))
 }

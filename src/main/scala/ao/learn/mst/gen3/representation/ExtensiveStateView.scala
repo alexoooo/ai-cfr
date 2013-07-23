@@ -1,6 +1,6 @@
 package ao.learn.mst.gen3.representation
 
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 import ao.learn.mst.gen2.info.InformationSet
 import ao.learn.mst.gen3.NExtensiveAction
 
@@ -9,7 +9,7 @@ import ao.learn.mst.gen3.NExtensiveAction
  */
 trait ExtensiveStateView[I <: InformationSet, A <: NExtensiveAction]
 {
-  def viewer: RationalPlayer
+  def viewer: DeliberatePlayer
 
   def informationSet: I
 

@@ -3,7 +3,7 @@ package ao.learn.mst.example.imperfect.complete.decision
 import ao.learn.mst.gen2.info.InformationSet
 import ao.learn.mst.gen2.game.ExtensiveGameDecision
 import ao.learn.mst.example.imperfect.complete.terminal.{ImperfectCompleteTerminalDownDown, ImperfectCompleteTerminalDownUp, ImperfectCompleteTerminalUpDown, ImperfectCompleteTerminalUpUp}
-import ao.learn.mst.gen2.player.model.{RationalPlayer, NamedFiniteAction, FiniteAction}
+import ao.learn.mst.gen2.player.model.{DeliberatePlayer, NamedFiniteAction, FiniteAction}
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ case object ImperfectCompleteDecisionFirst
   extends ImperfectCompleteDecision
 {
   override def player =
-    new RationalPlayer(0)
+    new DeliberatePlayer(0)
 
   val informationSet = ImperfectCompleteDecisionFirstInfo
 
@@ -44,7 +44,7 @@ object ImperfectCompleteDecisionAfterUp
     extends ImperfectCompleteDecision
 {
   override def player =
-    RationalPlayer(1)
+    DeliberatePlayer(1)
 
   def informationSet = ImperfectCompleteDecisionSecondInfo
 
@@ -61,7 +61,7 @@ object ImperfectCompleteDecisionAfterDown
     extends ImperfectCompleteDecision
 {
   override def player =
-    RationalPlayer(1)
+    DeliberatePlayer(1)
 
   def informationSet = ImperfectCompleteDecisionSecondInfo
 

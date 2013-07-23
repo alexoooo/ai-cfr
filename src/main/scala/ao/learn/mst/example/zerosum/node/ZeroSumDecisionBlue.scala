@@ -4,7 +4,7 @@ import ao.learn.mst.gen2.game.ExtensiveGameDecision
 import ao.learn.mst.example.zerosum.act._
 import ao.learn.mst.example.zerosum.info.ZeroSumInfoBlue
 import collection.immutable.SortedSet
-import ao.learn.mst.gen2.player.model.{RationalPlayer, FiniteAction}
+import ao.learn.mst.gen2.player.model.{DeliberatePlayer, FiniteAction}
 
 
 case class ZeroSumDecisionBlue(redPlayerAction: ZeroSumActionRed)
@@ -23,7 +23,7 @@ case class ZeroSumDecisionBlue(redPlayerAction: ZeroSumActionRed)
   }
 
   override val player =
-    RationalPlayer(1)
+    DeliberatePlayer(1)
 
   val informationSet = ZeroSumInfoBlue
 }

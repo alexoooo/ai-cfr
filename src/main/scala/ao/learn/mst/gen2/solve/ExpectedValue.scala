@@ -1,7 +1,7 @@
 package ao.learn.mst.gen2.solve
 
 import scala.Predef._
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ import ao.learn.mst.gen2.player.model.RationalPlayer
  *
  * @param outcomes payoffs
  */
-case class ExpectedValue(outcomes : Map[RationalPlayer, Double])
+case class ExpectedValue(outcomes : Map[DeliberatePlayer, Double])
 
 
 object ExpectedValue {
@@ -19,11 +19,11 @@ object ExpectedValue {
     val valuesWithIndex: Seq[(Double, Int)] =
       values.zipWithIndex
 
-    val playersWithValues: Seq[(RationalPlayer, Double)] =
-      valuesWithIndex.map(vi => (RationalPlayer(vi._2), vi._1))
+    val playersWithValues: Seq[(DeliberatePlayer, Double)] =
+      valuesWithIndex.map(vi => (DeliberatePlayer(vi._2), vi._1))
 
     ExpectedValue(
-      Map[RationalPlayer, Double]()
+      Map[DeliberatePlayer, Double]()
         ++ playersWithValues)
   }
 }

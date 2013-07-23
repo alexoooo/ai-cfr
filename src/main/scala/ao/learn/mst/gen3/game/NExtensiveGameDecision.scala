@@ -1,6 +1,6 @@
 package ao.learn.mst.gen3.game
 
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 import ao.learn.mst.gen2.info.InformationSet
 import ao.learn.mst.gen3.NExtensiveAction
 
@@ -14,7 +14,7 @@ trait NExtensiveGameDecision[+I <: InformationSet, +A <: NExtensiveAction]
   /**
    * @return RationalPlayer, i.e. next to act.
    */
-  override def player : RationalPlayer
+  override def player : DeliberatePlayer
 
 
   //--------------------------------------------------------------------------------------------------------------------

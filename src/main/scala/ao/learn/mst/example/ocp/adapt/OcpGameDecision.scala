@@ -4,7 +4,7 @@ import ao.learn.mst.gen2.game.{ExtensiveGameNode, ExtensiveGameDecision}
 import collection.immutable.SortedSet
 import ao.learn.mst.example.ocp.state.OcpState
 import ao.learn.mst.example.ocp.action.OcpAction
-import ao.learn.mst.gen2.player.model.{RationalPlayer, IndexedFiniteAction, FiniteAction}
+import ao.learn.mst.gen2.player.model.{DeliberatePlayer, IndexedFiniteAction, FiniteAction}
 
 /**
  * Date: 03/12/11
@@ -33,7 +33,7 @@ case class OcpGameDecision(delegate: OcpState)
 
   //--------------------------------------------------------------------------------------------------------------------
   override def player =
-    RationalPlayer(delegate.nextToAct.get.id)
+    DeliberatePlayer(delegate.nextToAct.get.id)
 
   def informationSet =
     OcpGameInfo(

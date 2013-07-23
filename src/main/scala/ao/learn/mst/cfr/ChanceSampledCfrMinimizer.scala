@@ -5,7 +5,7 @@ import ao.learn.mst.gen2.game._
 import scala._
 import ao.learn.mst.gen2.solve.ExtensiveGameSolver
 import collection.immutable.SortedMap
-import ao.learn.mst.gen2.player.model.{RationalPlayer, FiniteAction}
+import ao.learn.mst.gen2.player.model.{DeliberatePlayer, FiniteAction}
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -97,8 +97,8 @@ class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
       case terminal : ExtensiveGameTerminal => {
         // train.cpp line 606
 
-        val rationalPlayers: Seq[RationalPlayer] =
-          (0 until game.rationalPlayerCount).map( RationalPlayer(_) )
+        val rationalPlayers: Seq[DeliberatePlayer] =
+          (0 until game.rationalPlayerCount).map( DeliberatePlayer(_) )
 
         rationalPlayers.map(terminal.payoff.outcomes(_))
       }

@@ -2,7 +2,7 @@ package ao.learn.mst.example.imperfect.complete.terminal
 
 import ao.learn.mst.gen2.game.ExtensiveGameTerminal
 import ao.learn.mst.gen2.solve.ExpectedValue
-import ao.learn.mst.gen2.player.model.RationalPlayer
+import ao.learn.mst.gen2.player.model.DeliberatePlayer
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -13,8 +13,8 @@ class ImperfectCompleteTerminal(
 {
   def payoff = ExpectedValue(
     Map(
-      RationalPlayer(0) -> firstPlayerOutcome,
-      RationalPlayer(1) -> secondPlayerOutcome))
+      DeliberatePlayer(0) -> firstPlayerOutcome,
+      DeliberatePlayer(1) -> secondPlayerOutcome))
 }
 
 
