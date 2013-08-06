@@ -2,6 +2,7 @@ package ao.learn.mst.example.kuhn.card
 
 import util.Random
 import ao.learn.mst.example.kuhn.card.KuhnCard._
+import ao.learn.mst.example.kuhn.action.KuhnCardSequence
 
 /**
  * Date: 20/09/11

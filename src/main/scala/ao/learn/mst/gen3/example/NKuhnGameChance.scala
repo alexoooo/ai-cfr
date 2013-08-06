@@ -1,7 +1,7 @@
 package ao.learn.mst.gen3.example
 
 import ao.learn.mst.gen3.game.{NExtensiveGameNode, NExtensiveGameChance}
-import ao.learn.mst.example.kuhn.card.{KuhnCardSequence, KuhnDeck, KuhnCard}
+import ao.learn.mst.example.kuhn.card.{KuhnDeck, KuhnCard}
 import ao.learn.mst.example.kuhn.card.KuhnCard._
 import ao.learn.mst.example.kuhn.state.KuhnState
 

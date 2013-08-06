@@ -6,7 +6,7 @@ object KuhnActionSequence extends Enumeration
   //--------------------------------------------------------------------------
   type KuhnActionSequence = Value
 
-  val FirstAction = Value("FirstAction")
+  val Empty = Value("FirstAction")
 
     val Check = Value("Check")
       val CheckCheck = Value("Check / Check")

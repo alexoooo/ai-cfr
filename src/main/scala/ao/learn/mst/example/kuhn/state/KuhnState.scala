@@ -2,14 +2,12 @@ package ao.learn.mst.example.kuhn.state
 
 import KuhnPosition._
 import terminal.KuhnTerminalStatus._
-import ao.learn.mst.example.kuhn.action.KuhnAction
-import ao.learn.mst.example.kuhn.action.KuhnAction._
-import ao.learn.mst.example.kuhn.action.KuhnActionSequence
+import ao.learn.mst.example.kuhn.action._
 import ao.learn.mst.example.kuhn.action.KuhnActionSequence._
-import ao.learn.mst.example.kuhn.card.KuhnCardSequence
 import ao.learn.mst.example.kuhn.view.KuhnObservation
-import ao.learn.mst.gen2.player.model.DeliberatePlayer
-import ao.learn.mst.example.kuhn.adapt.KuhnGameInfo
+import ao.learn.mst.example.kuhn.action.KuhnActionSequence
+import scala.Some
+import ao.learn.mst.example.kuhn.action.KuhnCardSequence
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -20,12 +18,12 @@ case class KuhnState(
 {
   //--------------------------------------------------------------------------------------------------------------------
   def this(cards : KuhnCardSequence) =
-    this(cards, FirstAction, new KuhnStake().ante)
+    this(cards, Empty, new KuhnStake().ante)
 
 
   //--------------------------------------------------------------------------------------------------------------------
   def nextToAct : Option[KuhnPosition] = actions match {
-      case FirstAction => Some(FirstToAct)
+      case Empty       => Some(FirstToAct)
       case Check       => Some(LastToAct)
       case CheckCheck  => None
       case CheckRaise  => Some(FirstToAct)
@@ -58,52 +56,58 @@ case class KuhnState(
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def availableActions : Seq[KuhnAction] =
+  def availableActions : Seq[KuhnDecision] =
     terminalStatus match {
-      case None => Seq(KuhnAction.CheckFold, KuhnAction.CallRaise)
+      case None => Seq(CheckFold, CallRaise)
       case _    => Seq()
     }
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def act(action : KuhnAction):KuhnState =
-    actions match {
-      case FirstAction => action match {
+  def act(action : KuhnDecision):KuhnState = {
+    val (nextActionSequence, nextState) = actions match {
+      case Empty => action match {
         case CheckFold =>
-          new KuhnState(cards, KuhnActionSequence.Check, stake)
+          (KuhnActionSequence.Check, stake)
 
         case CallRaise =>
-          new KuhnState(cards, KuhnActionSequence.Raise, stake.incrementFirstPlayer)
+          (KuhnActionSequence.Raise, stake.incrementFirstPlayer)
       }
 
       case Check => {
         action match {
           case CheckFold =>
-            new KuhnState(cards, KuhnActionSequence.CheckCheck, stake)
+            (KuhnActionSequence.CheckCheck, stake)
 
           case CallRaise =>
-            new KuhnState(cards, KuhnActionSequence.CheckRaise, stake.incrementLastPlayer)
+            (KuhnActionSequence.CheckRaise, stake.incrementLastPlayer)
         }
       }
 
       case CheckRaise => {
         action match {
           case CheckFold =>
-            new KuhnState(cards, KuhnActionSequence.CheckRaiseFold, stake)
+            (KuhnActionSequence.CheckRaiseFold, stake)
 
           case CallRaise =>
-            new KuhnState(cards, KuhnActionSequence.CheckRaiseCall, stake.incrementFirstPlayer)
+            (KuhnActionSequence.CheckRaiseCall, stake.incrementFirstPlayer)
         }
       }
 
       case Raise => action match {
         case CheckFold =>
-          new KuhnState(cards, KuhnActionSequence.RaiseFold, stake)
+          (KuhnActionSequence.RaiseFold, stake)
 
         case CallRaise =>
-          new KuhnState(cards, KuhnActionSequence.RaiseCall, stake.incrementLastPlayer)
+          (KuhnActionSequence.RaiseCall, stake.incrementLastPlayer)
       }
     }
+
+    new KuhnState(cards, nextActionSequence, nextState)
+  }
+
+
+
 
 
   //--------------------------------------------------------------------------------------------------------------------

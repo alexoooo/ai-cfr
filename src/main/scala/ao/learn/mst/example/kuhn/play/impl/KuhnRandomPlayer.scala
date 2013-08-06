@@ -2,7 +2,7 @@ package ao.learn.mst.example.kuhn.play.impl
 
 import ao.learn.mst.example.kuhn.play.KuhnPlayer
 import ao.learn.mst.example.kuhn.state.KuhnState
-import ao.learn.mst.example.kuhn.action.KuhnAction
+import ao.learn.mst.example.kuhn.action.{KuhnDecision, KuhnPlayerAction}
 import util.Random
 
 /**
@@ -17,7 +17,7 @@ class KuhnRandomPlayer extends KuhnPlayer
 
   //--------------------------------------------------------------------------------------------------------------------
   def act(state: KuhnState) = {
-    KuhnAction.values.toList(
+    KuhnDecision.values.toList(
       rand.nextInt(2))
   }
 }

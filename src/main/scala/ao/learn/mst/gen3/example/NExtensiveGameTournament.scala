@@ -3,7 +3,7 @@ package ao.learn.mst.gen3.example
 import ao.learn.mst.gen3.game.{NExtensiveGameChance, NExtensiveGame}
 import ao.learn.mst.gen2.info.InformationSet
 import ao.learn.mst.gen3.NExtensiveAction
-import ao.learn.mst.example.kuhn.card.{KuhnCardSequence, KuhnCard}
+import ao.learn.mst.example.kuhn.card.{KuhnCard}
 import scala.xml.PrettyPrinter
 
 /**

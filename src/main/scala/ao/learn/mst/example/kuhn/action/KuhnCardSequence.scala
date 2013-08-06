@@ -1,12 +1,13 @@
-package ao.learn.mst.example.kuhn.card
+package ao.learn.mst.example.kuhn.action
 
-import KuhnCard._
 import ao.learn.mst.example.kuhn.state.KuhnPosition._
+import ao.learn.mst.example.kuhn.card.KuhnCard._
 
 
 //---------------------------------------------------------------------------------------------------------------------
 case class KuhnCardSequence(
-    first : KuhnCard, last : KuhnCard)
+    first : KuhnCard, last : KuhnCard
+  ) extends KuhnGenAction
 {
   //--------------------------------------------------------------------------
   def hands = (first, last)

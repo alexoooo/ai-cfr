@@ -1,8 +1,8 @@
 package ao.learn.mst.gen3.example
 
 import ao.learn.mst.gen3.NExtensiveAction
-import ao.learn.mst.example.kuhn.card.KuhnCardSequence
-import ao.learn.mst.example.kuhn.action.KuhnAction._
+import ao.learn.mst.example.kuhn.action.KuhnPlayerAction._
+import ao.learn.mst.example.kuhn.action.{KuhnDecision, KuhnCardSequence}
 
 /**
  * Extensive Game wrapper
@@ -17,5 +17,5 @@ case class Chance(
 
 
 case class Decision(
-    delegate : KuhnAction
+    delegate : KuhnDecision
 ) extends NKuhnAction

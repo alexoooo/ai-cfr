@@ -6,10 +6,10 @@ package ao.learn.mst.example.kuhn.action
  */
 
 //----------------------------------------------------------------------------
-object KuhnAction extends Enumeration
+object KuhnPlayerAction extends Enumeration
 {
   //--------------------------------------------------------------------------
-  type KuhnAction = Value
+  type KuhnPlayerAction = Value
 
   val CheckFold = Value("Check/Fold")
   val CallRaise = Value("Call/Raise")

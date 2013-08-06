@@ -4,7 +4,7 @@ import ao.learn.mst.example.kuhn.state.KuhnState
 import ao.learn.mst.gen2.game.{ExtensiveGameNode, ExtensiveGameDecision}
 import ao.learn.mst.gen2.player.model.{DeliberatePlayer, IndexedFiniteAction, FiniteAction}
 import collection.immutable.SortedSet
-import ao.learn.mst.example.kuhn.action.KuhnAction
+import ao.learn.mst.example.kuhn.action.{KuhnDecision, KuhnPlayerAction}
 
 /**
  * Date: 03/12/11
@@ -38,7 +38,7 @@ case class KuhnGameDecision(delegate : KuhnState)
 
   //--------------------------------------------------------------------------------------------------------------------
   def child(action: FiniteAction) : ExtensiveGameNode = {
-    val childDelegate = delegate.act(KuhnAction.values.toSeq(action.index))
+    val childDelegate = delegate.act(KuhnDecision.values.toSeq(action.index))
 
     childDelegate.winner match {
       case None => KuhnGameDecision(childDelegate)

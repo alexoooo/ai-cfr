@@ -1,10 +1,11 @@
 package ao.learn.mst.gen3.example
 
 import ao.learn.mst.gen3.game.{NExtensiveGameNode, NExtensiveGameDecision}
-import ao.learn.mst.example.kuhn.action.KuhnAction._
+import ao.learn.mst.example.kuhn.action.KuhnPlayerAction._
 import ao.learn.mst.gen2.player.model.DeliberatePlayer
 import scala.Some
 import ao.learn.mst.example.kuhn.state.KuhnState
+import ao.learn.mst.example.kuhn.action.KuhnDecision
 
 /**
  * 21/07/13 4:54 PM
@@ -38,7 +39,7 @@ case class NKuhnGameDecision(delegate : KuhnState)
 
   //--------------------------------------------------------------------------------------------------------------------
   def child[T >: NKuhnAction](action: T): Option[NExtensiveGameNode[NKuhnInfoSet, NKuhnAction]] = {
-    val legalKuhnAction : Option[KuhnAction] = action match {
+    val legalKuhnAction : Option[KuhnDecision] = action match {
       case Decision(kuhnAction) =>
         if (actions.indices.contains(kuhnAction.id)) Some(kuhnAction) else None
     }

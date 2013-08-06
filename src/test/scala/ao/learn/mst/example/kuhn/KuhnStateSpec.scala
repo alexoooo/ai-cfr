@@ -1,6 +1,6 @@
 package ao.learn.mst.example.kuhn
 
-import action.{KuhnAction, KuhnActionSequence}
+import ao.learn.mst.example.kuhn.action.{CheckFold, CallRaise, KuhnDecision, KuhnActionSequence}
 import card.KuhnDeck
 import state.terminal.KuhnTerminalStatus
 import ao.learn.mst.example.kuhn.state.{KuhnPosition, KuhnState}
@@ -25,7 +25,7 @@ class KuhnStateSpec
         arbitraryCards)
 
     "No action has been taken" in {
-      initialState.actions === KuhnActionSequence.FirstAction
+      initialState.actions === KuhnActionSequence.Empty
     }
 
     "First player is next to act" in {
@@ -45,14 +45,14 @@ class KuhnStateSpec
       initialState.terminalStatus === None
 
       initialState.availableActions must equalTo(
-        Seq(KuhnAction.CheckFold, KuhnAction.CallRaise))
+        Seq(CheckFold, CallRaise))
     }
 
 
     //------------------------------------------------------------------------------------------------------------------
     "On first player checks" in {
       val onFirstPlayerChecks =
-          initialState.act(KuhnAction.CheckFold)
+          initialState.act(CheckFold)
 
       "Action sequence should match" in {
         onFirstPlayerChecks.actions === KuhnActionSequence.Check
@@ -70,14 +70,14 @@ class KuhnStateSpec
         onFirstPlayerChecks.terminalStatus === None
 
         onFirstPlayerChecks.availableActions ===
-          Seq(KuhnAction.CheckFold, KuhnAction.CallRaise)
+          Seq(CheckFold, CallRaise)
       }
 
 
       //----------------------------------------------------------------------------------------------------------------
       "On second player checks" in {
         val onSecondPlayerChecks =
-            onFirstPlayerChecks.act(KuhnAction.CheckFold)
+            onFirstPlayerChecks.act(CheckFold)
 
         "Action sequence should match" in {
           onSecondPlayerChecks.actions === KuhnActionSequence.CheckCheck
@@ -100,7 +100,7 @@ class KuhnStateSpec
         //--------------------------------------------------------------------------------------------------------------
         "On second player raises" in {
           val onSecondPlayerRaises =
-            onFirstPlayerChecks.act(KuhnAction.CallRaise)
+            onFirstPlayerChecks.act(CallRaise)
 
           "Action sequence should match" in {
             onSecondPlayerRaises.actions === KuhnActionSequence.CheckRaise
@@ -115,7 +115,7 @@ class KuhnStateSpec
             onSecondPlayerRaises.nextToAct === Some(KuhnPosition.FirstToAct)
 
             onSecondPlayerRaises.availableActions ===
-              Seq(KuhnAction.CheckFold, KuhnAction.CallRaise)
+              Seq(CheckFold, CallRaise)
 
             onSecondPlayerRaises.terminalStatus === None
           }
@@ -124,7 +124,7 @@ class KuhnStateSpec
           //------------------------------------------------------------------------------------------------------------
           "On first player folds" in {
             val onFirstPlayerFolds =
-              onSecondPlayerRaises.act(KuhnAction.CheckFold)
+              onSecondPlayerRaises.act(CheckFold)
 
             "Action sequence matches" in {
               onFirstPlayerFolds.actions === KuhnActionSequence.CheckRaiseFold
@@ -144,7 +144,7 @@ class KuhnStateSpec
           //------------------------------------------------------------------------------------------------------------
           "On first player calls" in {
             val onFirstPlayerCalls =
-              onSecondPlayerRaises.act(KuhnAction.CallRaise)
+              onSecondPlayerRaises.act(CallRaise)
 
             "Action sequence matches" in {
               onFirstPlayerCalls.actions === KuhnActionSequence.CheckRaiseCall
@@ -166,7 +166,7 @@ class KuhnStateSpec
     //------------------------------------------------------------------------------------------------------------------
     "On first player raises" in {
       val onFirstPlayerRaises =
-        initialState.act(KuhnAction.CallRaise)
+        initialState.act(CallRaise)
 
       "Action sequence matches" in {
         onFirstPlayerRaises.actions === KuhnActionSequence.Raise
@@ -185,14 +185,14 @@ class KuhnStateSpec
         onFirstPlayerRaises.terminalStatus === None
 
         onFirstPlayerRaises.availableActions ===
-          Seq(KuhnAction.CheckFold, KuhnAction.CallRaise)
+          Seq(CheckFold, CallRaise)
       }
 
 
       //----------------------------------------------------------------------------------------------------------------
       "On player two folds" in {
         val onLastPlayerFolds =
-          onFirstPlayerRaises.act(KuhnAction.CheckFold)
+          onFirstPlayerRaises.act(CheckFold)
 
         "Action sequence matches" in {
           onLastPlayerFolds.actions === KuhnActionSequence.RaiseFold
@@ -217,7 +217,7 @@ class KuhnStateSpec
       //----------------------------------------------------------------------------------------------------------------
       "On player two calls" in {
         val onLastPlayerCalls =
-          onFirstPlayerRaises.act(KuhnAction.CallRaise)
+          onFirstPlayerRaises.act(CallRaise)
 
         "Action sequence matches" in {
           onLastPlayerCalls.actions === KuhnActionSequence.RaiseCall

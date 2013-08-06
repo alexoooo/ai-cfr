@@ -1,6 +1,7 @@
 package ao.learn.mst.example.ocp.card
 
 import util.Random
+import ao.learn.mst.example.ocp.card.OcpCard._
 
 /**
  * Date: 20/09/11
@@ -9,9 +10,11 @@ import util.Random
 class OcpDeck {
   //--------------------------------------------------------------------------
   def deal(random: Random): OcpCardSequence = {
-    val cards = OcpCard.values.toList
+    val cards : List[OcpCard] =
+      OcpCard.values.toList
 
-    val randomCards = random.shuffle(cards).tail
+    val randomCards : List[OcpCard] =
+      random.shuffle(cards).tail
 
     OcpCardSequence(
       randomCards(0),
