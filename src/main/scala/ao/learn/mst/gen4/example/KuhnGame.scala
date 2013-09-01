@@ -15,6 +15,7 @@ import scala.Some
 import ao.learn.mst.example.kuhn.state.KuhnState
 import ao.learn.mst.example.kuhn.action.KuhnCardSequence
 import scala.languageFeature.experimental.macros
+import ao.learn.mst.gen4.sp.{TerminalPartition, ChancePartition, DecisionPartition, StatePartition}
 
 /**
  * 28/07/13 7:11 PM
@@ -31,17 +32,17 @@ case object KuhnGame
 
   def identify(state: KuhnState): StatePartition =
     if (state == initialState) {
-      Chance
+      ChancePartition
     } else if (state.winner.isDefined) {
-      Terminal
+      TerminalPartition
     } else {
-      Decision
+      DecisionPartition
     }
 
 
   def payoff(state: KuhnState): Option[Seq[Double]] =
     identify(state) match {
-      case Terminal => {
+      case TerminalPartition => {
         val outcome =
           state.stake.toOutcome(state.winner.get)
         Some(outcome.toSeq)
@@ -53,19 +54,19 @@ case object KuhnGame
 
   def nextToAct(state: KuhnState): Option[Player] =
     identify(state) match {
-      case Terminal => None
-      case Chance => Some(Nature)
-      case Decision => Some(Rational(state.nextToAct.get.id))
+      case TerminalPartition => None
+      case ChancePartition => Some(Nature)
+      case DecisionPartition => Some(Rational(state.nextToAct.get.id))
     }
 
 
   def actions(state: KuhnState): Option[Traversable[KuhnGenAction]] =
     identify(state) match {
-      case Terminal => None
-      case Chance => {
+      case TerminalPartition => None
+      case ChancePartition => {
         Some(KuhnDeck.permutations)
       }
-      case Decision => {
+      case DecisionPartition => {
         Some(KuhnDecision.values)
       }
     }
@@ -73,10 +74,10 @@ case object KuhnGame
 
   def transition(state: KuhnState, action: KuhnGenAction): Option[KuhnState] =
     (identify(state), action) match {
-      case (Chance, s : KuhnCardSequence) => {
+      case (ChancePartition, s : KuhnCardSequence) => {
         Some(KuhnState(s, KuhnActionSequence.Empty, new KuhnStake()))
       }
-      case (Decision, d : KuhnDecision) => {
+      case (DecisionPartition, d : KuhnDecision) => {
         Some(state.act(d))
       }
       case _ => None
@@ -85,7 +86,7 @@ case object KuhnGame
 
   def probability(state: KuhnState, action: KuhnGenAction): Option[Double] =
     (identify(state), action) match {
-      case (Chance, s : KuhnCardSequence) => {
+      case (ChancePartition, s : KuhnCardSequence) => {
         if (KuhnDeck.permutations.contains(s)) {
           Some(1.0 / KuhnDeck.permutations.size)
         } else {
@@ -98,7 +99,7 @@ case object KuhnGame
 
   def informationSet(state: KuhnState): Option[KuhnObservation] =
     identify(state) match {
-      case Decision => Some(state.playerView)
+      case DecisionPartition => Some(state.playerView)
       case _ => None
     }
 }

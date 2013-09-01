@@ -11,7 +11,10 @@ package ao.learn.mst.gen4
  *    (A game of complete information thus has an empty set of Chance nodes.)"
  *
  * Above, "rational" implies that the player is able to interpret the payoff (outcome) at terminal nodes.
- * Also, rationality implies hat a player will never knowingly play a strictly dominated strategy.
+ * Also, rationality implies that a player will never knowingly play a strictly dominated strategy.
+ * Note that if we plan for rational opponents, we can only do better against irrational one.
+ *  Rationality is a safe assumption, but in practice deliberate players might not be rational (but would
+ *  still be considered "Rational" as per below).
  */
 
 

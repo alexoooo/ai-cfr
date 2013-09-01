@@ -1,6 +1,7 @@
 package ao.learn.mst.gen4
 
-import ao.learn.mst.gen2.player.model.PlayerIdentity
+import ao.learn.mst.gen4.sp.StatePartition
+
 
 /**
  *
