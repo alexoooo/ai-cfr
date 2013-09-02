@@ -11,7 +11,8 @@ class MixedStrategyPlayer[InformationSet, Action](
   sourceOfRandomness : Random)
   extends ExtensivePlayer[InformationSet, Action]
 {
-  def act(informationSet: InformationSet, actions: Traversable[Action]): Action = {
+  def act(informationSet: InformationSet, actions: Traversable[Action]): Action =
+  {
     val indexToActions : Map[Int, Traversable[Action]] = {
       def actionToIndex(action : Action) : Int =
         gameAbstraction.actionSubIndex(informationSet, action)

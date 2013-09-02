@@ -20,15 +20,19 @@
     <properties>
         <scala-major.version>2.10</scala-major.version>
         <scala.version>${scala-major.version}.2</scala.version>
+
         <scala-plugin.version>3.1.5</scala-plugin.version>
+
         <scalaz.version>7.0.2</scalaz.version>
+        <spire.version>0.6.0</spire.version>
+        <guava.version>15.0-rc1</guava.version>
+
         <specs2.version>2.0</specs2.version>
         <scalacheck.version>1.10.1</scalacheck.version>
         <junit.version>4.11</junit.version>
         <scalamock.version>3.0</scalamock.version>
         <mockito.version>1.9.5</mockito.version>
     </properties>
-
 
     <!--
         According to https://github.com/scalaz/scalaz :
@@ -84,6 +88,7 @@
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.scalaz</groupId>
             <artifactId>scalaz-core_${scala-major.version}</artifactId>
@@ -94,6 +99,23 @@
             <artifactId>scalaz-concurrent_${scala-major.version}</artifactId>
             <version>${scalaz.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.spire-math</groupId>
+            <artifactId>spire_${scala-major.version}</artifactId>
+            <version>${spire.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.specs2</groupId>
@@ -111,18 +133,21 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.scalacheck</groupId>
             <artifactId>scalacheck_${scala-major.version}</artifactId>
             <version>${scalacheck.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
         <!--<dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -177,7 +202,7 @@
 
     <!--===================================================================-->
     <reporting>
-        <plugins>
+        <!--<plugins>
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
@@ -186,6 +211,6 @@
                     <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
             </plugin>
-        </plugins>
+        </plugins>-->
     </reporting>
 </project>

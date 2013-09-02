@@ -1,16 +1,17 @@
 package ao.learn.mst.gen5.node
 
 import ao.learn.mst.gen4.{Nature, Rational, Player}
+import ao.learn.mst.gen4.sp.{TerminalPartition, ChancePartition, DecisionPartition, StatePartition}
 
 
 //----------------------------------------------------------------------------------------------------------------------
-sealed trait ExtensiveNode[InformationSet, Action]
+sealed trait ExtensiveNode[InformationSet, Action] {
+  def statePartition : StatePartition
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------
-trait NonTerminal[InformationSet, Action]
-  extends ExtensiveNode[InformationSet, Action]
-{
+trait NonTerminal {
   def nextToAct : Player
 }
 
@@ -18,15 +19,20 @@ trait NonTerminal[InformationSet, Action]
 //----------------------------------------------------------------------------------------------------------------------
 case class Decision[InformationSet, Action](
   nextToAct      : Rational,
-  choices        : Traversable[Action],
-  informationSet : InformationSet
-) extends NonTerminal[InformationSet, Action]
+  informationSet : InformationSet,
+  choices        : Traversable[Action]
+) extends ExtensiveNode[InformationSet, Action]
+  with NonTerminal {
+  val statePartition = DecisionPartition
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------
 case class Chance[InformationSet, Action](
   outcomes : Traversable[Outcome[Action]]
-) extends NonTerminal[InformationSet, Action] {
+) extends ExtensiveNode[InformationSet, Action]
+  with NonTerminal {
+  val statePartition = ChancePartition
   val nextToAct = Nature
 }
 
@@ -52,7 +58,9 @@ object Outcome {
 //----------------------------------------------------------------------------------------------------------------------
 case class Terminal[InformationSet, Action](
   payoffs : Seq[Double]
-) extends ExtensiveNode[InformationSet, Action]
+) extends ExtensiveNode[InformationSet, Action] {
+  val statePartition = TerminalPartition
+}
 
 object Terminal {
   def fromPayoffs(payoffs : Seq[Double]): Terminal[_, _]=

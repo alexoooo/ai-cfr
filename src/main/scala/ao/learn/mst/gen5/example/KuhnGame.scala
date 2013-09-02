@@ -15,7 +15,7 @@ import ao.learn.mst.gen4.Rational
 
 //----------------------------------------------------------------------------------------------------------------------
 case object KuhnGame
-  extends ExtensiveGame[KuhnState, KuhnGenAction, KuhnObservation]
+  extends ExtensiveGame[KuhnState, KuhnObservation, KuhnGenAction]
 {
   //--------------------------------------------------------------------------------------------------------------------
   def playerCount = 2
@@ -35,7 +35,7 @@ case object KuhnGame
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def node(state: KuhnState): ExtensiveNode[KuhnGenAction, KuhnObservation] =
+  def node(state: KuhnState): ExtensiveNode[KuhnObservation, KuhnGenAction] =
     identify(state) match {
       case TerminalPartition =>
         Terminal(terminalPayoffs(state))
@@ -50,7 +50,7 @@ case object KuhnGame
         val nextToAct = Rational(state.nextToAct.get.id)
         val choices : Traversable[KuhnGenAction] = KuhnDecision.values
         val infoSet = state.playerView
-        Decision(nextToAct, choices, infoSet)
+        Decision(nextToAct, infoSet, choices)
       }
     }
 

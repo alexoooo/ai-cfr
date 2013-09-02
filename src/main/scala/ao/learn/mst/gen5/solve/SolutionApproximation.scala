@@ -1,6 +1,7 @@
 package ao.learn.mst.gen5.solve
 
-import ao.learn.mst.gen5.{ExtensiveAbstraction}
+import ao.learn.mst.gen5.ExtensiveAbstraction
+
 
 trait SolutionApproximation[InformationSet, Action]
 {
