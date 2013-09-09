@@ -35,22 +35,22 @@ case object KuhnGame
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def node(state: KuhnState): ExtensiveNode[KuhnObservation, KuhnGenAction] =
+  def node(state: KuhnState): ExtensiveNode[KuhnState, KuhnObservation, KuhnGenAction] =
     identify(state) match {
       case TerminalPartition =>
-        Terminal(terminalPayoffs(state))
+        Terminal(state, terminalPayoffs(state))
 
       case ChancePartition => {
         val outcomes : Traversable[Outcome[KuhnGenAction]] =
           Outcome.equalProbability(KuhnDeck.permutations)
-        Chance(outcomes)
+        Chance(state, outcomes)
       }
 
       case DecisionPartition => {
         val nextToAct = Rational(state.nextToAct.get.id)
         val choices : Traversable[KuhnGenAction] = KuhnDecision.values
         val infoSet = state.playerView
-        Decision(nextToAct, infoSet, choices)
+        Decision(state, nextToAct, infoSet, choices)
       }
     }
 

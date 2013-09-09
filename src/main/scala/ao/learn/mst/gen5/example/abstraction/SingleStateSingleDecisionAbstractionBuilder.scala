@@ -7,7 +7,7 @@ import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
 /**
  * Singleton information set where all information sets and all actions appear identical.
  */
-class SingleStateSingleActionAbstractionBuilder
+class SingleStateSingleDecisionAbstractionBuilder
   extends OpaqueAbstractionBuilder
 {
   //--------------------------------------------------------------------------------------------------------------------
@@ -31,5 +31,8 @@ class SingleStateSingleActionAbstractionBuilder
 
     def actionSubIndex(informationSet: InformationSet, action: Action): Int =
       0
+
+    def actionCount(informationSet: InformationSet): Int =
+      1
   }
 }

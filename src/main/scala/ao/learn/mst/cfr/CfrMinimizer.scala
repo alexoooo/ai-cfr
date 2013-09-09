@@ -133,7 +133,7 @@ class CfrMinimizer extends ExtensiveGameSolver
         // train.cpp line 606
 
         val rationalPlayers: Seq[DeliberatePlayer] =
-          (0 until game.rationalPlayerCount).map( DeliberatePlayer(_) )
+          (0 until game.rationalPlayerCount).map( DeliberatePlayer )
 
         rationalPlayers.map(terminal.payoff.outcomes(_))
       }

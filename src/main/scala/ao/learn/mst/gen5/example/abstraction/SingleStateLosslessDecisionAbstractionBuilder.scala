@@ -16,12 +16,12 @@ class SingleStateLosslessDecisionAbstractionBuilder
     game: ExtensiveGame[State, InformationSet, Action]
     ): ExtensiveAbstraction[InformationSet, Action] =
   {
-    val nodes : Traversable[ExtensiveNode[InformationSet, Action]] =
+    val nodes : Traversable[ExtensiveNode[State, InformationSet, Action]] =
       GameTraversal.traverseTreeBreadthFirst(game)
 
-    def nodeChoices(node : ExtensiveNode[InformationSet, Action]) : Traversable[Action] =
+    def nodeChoices(node : ExtensiveNode[State, InformationSet, Action]) : Traversable[Action] =
       node match {
-        case Decision(_, _, choices : Traversable[Action]) =>
+        case Decision(_, _, _, choices : Traversable[Action]) =>
           choices
         case _ =>
           None
@@ -75,5 +75,8 @@ class SingleStateLosslessDecisionAbstractionBuilder
         trivialChoiceIndex
       }
     }
+
+    def actionCount(informationSet: InformationSet): Int =
+      nonTrivialChoiceIndex.size
   }
 }

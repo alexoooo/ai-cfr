@@ -2,11 +2,12 @@ package ao.learn.mst.gen5.example
 
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensivePlayer}
 import scala.util.Random
-import ao.learn.mst.gen5.solve.MixedStrategy
+import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 
 
+// todo: is there a bug here?
 class MixedStrategyPlayer[InformationSet, Action](
-  mixedStrategy : MixedStrategy,
+  mixedStrategy : ExtensiveStrategyProfile,
   gameAbstraction : ExtensiveAbstraction[InformationSet, Action],
   sourceOfRandomness : Random)
   extends ExtensivePlayer[InformationSet, Action]

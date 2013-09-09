@@ -7,8 +7,13 @@ import ao.learn.mst.gen.chance.ProbabilityMass
  */
 trait ExtensiveStrategyProfile
 {
-  def actionProbabilities(
+  def actionProbabilityMass(
     informationSetIndex:Int,
     actionCount:Int
-  ): ProbabilityMass
+    ): ProbabilityMass
+
+  def actionProbability(
+    informationSetIndex:Int,
+    actionCount:Int
+    ): Double
 }

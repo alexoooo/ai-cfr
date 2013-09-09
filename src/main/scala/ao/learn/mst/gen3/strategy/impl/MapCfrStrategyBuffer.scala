@@ -3,7 +3,7 @@ package ao.learn.mst.gen3.strategy.impl
 import ao.learn.mst.gen3.strategy.{CfrStrategyBuffer, CfrStrategyProfile}
 
 /**
- * 20/06/13 9:41 PM
+ * Uses mutable Map representation
  */
 class MapCfrStrategyBuffer
   extends CfrStrategyBuffer

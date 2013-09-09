@@ -12,10 +12,10 @@ object GameTraversal
 {
   def traverseTreeBreadthFirst[State, InformationSet, Action](
     game : ExtensiveGame[State, InformationSet, Action]
-    ) : Traversable[ExtensiveNode[InformationSet, Action]] =
+    ) : Traversable[ExtensiveNode[State, InformationSet, Action]] =
   {
-    new Traversable[ExtensiveNode[InformationSet, Action]](){
-      def foreach[U](traverser: (ExtensiveNode[InformationSet, Action]) => U)
+    new Traversable[ExtensiveNode[State, InformationSet, Action]](){
+      def foreach[U](traverser: (ExtensiveNode[State, InformationSet, Action]) => U)
       {
         val traversalOrderSelector : TreeTraverser[State] => State => java.lang.Iterable[State] =
           _.breadthFirstTraversal
@@ -32,7 +32,7 @@ object GameTraversal
     }
   }
 
-  private def traverseStates[State, Action](
+  private def traverseStates[State, InformationSet, Action](
       game : ExtensiveGame[State, _, Action],
       traversalOrderSelector : TreeTraverser[State] => State => java.lang.Iterable[State]
       ) : Traversable[State] =
@@ -55,14 +55,14 @@ object GameTraversal
     extends TreeTraverser[State]
   {
     def children(state: State) : java.lang.Iterable[State] = {
-      val node : ExtensiveNode[_, Action] =
+      val node : ExtensiveNode[State, _, Action] =
         game.node(state)
 
       val actions : Traversable[Action] =
         node match {
-          case Terminal(_            ) => Traversable.empty
-          case Decision(_, _, choices) => choices
-          case Chance  (outcomes     ) => outcomes.map(_.action)
+          case Terminal(_, _            ) => Traversable.empty
+          case Decision(_, _, _, choices) => choices
+          case Chance  (_, outcomes     ) => outcomes.map(_.action)
         }
 
       def transitionTo(action : Action) =
