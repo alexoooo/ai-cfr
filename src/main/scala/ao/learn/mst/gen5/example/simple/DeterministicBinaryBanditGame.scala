@@ -20,7 +20,10 @@ case object DeterministicBinaryBanditGame
     state match {
       case TerminalState(action: Boolean) => {
         val payoff : Double =
-          math.random * (if (action) 100.0 else 99.0)
+          action match {
+            case false => -1
+            case true  => +1
+          }
 
         Terminal(Seq(payoff))
       }
