@@ -10,6 +10,8 @@ import scala._
 import scala.Function
 import ao.learn.mst.gen5.node.Decision
 import ao.learn.mst.gen5.node.Chance
+import scala.collection.immutable.SortedMap
+import com.google.common.base.Preconditions
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -136,27 +138,27 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
         // Compute u1(σ, I(r1))) = sum[a∈A(I(r1)) | σ1(I(r1))(a) × u1(σ, I(r1), a)].
         def playerUtility(playerIndex: Int): Double =
           (for ((actionProbability, action) <- actionProbabilities.zipWithIndex)
-          // train.cpp line 668: expected += ev[player]*probability[i];
-          yield actionProbability * playerChildUtilities(playerIndex)(action)
-            ).sum
+            // train.cpp line 668: expected += ev[player]*probability[i];
+            yield actionProbability * playerChildUtilities(playerIndex)(action)
+          ).sum
 
         val expectedUtilities: Seq[Double] =
           (for (playerIndex <- 0 until game.playerCount)
-          // train.cpp line 669: sum      += ev[opponent];
-          // note: why doesn't it multiply by action probability? (is it done internally?)
-          yield playerUtility(playerIndex)
-            ).toSeq
+            // train.cpp line 669: sum      += ev[opponent];
+            // note: why doesn't it multiply by action probability? (is it done internally?)
+            yield playerUtility(playerIndex)
+          ).toSeq
 
         // Update counterfactual regret and average strategy
         {
           val nextToAct : Int =
             node.nextToAct.index
 
-          val opponentReachProbability =
+          val opponentReachProbability : Double =
             (for (playerIndex <- 0 until game.playerCount
                   if playerIndex != nextToAct)
-            yield reachProbabilities(playerIndex)
-              ).product
+              yield reachProbabilities(playerIndex)
+            ).product
 
           val actionRegret: Seq[Double] =
             playerChildUtilities(nextToAct).map(childUtility =>
@@ -177,7 +179,7 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
           node                : Decision[State, InformationSet, Action],
           actionProbabilities : Seq[Double],
           reachProbabilities  : Seq[Double]
-          ): Seq[Seq[Double]] =
+          ): Seq[Seq[Double]] = // Action Index -> Player -> Payoff
       {
         def actionIndex(action : Action) : Int =
           abstraction.actionSubIndex(
@@ -192,10 +194,14 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
         def sampleAction(choices : Traversable[Action]) : Action =
           choices.maxBy(a => math.random)
 
-        val sampledActions : Map[Int, Action] =
+        val sampledActions = SortedMap[Int, Action]() ++
           indexToAction.transform(
             (index: Int, actions: Traversable[Action]) =>
             sampleAction(actions))
+
+        assert(
+          sampledActions.size == (sampledActions.keySet.max + 1),
+          "Action indexes must be in [0, n).")
 
         for ((index, action) <- sampledActions.toSeq)
         yield {

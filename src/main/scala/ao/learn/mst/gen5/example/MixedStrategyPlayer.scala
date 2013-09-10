@@ -5,7 +5,6 @@ import scala.util.Random
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 
 
-// todo: is there a bug here?
 class MixedStrategyPlayer[InformationSet, Action](
   mixedStrategy : ExtensiveStrategyProfile,
   gameAbstraction : ExtensiveAbstraction[InformationSet, Action],
@@ -30,7 +29,10 @@ class MixedStrategyPlayer[InformationSet, Action](
       def randomizedWeight(index : Int) : Double =
         indexToProbability(index) * sourceOfRandomness.nextDouble()
 
-      indexToActions.keySet.maxBy(randomizedWeight)
+      val actionIndexes : Set[Int] =
+        indexToActions.keySet
+
+      actionIndexes.maxBy(randomizedWeight)
     }
 
     val concreteActions : Seq[Action] =

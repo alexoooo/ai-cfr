@@ -62,9 +62,11 @@ object Gameplay extends App
     val abstraction : ExtensiveAbstraction[I, A] =
       abstractionBuilder.generate(game)
 
-    for (i <- 1 to 100) {
+    for (i <- 1 to 1000 * 1000 * 1000) {
       solution.optimize(abstraction)
-      println(solution.strategy)
+      if (i % 10000 == 0) {
+        println(solution.strategy)
+      }
     }
 
     val strategy : ExtensiveStrategyProfile =

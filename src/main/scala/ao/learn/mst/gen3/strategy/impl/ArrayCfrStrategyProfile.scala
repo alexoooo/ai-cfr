@@ -22,9 +22,9 @@ class ArrayCfrStrategyProfile
 
   //--------------------------------------------------------------------------------------------------------------------
   def update(
-    informationSetIndex: Int,
-    actionRegret: Seq[Double],
-    reachProbability: Double)
+    informationSetIndex : Int,
+    actionRegret        : Seq[Double],
+    reachProbability    : Double)
   {
     val actionCount = actionRegret.length
     initializeInformationSetIfRequired(informationSetIndex, actionCount)
