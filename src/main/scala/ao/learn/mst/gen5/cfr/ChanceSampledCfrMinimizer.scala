@@ -11,7 +11,6 @@ import scala.Function
 import ao.learn.mst.gen5.node.Decision
 import ao.learn.mst.gen5.node.Chance
 import scala.collection.immutable.SortedMap
-import com.google.common.base.Preconditions
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -53,6 +52,7 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
       //----------------------------------------------------------------------------------------------------------------
       def updateFromRoot() {
         cfrUpdate(
+          game.initialState,
           game.node( game.initialState ),
           Seq.fill( game.playerCount )( 1.0 ))
 
@@ -62,18 +62,19 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
 
       //----------------------------------------------------------------------------------------------------------------
       private def cfrUpdate(
-          node               : ExtensiveNode[State, InformationSet, Action],
+          state              : State,
+          node               : ExtensiveNode[InformationSet, Action],
           reachProbabilities : Seq[Double]
           ): Seq[Double] =
       {
         node match {
-          case decision : Decision[State, InformationSet, Action] =>
-            walkDecision(decision, reachProbabilities)
+          case decision : Decision[InformationSet, Action] =>
+            walkDecision(state, decision, reachProbabilities)
 
-          case chance : Chance[State, InformationSet, Action] =>
-            walkChance(chance, reachProbabilities)
+          case chance : Chance[InformationSet, Action] =>
+            walkChance(state, chance, reachProbabilities)
 
-          case terminal : Terminal[State, InformationSet, Action] => {
+          case terminal : Terminal[InformationSet, Action] => {
             // train.cpp line 606
             terminal.payoffs
           }
@@ -83,7 +84,8 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
 
       //----------------------------------------------------------------------------------------------------------------
       private def walkChance(
-          node               : Chance[State, InformationSet, Action],
+          state              : State,
+          node               : Chance[InformationSet, Action],
           reachProbabilities : Seq[Double]
           ): Seq[Double] =
       {
@@ -96,19 +98,23 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
         val sampledProbability : Double =
           sampledOutcome.probability
 
-        val sampledState : ExtensiveNode[State, InformationSet, Action] =
-          game.node(game.transition(node.state, sampledAction))
+        val sampledState : State =
+          game.transition(state, sampledAction)
+
+        val sampledNode : ExtensiveNode[InformationSet, Action] =
+          game.node(sampledState)
 
         val reachProbability : Seq[Double] =
           reachProbabilities.map(_ * sampledProbability)
 
-        cfrUpdate(sampledState, reachProbability)
+        cfrUpdate(sampledState, sampledNode, reachProbability)
       }
 
 
       //----------------------------------------------------------------------------------------------------------------
       private def walkDecision(
-          node               : Decision[State, InformationSet, Action],
+          state              : State,
+          node               : Decision[InformationSet, Action],
           reachProbabilities : Seq[Double]
           ) : Seq[Double] =
       {
@@ -130,6 +136,7 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
         //   Compute u1(σ, I(r1), a) and u2(σ, r2, a)
         val playerChildUtilities: Seq[Seq[Double]] =
           childUtilities(
+            state,
             node,
             actionProbabilities,
             reachProbabilities
@@ -176,7 +183,8 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
 
       //----------------------------------------------------------------------------------------------------------------
       private def childUtilities(
-          node                : Decision[State, InformationSet, Action],
+          state               : State,
+          node                : Decision[InformationSet, Action],
           actionProbabilities : Seq[Double],
           reachProbabilities  : Seq[Double]
           ): Seq[Seq[Double]] = // Action Index -> Player -> Payoff
@@ -206,8 +214,11 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
         for ((index, action) <- sampledActions.toSeq)
         yield {
           // Find the associated child of c1 of r1 and c2 of r2.
-          val child : ExtensiveNode[State, InformationSet, Action] =
-            game.transitionNode(node.state, action)
+          val childState : State =
+            game.transition(state, action)
+
+          val childNode : ExtensiveNode[InformationSet, Action] =
+            game.node(childState)
 
           val actionProbability : Double =
             actionProbabilities( index )
@@ -219,7 +230,7 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
               node.nextToAct.index,
               actionProbability)
 
-          cfrUpdate(child, childReachProbabilities)
+          cfrUpdate(childState, childNode, childReachProbabilities)
         }
       }
 

@@ -34,7 +34,7 @@ trait ExtensiveGame[State, InformationSet, Action]
    * @param state of node of the game tree
    * @return game tree node
    */
-  def node(state : State) : ExtensiveNode[State, InformationSet, Action]
+  def node(state : State) : ExtensiveNode[InformationSet, Action]
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -48,6 +48,6 @@ trait ExtensiveGame[State, InformationSet, Action]
     action      : Action
     ) : State
 
-  def transitionNode(nonTerminal : State, action : Action) : ExtensiveNode[State, InformationSet, Action] =
+  def transitionNode(nonTerminal : State, action : Action) : ExtensiveNode[InformationSet, Action] =
     node(transition(nonTerminal, action))
 }

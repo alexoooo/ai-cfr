@@ -16,17 +16,17 @@ case object DeterministicBinaryBanditGame
   def initialState =
     DecisionState
 
-  def node(state: DeterministicBinaryBanditState): ExtensiveNode[DeterministicBinaryBanditState, Unit, Boolean] = {
+  def node(state: DeterministicBinaryBanditState): ExtensiveNode[Unit, Boolean] = {
     state match {
       case TerminalState(action: Boolean) => {
         val payoff : Double =
           math.random * (if (action) 100.0 else 99.0)
 
-        Terminal(state, Seq(payoff))
+        Terminal(Seq(payoff))
       }
 
       case DecisionState =>
-        Decision(state, Rational(0), (), Seq(false, true))
+        Decision(Rational(0), (), Seq(false, true))
     }
   }
 

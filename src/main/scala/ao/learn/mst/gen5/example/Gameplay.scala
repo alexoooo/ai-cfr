@@ -62,7 +62,7 @@ object Gameplay extends App
     val abstraction : ExtensiveAbstraction[I, A] =
       abstractionBuilder.generate(game)
 
-    for (i <- 1 to 1000 * 1000 * 1000) {
+    for (i <- 1 to /*1000 * */1000 * 1000) {
       solution.optimize(abstraction)
       if (i % 10000 == 0) {
         println(solution.strategy)
@@ -101,10 +101,10 @@ object Gameplay extends App
     val node = game.node(state)
 
     node match {
-      case Terminal(_, payoffs) =>
+      case Terminal(payoffs) =>
         payoffs
 
-      case Chance(_, outcomes) => {
+      case Chance(outcomes) => {
         val sampledOutcome =
           outcomes.maxBy(_.probability * math.random).action
 
@@ -114,7 +114,7 @@ object Gameplay extends App
         playout(sampledState, game, players)
       }
 
-      case Decision(_,
+      case Decision(
           nextToAct, informationSet, choices) =>
       {
         val player =
