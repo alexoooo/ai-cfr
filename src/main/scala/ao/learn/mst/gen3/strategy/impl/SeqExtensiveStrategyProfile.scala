@@ -15,7 +15,7 @@ case class SeqExtensiveStrategyProfile(probabilities:Seq[Seq[Double]])
 {
   //--------------------------------------------------------------------------------------------------------------------
   def actionProbabilityMass(
-      informationSetIndex:Int, actionCount:Int): ProbabilityMass =
+      informationSetIndex:Int, actionCount:Int): Seq[Double] =
   {
     val actionProbabilities : Seq[Double] =
       probabilities(informationSetIndex)
@@ -25,7 +25,7 @@ case class SeqExtensiveStrategyProfile(probabilities:Seq[Seq[Double]])
         informationSetIndex + " | " + actionCount + " | " + actionProbabilities)
     }
 
-    ProbabilityMass(actionProbabilities)
+    actionProbabilities
   }
 
 

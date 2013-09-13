@@ -1,19 +1,30 @@
 package ao.learn.mst.gen5.example
 
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensivePlayer, ExtensiveGame}
-import ao.learn.mst.gen5.example.simple.DeterministicBinaryBanditGame
 import ao.learn.mst.gen5.node.{Chance, Terminal, Decision}
 import scala.util.Random
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import ao.learn.mst.gen5.example.abstraction.{SingleStateLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.example.simple.deterministic.DeterministicBinaryBanditGame
+import ao.learn.mst.gen5.example.simple.bernoulli.BernoulliBinaryBanditGame
+import ao.learn.mst.gen5.example.simple.uniform.UniformBinaryBanditGame
+import ao.learn.mst.gen5.example.simple.gaussian.GaussianBinaryBanditGame
 
 
 object Gameplay extends App
 {
   //--------------------------------------------------------------------------------------------------------------------
-  play(DeterministicBinaryBanditGame)
+  implicit val sourceOfRandomness : Random =
+    new Random()
+
+  play(
+//    DeterministicBinaryBanditGame.plusMinusOne
+//    BernoulliBinaryBanditGame.withAdvantageForTrue(0.01)
+//    UniformBinaryBanditGame.withAdvantageForTrue(0.01)
+    GaussianBinaryBanditGame.withAdvantageForTrue(0.01)
+  )
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -26,25 +37,31 @@ object Gameplay extends App
     val outcomeSums =
       new Array[Double](game.playerCount)
 
-    var outcomeCount : Int = 0
+    val outcomeCount : Int =
+      100 * 1000
 
-    for (i <- 1 to 100) {
+    val displayInterval : Int =
+      outcomeCount / 10
+
+    def displayMeanOutcomes(gamesPlayed: Int) : Unit = {
+      val meanOutcomes = outcomeSums.map(_ / gamesPlayed).toSeq
+      println(s"Average outcomes: ${meanOutcomes.mkString("\t")}")
+    }
+
+    for (i <- 1 to outcomeCount) {
       val outcome : Seq[Double] =
         playout(game, players)
-
-      println(outcome)
 
       for (p <- 0 until game.playerCount) {
         outcomeSums(p) += outcome(p)
       }
 
-      outcomeCount += 1
+      if (i % displayInterval == 0) {
+        displayMeanOutcomes(i)
+      }
     }
 
-    val meanOutcomes : Seq[Double] =
-      outcomeSums.map(_ / outcomeCount)
-
-    println(s"Average outcomes: $meanOutcomes")
+    displayMeanOutcomes(outcomeCount)
   }
 
 
@@ -62,10 +79,23 @@ object Gameplay extends App
     val abstraction : ExtensiveAbstraction[I, A] =
       abstractionBuilder.generate(game)
 
-    for (i <- 1 to 1000 * 1000) {
+    val numberOfRounds : Int =
+      100 * 1000
+
+    val displayFrequency : Int =
+      numberOfRounds / 1000
+
+    for (i <- 1 to numberOfRounds) {
       solution.optimize(abstraction)
-      if (i % 1000 == 0) {
-        println(solution.strategy)
+      if (i % displayFrequency == 0) {
+        val strategy : ExtensiveStrategyProfile =
+          solution.strategy
+
+        val singletonBinaryProbabilities : Seq[Double] =
+          strategy.actionProbabilityMass(0, 2)
+
+//        println(solution.strategy)
+        println(singletonBinaryProbabilities.mkString("\t"))
       }
     }
 

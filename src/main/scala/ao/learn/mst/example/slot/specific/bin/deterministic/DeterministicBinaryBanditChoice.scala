@@ -1,4 +1,4 @@
-package ao.learn.mst.example.slot.specific.bin
+package ao.learn.mst.example.slot.specific.bin.deterministic
 
 import ao.learn.mst.example.slot.general.{SlotMachineTerminal, SlotMachineDecision}
 import ao.learn.mst.gen2.player.model.{NamedFiniteAction, FiniteAction}

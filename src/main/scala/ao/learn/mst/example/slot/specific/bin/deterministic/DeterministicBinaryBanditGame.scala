@@ -1,10 +1,10 @@
-package ao.learn.mst.example.slot.specific.bin
+package ao.learn.mst.example.slot.specific.bin.deterministic
 
 import ao.learn.mst.example.slot.general.SlotMachineGame
 
 /**
  * Simplest game possible:
- *   deterministic one armed bandit.
+ *   deterministic binary one-armed bandit.
  *
  * Perfect play:
  * always "D" (2nd move, indexed 1).

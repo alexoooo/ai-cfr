@@ -7,7 +7,11 @@ import ao.learn.mst.gen5.example.abstraction.{SingleStateLosslessDecisionAbstrac
 import ao.learn.mst.gen5.node.Decision
 import ao.learn.mst.gen.chance.ProbabilityMass
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
-import ao.learn.mst.gen5.example.simple.DeterministicBinaryBanditGame
+import ao.learn.mst.gen5.example.simple.deterministic.DeterministicBinaryBanditGame
+import ao.learn.mst.gen5.example.simple.uniform.UniformBinaryBanditGame
+import scala.util.Random
+import ao.learn.mst.gen5.example.simple.gaussian.GaussianBinaryBanditGame
+import ao.learn.mst.gen5.example.simple.bernoulli.BernoulliBinaryBanditGame
 
 
 class BasicSolverSpec
@@ -59,18 +63,48 @@ class BasicSolverSpec
         val actionCount : Int =
           abstraction.actionCount(informationSet)
 
-        val actionProbabilities : ProbabilityMass =
+        val actionProbabilities : Seq[Double] =
           strategy.actionProbabilityMass(0, actionCount)
 
-        actionProbabilities.probabilities
+        actionProbabilities
       }
 
       "Classical bandit setting" in {
-        "Deterministic Binary Bandit" in {
+        "Deterministic binary bandit" in {
           val optimalStrategy = solveSingletonInformationSetGame(
-            DeterministicBinaryBanditGame, 64)
+            DeterministicBinaryBanditGame.plusMinusOne,
+            64)
 
           optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
+        }
+
+        "Stochastic bandits" in {
+          implicit val sourceOfRandomness = new Random
+
+          "Uniform binary" in {
+            val optimalStrategy = solveSingletonInformationSetGame(
+              UniformBinaryBanditGame.withAdvantageForTrue(0.05),
+              12 * 1000)
+
+            optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
+          }
+
+          "Bernoulli binary" in {
+            val optimalStrategy = solveSingletonInformationSetGame(
+              BernoulliBinaryBanditGame.withAdvantageForTrue(0.05),
+              42 * 1000)
+
+            optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
+          }
+
+          "Gaussian binary" in {
+            val optimalStrategy = solveSingletonInformationSetGame(
+                GaussianBinaryBanditGame.withAdvantageForTrue(0.05),
+            250 * 1000)
+
+            optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
+          }
+
         }
       }
     }
