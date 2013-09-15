@@ -26,6 +26,19 @@ case class Decision[InformationSet, Action](
   val statePartition = DecisionPartition
 }
 
+case object Decision
+{
+  def apply[InformationSet, Action](
+    nextToActIndex : Int,
+    informationSet : InformationSet,
+    choices        : Traversable[Action])
+    : Decision[InformationSet, Action] =
+  {
+    apply(Rational(nextToActIndex), informationSet, choices)
+  }
+}
+
+
 
 //----------------------------------------------------------------------------------------------------------------------
 case class Chance[InformationSet, Action](

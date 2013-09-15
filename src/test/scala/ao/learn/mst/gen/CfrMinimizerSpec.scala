@@ -179,7 +179,7 @@ class CfrMinimizerSpec
         val blueStrategy = optimalStrategyProfile.averageStrategy(
           ZeroSumInfoBlue, 3)
 
-        blueStrategy(0) must be lessThan(epsilonProbability)
+        blueStrategy(0) must be lessThan epsilonProbability
         blueStrategy(1) must be greaterThan(4.0/7 - epsilonProbability)
       }
     }

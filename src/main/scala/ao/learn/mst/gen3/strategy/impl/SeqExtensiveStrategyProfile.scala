@@ -10,40 +10,45 @@ import ao.learn.mst.gen.chance.ProbabilityMass
  *
  * @param probabilities information set index -> action index -> probability
  */
-case class SeqExtensiveStrategyProfile(probabilities:Seq[Seq[Double]])
+case class SeqExtensiveStrategyProfile(
+  probabilities:Seq[Seq[Double]])
+  (implicit defaultStrategy : ExtensiveStrategyProfile = ObliviousExtensiveStrategyProfile)
   extends ExtensiveStrategyProfile
 {
   //--------------------------------------------------------------------------------------------------------------------
   def actionProbabilityMass(
       informationSetIndex:Int, actionCount:Int): Seq[Double] =
   {
+    if (informationSetIndex >= probabilities.length) {
+      return defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)
+    }
+
     val actionProbabilities : Seq[Double] =
       probabilities(informationSetIndex)
 
-    if (actionProbabilities == null || actionProbabilities.length != actionCount) {
-      throw new IllegalArgumentException("Unexpected number of actions: " +
-        informationSetIndex + " | " + actionCount + " | " + actionProbabilities)
+    if (actionProbabilities.length != actionCount) {
+      actionProbabilities.padTo(actionCount, 0.0)
+    } else {
+      actionProbabilities
     }
-
-    actionProbabilities
   }
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def actionProbability(informationSetIndex: Int, actionIndex: Int): Double = {
-    if (informationSetIndex >= probabilities.length) {
-      return 0 // fallback action can be taken out
-    }
-
-    val actionProbabilities : Seq[Double] =
-      probabilities(informationSetIndex)
-
-    if (actionProbabilities == null || actionProbabilities.length <= actionIndex) {
-      return 0
-//      throw new IllegalArgumentException("Unexpected action index: " +
-//        informationSetIndex + " | " + actionIndex + " | " + actionProbabilities)
-    }
-
-    actionProbabilities(actionIndex)
-  }
+//  def actionProbability(informationSetIndex: Int, actionIndex: Int): Double = {
+//    if (informationSetIndex >= probabilities.length) {
+//      return defaultStrategy.actionProbability(informationSetIndex, actionIndex)
+//    }
+//
+//    val actionProbabilities : Seq[Double] =
+//      probabilities(informationSetIndex)
+//
+//    if (actionProbabilities == null || actionProbabilities.length <= actionIndex) {
+//      return 0
+////      throw new IllegalArgumentException("Unexpected action index: " +
+////        informationSetIndex + " | " + actionIndex + " | " + actionProbabilities)
+//    }
+//
+//    actionProbabilities(actionIndex)
+//  }
 }

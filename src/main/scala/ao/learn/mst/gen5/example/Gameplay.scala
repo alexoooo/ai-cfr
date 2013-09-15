@@ -11,6 +11,7 @@ import ao.learn.mst.gen5.example.simple.deterministic.DeterministicBinaryBanditG
 import ao.learn.mst.gen5.example.simple.bernoulli.BernoulliBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.uniform.UniformBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.gaussian.GaussianBinaryBanditGame
+import ao.learn.mst.gen5.example.simple.rps.RockPaperScissorsGame
 
 
 object Gameplay extends App
@@ -23,7 +24,8 @@ object Gameplay extends App
 //    DeterministicBinaryBanditGame.plusMinusOne
 //    BernoulliBinaryBanditGame.withAdvantageForTrue(0.01)
 //    UniformBinaryBanditGame.withAdvantageForTrue(0.01)
-    GaussianBinaryBanditGame.withAdvantageForTrue(0.01)
+//    GaussianBinaryBanditGame.withAdvantageForTrue(0.01)
+    RockPaperScissorsGame
   )
 
 
@@ -85,6 +87,15 @@ object Gameplay extends App
     val displayFrequency : Int =
       numberOfRounds / 1000
 
+    val singletonInformationSet : I =
+      game.node(game.initialState) match {
+        case Decision(_, i, _) => i
+        case _ => throw new UnsupportedOperationException
+      }
+
+    val decisionCount : Int =
+      abstraction.actionCount(singletonInformationSet)
+
     for (i <- 1 to numberOfRounds) {
       solution.optimize(abstraction)
       if (i % displayFrequency == 0) {
@@ -92,7 +103,7 @@ object Gameplay extends App
           solution.strategy
 
         val singletonBinaryProbabilities : Seq[Double] =
-          strategy.actionProbabilityMass(0, 2)
+          strategy.actionProbabilityMass(0, decisionCount)
 
 //        println(solution.strategy)
         println(singletonBinaryProbabilities.mkString("\t"))

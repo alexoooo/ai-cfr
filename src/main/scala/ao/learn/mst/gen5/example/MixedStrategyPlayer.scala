@@ -23,14 +23,17 @@ class MixedStrategyPlayer[InformationSet, Action](
     val randomizedActionIndex : Int = {
       val informationSetIndex = gameAbstraction.informationSetIndex(informationSet)
 
-      def indexToProbability(index : Int) : Double =
-        mixedStrategy.actionProbability(informationSetIndex, index)
+      val actionIndexes : Set[Int] =
+        indexToActions.keySet
+
+      val actionCount : Int =
+        actionIndexes.max + 1
+
+      val indexToProbability: Seq[Double] =
+        mixedStrategy.actionProbabilityMass(informationSetIndex, actionCount)
 
       def randomizedWeight(index : Int) : Double =
         indexToProbability(index) * sourceOfRandomness.nextDouble()
-
-      val actionIndexes : Set[Int] =
-        indexToActions.keySet
 
       actionIndexes.maxBy(randomizedWeight)
     }

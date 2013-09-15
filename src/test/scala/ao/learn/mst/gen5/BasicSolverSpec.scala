@@ -5,13 +5,14 @@ import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import ao.learn.mst.gen5.example.abstraction.{SingleStateLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen5.node.Decision
-import ao.learn.mst.gen.chance.ProbabilityMass
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.simple.deterministic.DeterministicBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.uniform.UniformBinaryBanditGame
 import scala.util.Random
 import ao.learn.mst.gen5.example.simple.gaussian.GaussianBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.bernoulli.BernoulliBinaryBanditGame
+import ao.learn.mst.gen5.example.simple.rps.RockPaperScissorsGame
+import ao.learn.mst.gen5.example.simple.rps.RockPaperScissorsGame
 
 
 class BasicSolverSpec
@@ -100,12 +101,22 @@ class BasicSolverSpec
           "Gaussian binary" in {
             val optimalStrategy = solveSingletonInformationSetGame(
                 GaussianBinaryBanditGame.withAdvantageForTrue(0.05),
-            250 * 1000)
+                250 * 1000)
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
 
         }
+      }
+
+      "Rock-paper-scissors" in {
+        val optimalStrategy = solveSingletonInformationSetGame(
+          RockPaperScissorsGame,
+          0)
+
+        // (roughly) equal distribution
+        optimalStrategy.min must be greaterThan(
+          1.0/3 - epsilonProbability)
       }
     }
   }

@@ -11,8 +11,8 @@ trait ExtensiveStrategyProfile
     actionCount:Int
     ): Seq[Double]
 
-  def actionProbability(
-    informationSetIndex:Int,
-    actionCount:Int
-    ): Double
+//  def actionProbability(
+//    informationSetIndex:Int,
+//    actionCount:Int
+//    ): Double
 }
