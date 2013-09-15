@@ -12,6 +12,7 @@ import ao.learn.mst.gen5.example.simple.bernoulli.BernoulliBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.uniform.UniformBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.gaussian.GaussianBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.rps.RockPaperScissorsGame
+import ao.learn.mst.gen5.example.simple.rpsw.RockPaperScissorsWellGame
 
 
 object Gameplay extends App
@@ -25,7 +26,8 @@ object Gameplay extends App
 //    BernoulliBinaryBanditGame.withAdvantageForTrue(0.01)
 //    UniformBinaryBanditGame.withAdvantageForTrue(0.01)
 //    GaussianBinaryBanditGame.withAdvantageForTrue(0.01)
-    RockPaperScissorsGame
+//    RockPaperScissorsGame
+    RockPaperScissorsWellGame
   )
 
 

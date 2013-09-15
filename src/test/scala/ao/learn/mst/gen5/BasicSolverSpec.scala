@@ -13,6 +13,7 @@ import ao.learn.mst.gen5.example.simple.gaussian.GaussianBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.bernoulli.BernoulliBinaryBanditGame
 import ao.learn.mst.gen5.example.simple.rps.RockPaperScissorsGame
 import ao.learn.mst.gen5.example.simple.rps.RockPaperScissorsGame
+import ao.learn.mst.gen5.example.simple.rpsw.RockPaperScissorsWellGame
 
 
 class BasicSolverSpec
@@ -85,7 +86,7 @@ class BasicSolverSpec
           "Uniform binary" in {
             val optimalStrategy = solveSingletonInformationSetGame(
               UniformBinaryBanditGame.withAdvantageForTrue(0.05),
-              12 * 1000)
+              14 * 1000)
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
@@ -93,7 +94,7 @@ class BasicSolverSpec
           "Bernoulli binary" in {
             val optimalStrategy = solveSingletonInformationSetGame(
               BernoulliBinaryBanditGame.withAdvantageForTrue(0.05),
-              42 * 1000)
+              43 * 1000)
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
@@ -117,6 +118,18 @@ class BasicSolverSpec
         // (roughly) equal distribution
         optimalStrategy.min must be greaterThan(
           1.0/3 - epsilonProbability)
+      }
+
+      "Rock-paper-scissors-well" in {
+        val optimalStrategy = solveSingletonInformationSetGame(
+          RockPaperScissorsWellGame,
+          100)
+
+        // (roughly) equal distribution
+        optimalStrategy(0) must be lessThan epsilonProbability
+
+        optimalStrategy.max must be lessThan(
+          1.0/3 + epsilonProbability)
       }
     }
   }

@@ -30,7 +30,7 @@ case object RockPaperScissorsGame
     else
     {
       val choices : Traversable[RpsAction] =
-        Seq(Rock, Paper, Scissors)
+        Seq(RpsRock, RpsPaper, RpsScissors)
 
       Decision(decisionCount, (), choices)
     }
@@ -71,9 +71,9 @@ case object RockPaperScissorsGame
     {
       def distinctWinner(a : RpsAction, b : RpsAction) : RpsAction =
         (a, b) match {
-          case (Rock    , Scissors) => Rock     // rock beats scissors
-          case (Scissors, Paper   ) => Scissors // scissors beat paper
-          case (Rock    , Paper   ) => Paper    // paper beats rock
+          case (RpsRock    , RpsScissors) => RpsRock     // rock beats scissors
+          case (RpsScissors, RpsPaper   ) => RpsScissors // scissors beat paper
+          case (RpsRock    , RpsPaper   ) => RpsPaper    // paper beats rock
 
           case _ => distinctWinner(b, a) // match in reverse order
         }
