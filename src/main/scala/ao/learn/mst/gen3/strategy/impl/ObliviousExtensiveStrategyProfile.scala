@@ -12,6 +12,6 @@ object ObliviousExtensiveStrategyProfile extends ExtensiveStrategyProfile
     Seq.fill(actionCount)(equalProbability)
   }
 
-//  def actionProbability(informationSetIndex: Int, actionCount: Int): Double =
-//    0
+  def actionProbabilityMass(informationSetIndex: Int): Seq[Double] =
+    Seq.empty
 }

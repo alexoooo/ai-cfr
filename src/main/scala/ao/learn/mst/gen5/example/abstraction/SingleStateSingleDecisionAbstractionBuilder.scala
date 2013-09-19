@@ -7,7 +7,7 @@ import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
 /**
  * Singleton information set where all information sets and all actions appear identical.
  */
-class SingleStateSingleDecisionAbstractionBuilder
+case object SingleStateSingleDecisionAbstractionBuilder
   extends OpaqueAbstractionBuilder
 {
   //--------------------------------------------------------------------------------------------------------------------

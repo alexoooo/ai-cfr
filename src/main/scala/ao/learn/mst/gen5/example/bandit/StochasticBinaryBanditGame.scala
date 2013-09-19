@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5.example.simple
+package ao.learn.mst.gen5.example.bandit
 
 import scala.util.Random
 import scala.Double

@@ -2,7 +2,7 @@ package ao.learn.mst.gen3.strategy.impl
 
 import ao.learn.mst.gen3.strategy.{ExtensiveStrategyProfile, CfrStrategyProfile}
 import ao.learn.mst.gen.chance.ProbabilityMass
-
+import scala.Array
 
 
 class ArrayCfrStrategyProfile
@@ -136,9 +136,9 @@ class ArrayCfrStrategyProfile
     // Note: should it be normalized in relation to siblings instead? (would that make a difference?)
 
     val averageStrategy : Seq[Double] =
-    actionProbabilitySums(informationSetIndex)
-      .map(_ / reachProbabilitySum(informationSetIndex))
-//      .map(_ / visitCount(informationSetIndex))
+      actionProbabilitySums(informationSetIndex)
+        .map(_ / reachProbabilitySum(informationSetIndex))
+//        .map(_ / visitCount(informationSetIndex))
 
     averageStrategy
   }
@@ -148,9 +148,16 @@ class ArrayCfrStrategyProfile
   private def informationSetCount: Int =
     visitCount.length
 
-  private def actionCount(informationSetIndex: Int) : Int=
-    regretSums.length
+  private def actionCount(informationSetIndex: Int) : Int = {
+    val actions : Array[Double] =
+      regretSums(informationSetIndex)
 
+    if (actions == null) {
+      0
+    } else {
+      actions.length
+    }
+  }
 
 
   //--------------------------------------------------------------------------------------------------------------------

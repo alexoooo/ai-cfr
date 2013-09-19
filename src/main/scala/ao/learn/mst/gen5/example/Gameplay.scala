@@ -5,14 +5,17 @@ import ao.learn.mst.gen5.node.{Chance, Terminal, Decision}
 import scala.util.Random
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
-import ao.learn.mst.gen5.example.abstraction.{SingleStateLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
+import ao.learn.mst.gen5.example.abstraction.{LosslessInfoLosslessDecisionAbstractionBuilder, SingleInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
-import ao.learn.mst.gen5.example.simple.deterministic.DeterministicBinaryBanditGame
-import ao.learn.mst.gen5.example.simple.bernoulli.BernoulliBinaryBanditGame
-import ao.learn.mst.gen5.example.simple.uniform.UniformBinaryBanditGame
-import ao.learn.mst.gen5.example.simple.gaussian.GaussianBinaryBanditGame
-import ao.learn.mst.gen5.example.simple.rps.RockPaperScissorsGame
-import ao.learn.mst.gen5.example.simple.rpsw.RockPaperScissorsWellGame
+import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
+import ao.learn.mst.gen5.example.bandit.bernoulli.BernoulliBinaryBanditGame
+import ao.learn.mst.gen5.example.bandit.uniform.UniformBinaryBanditGame
+import ao.learn.mst.gen5.example.bandit.gaussian.GaussianBinaryBanditGame
+import ao.learn.mst.gen5.example.bandit.rps.RockPaperScissorsGame
+import ao.learn.mst.gen5.example.bandit.rpsw.RockPaperScissorsWellGame
+import ao.learn.mst.gen5.example.bandit.sig.SignalingGame
+import ao.learn.mst.gen5.example.matrix.MatrixGames
+import java.text.DecimalFormat
 
 
 object Gameplay extends App
@@ -27,8 +30,19 @@ object Gameplay extends App
 //    UniformBinaryBanditGame.withAdvantageForTrue(0.01)
 //    GaussianBinaryBanditGame.withAdvantageForTrue(0.01)
 //    RockPaperScissorsGame
-    RockPaperScissorsWellGame
+//    RockPaperScissorsWellGame
+//    SignalingGame
+
+//    MatrixGames.deadlock
+//    MatrixGames.prisonersDilemma
+//    MatrixGames.matchingPennis
+    MatrixGames.zeroSum
   )
+
+  //  Quote:
+  //  *  Red should choose action 1 with probability 4/7 and action 2 with probability 3/7,
+  //  *  while Blue should assign the probabilities 0, 4/7, and 3/7 to the three actions A, B, and C.
+  //  *  Red will then win 20/7 points on average per game.
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -48,8 +62,14 @@ object Gameplay extends App
       outcomeCount / 10
 
     def displayMeanOutcomes(gamesPlayed: Int) : Unit = {
-      val meanOutcomes = outcomeSums.map(_ / gamesPlayed).toSeq
-      println(s"Average outcomes: ${meanOutcomes.mkString("\t")}")
+      val meanOutcomes : Seq[Double] =
+        outcomeSums.map(_ / gamesPlayed).toSeq
+
+      val formatter = new DecimalFormat("0.0000")
+      val formattedMeanOutcomes : Seq[String] =
+        meanOutcomes.map(formatter.format)
+
+      println(s"Average outcomes: ${formattedMeanOutcomes.mkString("\t")}")
     }
 
     for (i <- 1 to outcomeCount) {
@@ -78,37 +98,23 @@ object Gameplay extends App
       solver.initialSolution(game)
 
     val abstractionBuilder : OpaqueAbstractionBuilder =
-      new SingleStateLosslessDecisionAbstractionBuilder
+      LosslessInfoLosslessDecisionAbstractionBuilder
+//      SingleStateLosslessDecisionAbstractionBuilder
 
     val abstraction : ExtensiveAbstraction[I, A] =
       abstractionBuilder.generate(game)
 
     val numberOfRounds : Int =
-      100 * 1000
+      10 * 1000 * 1000
 
     val displayFrequency : Int =
+//      1
       numberOfRounds / 1000
-
-    val singletonInformationSet : I =
-      game.node(game.initialState) match {
-        case Decision(_, i, _) => i
-        case _ => throw new UnsupportedOperationException
-      }
-
-    val decisionCount : Int =
-      abstraction.actionCount(singletonInformationSet)
 
     for (i <- 1 to numberOfRounds) {
       solution.optimize(abstraction)
       if (i % displayFrequency == 0) {
-        val strategy : ExtensiveStrategyProfile =
-          solution.strategy
-
-        val singletonBinaryProbabilities : Seq[Double] =
-          strategy.actionProbabilityMass(0, decisionCount)
-
-//        println(solution.strategy)
-        println(singletonBinaryProbabilities.mkString("\t"))
+        println(solution.strategy)
       }
     }
 

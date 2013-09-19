@@ -6,7 +6,7 @@ import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 
 trait SolutionApproximation[InformationSet, Action]
 {
-  def optimize(extensiveAbstraction : ExtensiveAbstraction[InformationSet, Action])
+  def optimize(extensiveAbstraction : ExtensiveAbstraction[InformationSet, Action]) : Unit
   
 //  def clear(informationSetIndex : Int)
 

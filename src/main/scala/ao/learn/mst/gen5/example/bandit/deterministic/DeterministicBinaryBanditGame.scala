@@ -1,6 +1,6 @@
-package ao.learn.mst.gen5.example.simple.deterministic
+package ao.learn.mst.gen5.example.bandit.deterministic
 
-import ao.learn.mst.gen5.example.simple.BinaryBanditGame
+import ao.learn.mst.gen5.example.bandit.BinaryBanditGame
 
 
 //----------------------------------------------------------------------------------------------------------------------

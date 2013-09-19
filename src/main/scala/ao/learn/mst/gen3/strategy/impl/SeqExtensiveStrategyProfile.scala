@@ -11,10 +11,23 @@ import ao.learn.mst.gen.chance.ProbabilityMass
  * @param probabilities information set index -> action index -> probability
  */
 case class SeqExtensiveStrategyProfile(
-  probabilities:Seq[Seq[Double]])
+  probabilities : Seq[Seq[Double]])
   (implicit defaultStrategy : ExtensiveStrategyProfile = ObliviousExtensiveStrategyProfile)
   extends ExtensiveStrategyProfile
 {
+  //--------------------------------------------------------------------------------------------------------------------
+  def actionProbabilityMass(informationSetIndex: Int): Seq[Double] = {
+    if (informationSetIndex >= probabilities.length) {
+      return defaultStrategy.actionProbabilityMass(informationSetIndex)
+    }
+
+    val actionProbabilities : Seq[Double] =
+      probabilities(informationSetIndex)
+
+    actionProbabilities
+  }
+
+
   //--------------------------------------------------------------------------------------------------------------------
   def actionProbabilityMass(
       informationSetIndex:Int, actionCount:Int): Seq[Double] =
@@ -51,4 +64,18 @@ case class SeqExtensiveStrategyProfile(
 //
 //    actionProbabilities(actionIndex)
 //  }
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  override def toString : String = {
+    val infoSets : Seq[String] =
+      for (infoSet <- probabilities) yield {
+        val perMills : Seq[Int] =
+          infoSet.map((p: Double) => (p * 1000).toInt)
+
+        perMills.mkString("\t")
+      }
+
+    infoSets.mkString(" || ")
+  }
 }

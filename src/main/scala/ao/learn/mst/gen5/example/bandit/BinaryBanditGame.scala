@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5.example.simple
+package ao.learn.mst.gen5.example.bandit
 
 import ao.learn.mst.gen5.ExtensiveGame
 import ao.learn.mst.gen5.node.{Decision, Terminal, ExtensiveNode}

@@ -1,6 +1,6 @@
-package ao.learn.mst.gen5.example.simple.bernoulli
+package ao.learn.mst.gen5.example.bandit.bernoulli
 
-import ao.learn.mst.gen5.example.simple.{StochasticBinaryBanditGameCompanion, StochasticBinaryBanditGame, BinaryBanditGame}
+import ao.learn.mst.gen5.example.bandit.{StochasticBinaryBanditGameCompanion, StochasticBinaryBanditGame, BinaryBanditGame}
 import scala.util.Random
 
 /**

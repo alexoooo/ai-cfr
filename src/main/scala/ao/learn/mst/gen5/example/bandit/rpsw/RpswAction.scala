@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5.example.simple.rpsw
+package ao.learn.mst.gen5.example.bandit.rpsw
 
 
 

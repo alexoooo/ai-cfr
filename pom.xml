@@ -25,7 +25,8 @@
 
         <scalaz.version>7.0.2</scalaz.version>
         <spire.version>0.6.0</spire.version>
-        <guava.version>15.0-rc1</guava.version>
+        <guava.version>15.0</guava.version>
+        <la4j.version>0.4.0</la4j.version>
 
         <specs2.version>2.0</specs2.version>
         <scalacheck.version>1.10.1</scalacheck.version>
@@ -77,6 +78,12 @@
 
     <!--===================================================================-->
     <dependencies>
+        <dependency>
+            <groupId>org.la4j</groupId>
+            <artifactId>la4j</artifactId>
+            <version>${la4j.version}</version>
+        </dependency>
+
         <!--<dependency>
             <groupId>org.scalaj</groupId>
             <artifactId>scalaj-time_${scala-major.version}</artifactId>

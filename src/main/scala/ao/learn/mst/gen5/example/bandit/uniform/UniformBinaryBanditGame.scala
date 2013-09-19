@@ -1,7 +1,7 @@
-package ao.learn.mst.gen5.example.simple.uniform
+package ao.learn.mst.gen5.example.bandit.uniform
 
 import scala.util.Random
-import ao.learn.mst.gen5.example.simple.{StochasticBinaryBanditGameCompanion, StochasticBinaryBanditGame}
+import ao.learn.mst.gen5.example.bandit.{StochasticBinaryBanditGameCompanion, StochasticBinaryBanditGame}
 
 
 /**
