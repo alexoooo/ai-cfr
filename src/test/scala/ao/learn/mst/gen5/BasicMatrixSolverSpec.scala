@@ -4,7 +4,7 @@ import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.solve.ExtensiveSolver
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
-import ao.learn.mst.gen5.example.matrix.{MatrixGames}
+import ao.learn.mst.gen5.example.matrix.MatrixGames
 
 /**
  * http://en.wikipedia.org/wiki/Normal_form_game
@@ -24,7 +24,7 @@ class BasicMatrixSolverSpec
       new ChanceSampledCfrMinimizer[S, I, A]
 
 
-    "Solve normal-form (aka. matrix) games" in {
+    "Solve normal-form matrix games" in {
       def solveNormalFormGame[S, I, A](
           game       : ExtensiveGame[S, I, A],
           iterations : Int): (Seq[Double], Seq[Double]) =
@@ -47,7 +47,7 @@ class BasicMatrixSolverSpec
       "Classic 2x2 games" in {
         "Matching Pennies" in {
           val (row, col) = solveNormalFormGame(
-            MatrixGames.matchingPennis,
+            MatrixGames.matchingPennies,
             1)
 
           row.max should be lessThan 0.5 + epsilonProbability
@@ -71,7 +71,9 @@ class BasicMatrixSolverSpec
           row(0) should be lessThan epsilonProbability
           col(0) should be lessThan epsilonProbability
         }
+      }
 
+      "Other matrix games" in {
         "Zero Sum" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.zeroSum,

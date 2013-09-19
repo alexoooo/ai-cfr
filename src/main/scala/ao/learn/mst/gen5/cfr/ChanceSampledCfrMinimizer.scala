@@ -51,16 +51,16 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
 
       //----------------------------------------------------------------------------------------------------------------
       def updateFromRoot() {
-//        for (i <- 1 to 100) {
-//          cfrUpdate(
-//            game.initialState,
-//            game.node( game.initialState ),
-//            Seq.fill( game.playerCount )( 1.0 ))
-//        }
-        cfrUpdate(
-          game.initialState,
-          game.node( game.initialState ),
-          Seq.fill( game.playerCount )( 1.0 ))
+        for (i <- 1 to 100) {
+          cfrUpdate(
+            game.initialState,
+            game.node( game.initialState ),
+            Seq.fill( game.playerCount )( 1.0 ))
+        }
+//        cfrUpdate(
+//          game.initialState,
+//          game.node( game.initialState ),
+//          Seq.fill( game.playerCount )( 1.0 ))
 
         buffer.commit(model)
       }

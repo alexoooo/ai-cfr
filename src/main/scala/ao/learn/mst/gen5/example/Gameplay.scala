@@ -16,6 +16,7 @@ import ao.learn.mst.gen5.example.bandit.rpsw.RockPaperScissorsWellGame
 import ao.learn.mst.gen5.example.bandit.sig.SignalingGame
 import ao.learn.mst.gen5.example.matrix.MatrixGames
 import java.text.DecimalFormat
+import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 
 
 object Gameplay extends App
@@ -36,7 +37,8 @@ object Gameplay extends App
 //    MatrixGames.deadlock
 //    MatrixGames.prisonersDilemma
 //    MatrixGames.matchingPennis
-    MatrixGames.zeroSum
+//    MatrixGames.zeroSum
+    PerfectCompleteGame
   )
 
   //  Quote:
@@ -105,11 +107,10 @@ object Gameplay extends App
       abstractionBuilder.generate(game)
 
     val numberOfRounds : Int =
-      10 * 1000 * 1000
+      100 * 1000
 
     val displayFrequency : Int =
-//      1
-      numberOfRounds / 1000
+      math.max(1, numberOfRounds / 1000)
 
     for (i <- 1 to numberOfRounds) {
       solution.optimize(abstraction)

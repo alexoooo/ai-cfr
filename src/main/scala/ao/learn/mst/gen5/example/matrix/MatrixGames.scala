@@ -43,7 +43,7 @@ object MatrixGames
   //--------------------------------------------------------------------------------------------------------------------
   // http://en.wikipedia.org/wiki/Matching_pennies
 
-  val matchingPennis : MatrixGame = fromMatrix(
+  val matchingPennies : MatrixGame = fromMatrix(
     Seq((+1, -1), (-1, +1)),
     Seq((-1, +1), (+1, -1)))
 
