@@ -5,6 +5,7 @@ import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
+import ao.learn.mst.gen5.example.imperfect.ImperfectGame
 
 /**
  *
@@ -51,6 +52,18 @@ class BasicGameSolverSpec
         playerOne(0) must be lessThan epsilonProbability
         playerTwoDown(0) must be lessThan playerTwoDown(1)/2
         playerTwoUp(1) must be lessThan epsilonProbability
+      }
+
+      "Imperfect information" in {
+        val solution = solveGame(
+          ImperfectGame,
+          110)
+
+        val playerOne = solution(0)
+        val playerTwo = solution(1)
+
+        playerOne(1) must be lessThan epsilonProbability
+        playerTwo(0) must be lessThan epsilonProbability
       }
     }
   }

@@ -17,6 +17,7 @@ import ao.learn.mst.gen5.example.bandit.sig.SignalingGame
 import ao.learn.mst.gen5.example.matrix.MatrixGames
 import java.text.DecimalFormat
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
+import ao.learn.mst.gen5.example.imperfect.ImperfectGame
 
 
 object Gameplay extends App
@@ -38,7 +39,8 @@ object Gameplay extends App
 //    MatrixGames.deadlock
 //    MatrixGames.prisonersDilemma
 //    MatrixGames.zeroSum
-    PerfectCompleteGame
+//    PerfectCompleteGame
+    ImperfectGame
   )
 
 

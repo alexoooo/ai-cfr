@@ -7,6 +7,7 @@ sealed trait PerfectCompleteAction {
   def decision : Boolean
 }
 
-case class PlayerOneAction(decision : Boolean) extends PerfectCompleteAction
-case class PlayerTwoAction(decision : Boolean) extends PerfectCompleteAction
+case class PerfectPlayerOneAction(decision : Boolean) extends PerfectCompleteAction
+case class PerfectPlayerTwoAction(decision : Boolean) extends PerfectCompleteAction
+
 

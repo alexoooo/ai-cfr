@@ -42,14 +42,14 @@ object PerfectCompleteGame
 
     state.actionSequence.toList match {
       case Nil =>
-        Decision(0, state, actionValues.map(PlayerOneAction))
+        Decision(0, state, actionValues.map(PerfectPlayerOneAction))
 
-      case List(actionOne : PlayerOneAction) =>
-        Decision(1, state, actionValues.map(PlayerTwoAction))
+      case List(actionOne : PerfectPlayerOneAction) =>
+        Decision(1, state, actionValues.map(PerfectPlayerTwoAction))
 
       case List(
-          actionOne : PlayerOneAction,
-          actionTwo : PlayerTwoAction) =>
+          actionOne : PerfectPlayerOneAction,
+          actionTwo : PerfectPlayerTwoAction) =>
       {
         val outcome : (Double, Double) =
           (actionOne.decision, actionTwo.decision) match {
