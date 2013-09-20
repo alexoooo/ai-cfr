@@ -3,6 +3,7 @@ package ao.learn.mst.gen3.strategy.impl
 import ao.learn.mst.gen3.strategy.{ExtensiveStrategyProfile, CfrStrategyProfile}
 import ao.learn.mst.gen.chance.ProbabilityMass
 import scala.Array
+import java.util
 
 
 class ArrayCfrStrategyProfile
@@ -30,7 +31,7 @@ class ArrayCfrStrategyProfile
     initializeInformationSetIfRequired(informationSetIndex, actionCount)
 
     val currentPositiveRegretStrategy : Seq[Double] =
-      positiveRegretStrategy(informationSetIndex, actionCount).probabilities
+      positiveRegretStrategy(informationSetIndex, actionCount)
 
     // See train.cpp (average the strategy for the player):
     // 651: for(int i=0; i<3; ++i) {
@@ -69,13 +70,13 @@ class ArrayCfrStrategyProfile
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  // verified against Leduc CFR train.get_probability (line 450)
   def positiveRegretStrategy(
-    informationSetIndex: Int,
-    actionCount: Int
-    ): ProbabilityMass =
+      informationSetIndex: Int
+      ): Seq[Double] =
   {
-    initializeInformationSetIfRequired(informationSetIndex, actionCount)
+    if (! informationSetInitialized(informationSetIndex)) {
+      return Seq.empty
+    }
 
     // Corresponds to train.cpp:
     // 465: /* compute sum of positive regret */
@@ -90,18 +91,35 @@ class ArrayCfrStrategyProfile
       positiveCounterfactualRegret.sum
 
     // compute probability as the proportion of positive regret
-    val positiveRegretStrategy : Seq[Double] =
+    val positiveRegretStrategy : Seq[Double] = {
       if (positiveRegretSum > epsilon)
-      {
         positiveCounterfactualRegret.map(_ / positiveRegretSum)
-      }
       else
-      {
-        Seq.fill(actionCount)(1.0 / actionCount)
-      }
+        Seq.empty
+    }
 
-    ProbabilityMass(
-      positiveRegretStrategy.padTo(actionCount, 0.0))
+
+    positiveRegretStrategy
+  }
+
+  // verified against Leduc CFR train.get_probability (line 450)
+  def positiveRegretStrategy(
+    informationSetIndex: Int,
+    actionCount: Int
+    ): Seq[Double] =
+  {
+    initializeInformationSetIfRequired(informationSetIndex, actionCount)
+
+    val strategy : Seq[Double] =
+      positiveRegretStrategy(informationSetIndex)
+
+    if (strategy.isEmpty) {
+      Seq.fill(actionCount)(1.0 / actionCount)
+    } else if (strategy.length == actionCount) {
+      strategy
+    } else {
+      strategy.padTo(actionCount, 0.0)
+    }
   }
 
 
@@ -163,32 +181,36 @@ class ArrayCfrStrategyProfile
   //--------------------------------------------------------------------------------------------------------------------
   private def initializeInformationSetIfRequired(informationSetIndex: Int, requiredActionCount : Int)
   {
-    padToInformationSetIfRequired(informationSetIndex + 1)
-    initializeActionsIfRequired(informationSetIndex, requiredActionCount)
-  }
-
-  private def padToInformationSetIfRequired(requiredInformationSetCount: Int)
-  {
-    if (informationSetCount < requiredInformationSetCount)
-    {
-      visitCount            = visitCount           .padTo(requiredInformationSetCount, 0.toLong  )
-      regretSums            = regretSums           .padTo(requiredInformationSetCount, null      )
-      actionProbabilitySums = actionProbabilitySums.padTo(requiredInformationSetCount, null      )
-      reachProbabilitySum   = reachProbabilitySum  .padTo(requiredInformationSetCount, 0.toDouble)
+    if (! informationSetInitialized(informationSetIndex)) {
+      initializeInformationSet(informationSetIndex)
     }
-  }
 
-  private def initializeActionsIfRequired(informationSetIndex: Int, requiredActionCount : Int)
-  {
     if (! actionsInitialized(informationSetIndex)) {
       initializeActions(informationSetIndex)
     }
 
-    updateActionCountIfRequired(informationSetIndex, requiredActionCount)
+    if (actionCountInitialized(informationSetIndex, requiredActionCount)) {
+      initializeActionCount(informationSetIndex, requiredActionCount)
+    }
   }
 
+
+  def informationSetInitialized(informationSetIndex: Int) =
+    informationSetIndex < informationSetCount
+
+  def initializeInformationSet(informationSetIndex: Int) {
+    val count = informationSetIndex + 1
+
+    visitCount            = visitCount           .padTo(count, 0.toLong  )
+    regretSums            = regretSums           .padTo(count, null      )
+    actionProbabilitySums = actionProbabilitySums.padTo(count, null      )
+    reachProbabilitySum   = reachProbabilitySum  .padTo(count, 0.toDouble)
+  }
+
+
   private def actionsInitialized(informationSetIndex: Int) : Boolean =
-    regretSums( informationSetIndex ) != null
+    regretSums.length > informationSetIndex &&
+      regretSums( informationSetIndex ) != null
 
   private def initializeActions(informationSetIndex: Int)
   {
@@ -196,14 +218,11 @@ class ArrayCfrStrategyProfile
     actionProbabilitySums(informationSetIndex) = new Array[Double](0)
   }
 
-  private def updateActionCountIfRequired(informationSetIndex: Int, requiredActionCount : Int)
-  {
-    if (actionCount(informationSetIndex) < requiredActionCount) {
-      updateActionCount(informationSetIndex, requiredActionCount)
-    }
-  }
 
-  private def updateActionCount(informationSetIndex: Int, requiredActionCount : Int)
+  def actionCountInitialized(informationSetIndex: Int, requiredActionCount : Int) =
+    actionCount(informationSetIndex) < requiredActionCount
+
+  private def initializeActionCount(informationSetIndex: Int, requiredActionCount : Int)
   {
     regretSums(informationSetIndex) =
       regretSums(informationSetIndex)
@@ -212,5 +231,13 @@ class ArrayCfrStrategyProfile
     actionProbabilitySums(informationSetIndex) =
       actionProbabilitySums(informationSetIndex)
         .padTo(requiredActionCount, 0.toDouble)
+  }
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  override def toString : String = {
+    "\n\n" +
+      util.Arrays.toString(visitCount) + "\n" +
+      util.Arrays.toString(reachProbabilitySum)
   }
 }

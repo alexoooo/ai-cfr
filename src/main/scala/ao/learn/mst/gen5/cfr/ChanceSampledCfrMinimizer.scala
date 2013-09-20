@@ -51,16 +51,18 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
 
       //----------------------------------------------------------------------------------------------------------------
       def updateFromRoot() {
-        for (i <- 1 to 100) {
-          cfrUpdate(
-            game.initialState,
-            game.node( game.initialState ),
-            Seq.fill( game.playerCount )( 1.0 ))
-        }
-//        cfrUpdate(
-//          game.initialState,
-//          game.node( game.initialState ),
-//          Seq.fill( game.playerCount )( 1.0 ))
+//        for (i <- 1 to 100) {
+//          cfrUpdate(
+//            game.initialState,
+//            game.node( game.initialState ),
+//            Seq.fill( game.playerCount )( 1.0 ))
+//        }
+//        println(model)
+
+        cfrUpdate(
+          game.initialState,
+          game.node( game.initialState ),
+          Seq.fill( game.playerCount )( 1.0 ))
 
         buffer.commit(model)
       }
@@ -136,7 +138,7 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
         // Compute σ1(I(r1)) according to Equation 8.
         val actionProbabilities: Seq[Double] =
           model.positiveRegretStrategy(
-            informationSetIndex, actionCount).probabilities
+            informationSetIndex, actionCount)
 
         // for Each action a ∈ A(I(r1))
         //   Compute u1(σ, I(r1), a) and u2(σ, r2, a)

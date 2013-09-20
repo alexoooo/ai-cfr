@@ -34,17 +34,12 @@ object Gameplay extends App
 //    RockPaperScissorsWellGame
 //    SignalingGame
 
+//    MatrixGames.matchingPennies
 //    MatrixGames.deadlock
 //    MatrixGames.prisonersDilemma
-//    MatrixGames.matchingPennis
 //    MatrixGames.zeroSum
     PerfectCompleteGame
   )
-
-  //  Quote:
-  //  *  Red should choose action 1 with probability 4/7 and action 2 with probability 3/7,
-  //  *  while Blue should assign the probabilities 0, 4/7, and 3/7 to the three actions A, B, and C.
-  //  *  Red will then win 20/7 points on average per game.
 
 
   //--------------------------------------------------------------------------------------------------------------------

@@ -16,8 +16,13 @@ case class SeqExtensiveStrategyProfile(
   extends ExtensiveStrategyProfile
 {
   //--------------------------------------------------------------------------------------------------------------------
+  def knownInformationSetCount: Int =
+    probabilities.length
+
+
+  //--------------------------------------------------------------------------------------------------------------------
   def actionProbabilityMass(informationSetIndex: Int): Seq[Double] = {
-    if (informationSetIndex >= probabilities.length) {
+    if (informationSetIndex >= knownInformationSetCount) {
       return defaultStrategy.actionProbabilityMass(informationSetIndex)
     }
 
@@ -32,7 +37,7 @@ case class SeqExtensiveStrategyProfile(
   def actionProbabilityMass(
       informationSetIndex:Int, actionCount:Int): Seq[Double] =
   {
-    if (informationSetIndex >= probabilities.length) {
+    if (informationSetIndex >= knownInformationSetCount) {
       return defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)
     }
 

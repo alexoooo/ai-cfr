@@ -2,10 +2,12 @@ package ao.learn.mst.gen3.strategy
 
 
 /**
- * 20/06/13 9:35 PM
+ *
  */
 trait ExtensiveStrategyProfile
 {
+  def knownInformationSetCount: Int
+
   def actionProbabilityMass(
     informationSetIndex:Int) : Seq[Double]
 
