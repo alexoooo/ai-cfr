@@ -50,8 +50,10 @@ class BasicGameSolverSpec
         val playerTwoUp   = solution(2)
 
         playerOne(0) must be lessThan epsilonProbability
-        playerTwoDown(0) must be lessThan playerTwoDown(1)/2
         playerTwoUp(1) must be lessThan epsilonProbability
+
+        //playerTwoDown(0) must be lessThan playerTwoDown(1)/2
+        playerTwoDown(0) must be lessThan epsilonProbability
       }
 
       "Imperfect information" in {

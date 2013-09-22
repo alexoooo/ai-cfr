@@ -1,12 +1,12 @@
 package ao.learn.mst.gen3.strategy.impl
 
-import ao.learn.mst.gen3.strategy.{CfrStrategyBuffer, CfrStrategyProfile}
+import ao.learn.mst.gen3.strategy.{CfrRegretConsumer, CfrStrategyBuilder, CfrRegretBuffer, CfrStrategyProfile}
 
 /**
  * Uses mutable Map representation
  */
-class MapCfrStrategyBuffer
-  extends CfrStrategyBuffer
+class MapCfrRegretBuffer
+  extends CfrRegretBuffer
 {
   //--------------------------------------------------------------------------------------------------------------------
   private val reachProbabilityBuffer     = collection.mutable.Map[Int, Double]()
@@ -14,7 +14,7 @@ class MapCfrStrategyBuffer
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def bufferUpdate(informationSetIndex: Int, actionRegret: Seq[Double], reachProbability: Double) {
+  def bufferRegret(informationSetIndex: Int, actionRegret: Seq[Double], reachProbability: Double) {
     val actionCount = actionRegret.length
     initializeInformationSetIfRequired(informationSetIndex, actionCount)
 
@@ -52,7 +52,7 @@ class MapCfrStrategyBuffer
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def commit(cfrStrategyProfileBuilder: CfrStrategyProfile) {
+  def commit(cfrStrategyProfileBuilder: CfrRegretConsumer) {
     for (informationSetIndex:Int <- reachProbabilityBuffer.keys) {
       cfrStrategyProfileBuilder.update(
         informationSetIndex,

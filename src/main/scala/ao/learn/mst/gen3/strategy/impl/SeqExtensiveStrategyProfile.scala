@@ -2,6 +2,8 @@ package ao.learn.mst.gen3.strategy.impl
 
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen.chance.ProbabilityMass
+import ao.learn.mst.lib.CommonUtils
+import com.google.common.base.Preconditions
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -44,7 +46,12 @@ case class SeqExtensiveStrategyProfile(
     val actionProbabilities : Seq[Double] =
       probabilities(informationSetIndex)
 
-    if (actionProbabilities.length != actionCount) {
+    assert(actionProbabilities.length <= actionCount,
+      "Requesting fewer actions than available is not supported.")
+
+    if (actionProbabilities.isEmpty) {
+      defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)
+    } else if (actionProbabilities.length != actionCount) {
       actionProbabilities.padTo(actionCount, 0.0)
     } else {
       actionProbabilities
@@ -75,10 +82,7 @@ case class SeqExtensiveStrategyProfile(
   override def toString : String = {
     val infoSets : Seq[String] =
       for (infoSet <- probabilities) yield {
-        val perMills : Seq[Int] =
-          infoSet.map((p: Double) => (p * 1000).toInt)
-
-        perMills.mkString("\t")
+        CommonUtils.displayProbabilities(infoSet)
       }
 
     infoSets.mkString(" || ")

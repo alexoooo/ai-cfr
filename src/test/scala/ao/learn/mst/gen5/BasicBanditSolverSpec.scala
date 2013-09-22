@@ -32,8 +32,9 @@ class BasicBanditSolverSpec
 
     "Solve singleton information-set games:" in {
       def solveSingletonInformationSetGame[S, I, A](
-          game       : ExtensiveGame[S, I, A],
-          iterations : Int): Seq[Double] =
+          game            : ExtensiveGame[S, I, A],
+          iterations      : Int,
+          expectedActions : Option[Int] = None): Seq[Double] =
       {
         val solver : ExtensiveSolver[S, I, A] =
           cfrAlgorithm()
@@ -42,7 +43,10 @@ class BasicBanditSolverSpec
           SolverSpecUtils.solve(game, solver, iterations)
 
         val actionProbabilities : Seq[Double] =
-          strategy.actionProbabilityMass(0)
+          expectedActions match {
+            case None    => strategy.actionProbabilityMass(0)
+            case Some(c) => strategy.actionProbabilityMass(0, c)
+          }
 
         actionProbabilities
       }
@@ -89,7 +93,7 @@ class BasicBanditSolverSpec
       "Rock-paper-scissors" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsGame,
-          1)
+          1, Some(3))
 
         // (roughly) equal distribution
         optimalStrategy.min must be greaterThan(

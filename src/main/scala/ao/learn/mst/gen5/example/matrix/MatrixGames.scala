@@ -6,6 +6,25 @@ package ao.learn.mst.gen5.example.matrix
 object MatrixGames
 {
   //--------------------------------------------------------------------------------------------------------------------
+  // http://en.wikipedia.org/wiki/Battle_of_the_sexes_(game_theory)#Burning_money
+
+  val burningMoney : MatrixGame =
+    fromMatrix(
+      Seq(( 2, 1), (-2, 0)),
+      Seq((-2, 0), ( 2, 4)))
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  // http://en.wikipedia.org/wiki/Battle_of_the_sexes_(game_theory)
+  // http://www.gametheory.net/dictionary/Games/BattleoftheSexes.html
+
+  val battleOfTheSexes : MatrixGame =
+    fromMatrix(
+      Seq((1, 2), (0, 0)),
+      Seq((0, 0), (2, 1)))
+
+
+  //--------------------------------------------------------------------------------------------------------------------
   // http://en.wikipedia.org/wiki/Zero%E2%80%93sum_game
 
 //  Quote:

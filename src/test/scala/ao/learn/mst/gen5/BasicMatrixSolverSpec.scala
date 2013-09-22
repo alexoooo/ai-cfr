@@ -20,26 +20,30 @@ class BasicMatrixSolverSpec
   //--------------------------------------------------------------------------------------------------------------------
   "Counterfactual Regret Minimization algorithm" should
   {
-    def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-      new ChanceSampledCfrMinimizer[S, I, A]
-
-
     "Solve normal-form matrix games" in {
       def solveNormalFormGame[S, I, A](
-          game       : ExtensiveGame[S, I, A],
-          iterations : Int): (Seq[Double], Seq[Double]) =
+          game             : ExtensiveGame[S, I, A],
+          iterations       : Int,
+          actionCounts     : Option[(Int, Int)] = None,
+          twoPlayerZeroSum : Boolean = false): (Seq[Double], Seq[Double]) =
       {
         val solver : ExtensiveSolver[S, I, A] =
-          cfrAlgorithm()
+          new ChanceSampledCfrMinimizer[S, I, A](twoPlayerZeroSum)
 
         val strategy : ExtensiveStrategyProfile =
           SolverSpecUtils.solve(game, solver, iterations)
 
         val rowActionProbabilities : Seq[Double] =
-          strategy.actionProbabilityMass(0)
+          actionCounts match {
+            case None    => strategy.actionProbabilityMass(0)
+            case Some(c) => strategy.actionProbabilityMass(0, c._1)
+          }
 
         val columnActionProbabilities : Seq[Double] =
-          strategy.actionProbabilityMass(1)
+          actionCounts match {
+            case None    => strategy.actionProbabilityMass(1)
+            case Some(c) => strategy.actionProbabilityMass(1, c._2)
+          }
 
         (rowActionProbabilities, columnActionProbabilities)
       }
@@ -48,7 +52,7 @@ class BasicMatrixSolverSpec
         "Matching Pennies" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.matchingPennies,
-            1)
+            1, Some((2, 2)))
 
           row.max should be lessThan 0.5 + epsilonProbability
           col.max should be lessThan 0.5 + epsilonProbability
@@ -71,13 +75,32 @@ class BasicMatrixSolverSpec
           row(0) should be lessThan epsilonProbability
           col(0) should be lessThan epsilonProbability
         }
+
+        "Battle of the Sexes" in {
+          val (row, col) = solveNormalFormGame(
+            MatrixGames.battleOfTheSexes,
+            5 * 1000)
+
+          if (row(0) < 0.3) {
+            row(0) should be lessThan epsilonProbability
+            col(0) should be lessThan epsilonProbability
+          } else if (row(1) < 0.3) {
+            row(1) should be lessThan epsilonProbability
+            col(1) should be lessThan epsilonProbability
+          } else {
+            // what would the optimal strategy be?
+            ???
+//            row.max should be lessThan 0.5 + epsilonProbability
+//            col.max should be lessThan 0.5 + epsilonProbability
+          }
+        }
       }
 
       "Other matrix games" in {
         "Zero Sum" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.zeroSum,
-            4 * 1000)
+            4 * 1000, None, twoPlayerZeroSum = true)
 
           row(0) must be greaterThan(4.0/7 - epsilonProbability)
           row(1) must be greaterThan(3.0/7 - epsilonProbability)

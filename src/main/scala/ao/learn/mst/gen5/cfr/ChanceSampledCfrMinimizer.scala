@@ -2,8 +2,8 @@ package ao.learn.mst.gen5.cfr
 
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.ExtensiveAbstraction
-import ao.learn.mst.gen3.strategy.{ExtensiveStrategyProfile, CfrStrategyBuffer, CfrStrategyProfile}
-import ao.learn.mst.gen3.strategy.impl.{MapCfrStrategyBuffer, ArrayCfrStrategyProfile}
+import ao.learn.mst.gen3.strategy._
+import ao.learn.mst.gen3.strategy.impl.{AveragingCfrStrategyProfile, ArrayCfrAverageStrategyBuilder, MapCfrRegretBuffer, ArrayCfrStrategyProfile}
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
@@ -11,10 +11,13 @@ import scala.Function
 import ao.learn.mst.gen5.node.Decision
 import ao.learn.mst.gen5.node.Chance
 import scala.collection.immutable.SortedMap
+import ao.learn.mst.gen5.node.Chance
+import scala.util.Random
 
 
 //----------------------------------------------------------------------------------------------------------------------
-class ChanceSampledCfrMinimizer[State, InformationSet, Action]
+case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
+    averageStrategy : Boolean = false)
   extends ExtensiveSolver[State, InformationSet, Action]
 {
   //--------------------------------------------------------------------------------------------------------------------
@@ -31,9 +34,15 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
     game: ExtensiveGame[State, InformationSet, Action])
     extends SolutionApproximation[InformationSet, Action]
   {
-    val model : CfrStrategyProfile =
-      new ArrayCfrStrategyProfile
+    val strategyProfile : CfrStrategyProfile = {
+      val baseStrategy = new ArrayCfrStrategyProfile
 
+      if (averageStrategy) {
+        new AveragingCfrStrategyProfile(baseStrategy)
+      } else {
+        baseStrategy
+      }
+    }
 
     //------------------------------------------------------------------------------------------------------------------Z
     def optimize(extensiveAbstraction: ExtensiveAbstraction[InformationSet, Action]) : Unit = {
@@ -45,26 +54,18 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
     private class Optimization(
       abstraction: ExtensiveAbstraction[InformationSet, Action])
     {
-      val buffer : CfrStrategyBuffer =
-        new MapCfrStrategyBuffer
+      val buffer : CfrRegretBuffer =
+        new MapCfrRegretBuffer
 
 
       //----------------------------------------------------------------------------------------------------------------
       def updateFromRoot() {
-//        for (i <- 1 to 100) {
-//          cfrUpdate(
-//            game.initialState,
-//            game.node( game.initialState ),
-//            Seq.fill( game.playerCount )( 1.0 ))
-//        }
-//        println(model)
-
         cfrUpdate(
           game.initialState,
           game.node( game.initialState ),
           Seq.fill( game.playerCount )( 1.0 ))
 
-        buffer.commit(model)
+        buffer.commit(strategyProfile)
       }
 
 
@@ -133,11 +134,11 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
           abstraction.informationSetIndex(infoSet)
 
         val actionCount : Int =
-          abstraction.actionCount(node.informationSet)
+          abstraction.actionCount(infoSet)
 
         // Compute σ1(I(r1)) according to Equation 8.
         val actionProbabilities: Seq[Double] =
-          model.positiveRegretStrategy(
+          strategyProfile.positiveRegretStrategy(
             informationSetIndex, actionCount)
 
         // for Each action a ∈ A(I(r1))
@@ -179,7 +180,7 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
             playerChildUtilities(nextToAct).map(childUtility =>
               childUtility - expectedUtilities(nextToAct))
 
-          buffer.bufferUpdate(
+          buffer.bufferRegret(
             informationSetIndex,
             actionRegret,
             opponentReachProbability)
@@ -263,7 +264,7 @@ class ChanceSampledCfrMinimizer[State, InformationSet, Action]
 
     //------------------------------------------------------------------------------------------------------------------
     def strategy: ExtensiveStrategyProfile = {
-      model.toExtensiveStrategyProfile
+      strategyProfile.toExtensiveStrategyProfile
     }
   }
 }

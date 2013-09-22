@@ -1,7 +1,6 @@
 package ao.learn.mst.gen3.strategy.impl
 
-import ao.learn.mst.gen3.strategy.{ExtensiveStrategyProfile, CfrStrategyProfile}
-import ao.learn.mst.gen.chance.ProbabilityMass
+import ao.learn.mst.gen3.strategy._
 import scala.Array
 import java.util
 
@@ -16,8 +15,6 @@ class ArrayCfrStrategyProfile
   //--------------------------------------------------------------------------------------------------------------------
   private var visitCount            = Array[Long         ]()
   private var regretSums            = Array[Array[Double]]()
-  private var actionProbabilitySums = Array[Array[Double]]()
-  private var reachProbabilitySum   = Array[Double       ]()
 
 
 
@@ -29,24 +26,6 @@ class ArrayCfrStrategyProfile
   {
     val actionCount = actionRegret.length
     initializeInformationSetIfRequired(informationSetIndex, actionCount)
-
-    val currentPositiveRegretStrategy : Seq[Double] =
-      positiveRegretStrategy(informationSetIndex, actionCount)
-
-    // See train.cpp (average the strategy for the player):
-    // 651: for(int i=0; i<3; ++i) {
-    // 652:
-    // 653:   average_probability[i] += reach[player]*probability[i];
-    // 654: }
-    for (action <- 0 until actionCount)
-    {
-      actionProbabilitySums( informationSetIndex )( action ) +=
-        reachProbability * currentPositiveRegretStrategy( action )
-    }
-
-    // technically not necessary because we can weigh
-    //  by sum of parent's child (i.e. sibling + self)
-    reachProbabilitySum( informationSetIndex ) += reachProbability
 
     val counterfactualRegret =
       actionRegret.map(_ * reachProbability)
@@ -74,7 +53,7 @@ class ArrayCfrStrategyProfile
       informationSetIndex: Int
       ): Seq[Double] =
   {
-    if (! informationSetInitialized(informationSetIndex)) {
+    if (! actionsInitialized(informationSetIndex)) {
       return Seq.empty
     }
 
@@ -123,42 +102,13 @@ class ArrayCfrStrategyProfile
   }
 
 
-
   //--------------------------------------------------------------------------------------------------------------------
   def toExtensiveStrategyProfile: ExtensiveStrategyProfile = {
     val averageStrategies : Seq[Seq[Double]] =
       (0 until informationSetCount)
-        .map(averageStrategy)
+        .map(positiveRegretStrategy)
 
     SeqExtensiveStrategyProfile(averageStrategies)
-  }
-
-  // Corresponds to train.cpp get_normalized_average_probability line 489
-  private def averageStrategy(
-    informationSetIndex : Int
-    ): Seq[Double] =
-  {
-    // In train.cpp, see the following relevant (lines 504 .. 509):
-    //  /* compute sum */
-    //  double sum = 0;
-    //  for(int i=0; i<leduc::NUM_ACTIONS; ++i) {
-    //    sum += average_probability[u.get_id()][bucket][i];
-    //  }
-    //
-    // Where average_probability is the equivalent of actionProbabilitySums.
-    //
-    // Then this sum is used to normalize relative to siblings (train.cpp line 516):
-    //  probability[i] = average_probability[u.get_id()][bucket][i]/sum;
-    //
-    // Here we are dividing by sum of reach probabilities for the information set.
-    // Note: should it be normalized in relation to siblings instead? (would that make a difference?)
-
-    val averageStrategy : Seq[Double] =
-      actionProbabilitySums(informationSetIndex)
-        .map(_ / reachProbabilitySum(informationSetIndex))
-//        .map(_ / visitCount(informationSetIndex))
-
-    averageStrategy
   }
 
 
@@ -189,7 +139,7 @@ class ArrayCfrStrategyProfile
       initializeActions(informationSetIndex)
     }
 
-    if (actionCountInitialized(informationSetIndex, requiredActionCount)) {
+    if (! actionCountInitialized(informationSetIndex, requiredActionCount)) {
       initializeActionCount(informationSetIndex, requiredActionCount)
     }
   }
@@ -201,10 +151,8 @@ class ArrayCfrStrategyProfile
   def initializeInformationSet(informationSetIndex: Int) {
     val count = informationSetIndex + 1
 
-    visitCount            = visitCount           .padTo(count, 0.toLong  )
-    regretSums            = regretSums           .padTo(count, null      )
-    actionProbabilitySums = actionProbabilitySums.padTo(count, null      )
-    reachProbabilitySum   = reachProbabilitySum  .padTo(count, 0.toDouble)
+    visitCount = visitCount.padTo(count, 0.toLong)
+    regretSums = regretSums.padTo(count, null    )
   }
 
 
@@ -214,22 +162,17 @@ class ArrayCfrStrategyProfile
 
   private def initializeActions(informationSetIndex: Int)
   {
-    regretSums           (informationSetIndex) = new Array[Double](0)
-    actionProbabilitySums(informationSetIndex) = new Array[Double](0)
+    regretSums(informationSetIndex) = new Array[Double](0)
   }
 
 
   def actionCountInitialized(informationSetIndex: Int, requiredActionCount : Int) =
-    actionCount(informationSetIndex) < requiredActionCount
+    requiredActionCount <= actionCount(informationSetIndex)
 
   private def initializeActionCount(informationSetIndex: Int, requiredActionCount : Int)
   {
     regretSums(informationSetIndex) =
       regretSums(informationSetIndex)
-        .padTo(requiredActionCount, 0.toDouble)
-
-    actionProbabilitySums(informationSetIndex) =
-      actionProbabilitySums(informationSetIndex)
         .padTo(requiredActionCount, 0.toDouble)
   }
 
@@ -237,7 +180,6 @@ class ArrayCfrStrategyProfile
   //--------------------------------------------------------------------------------------------------------------------
   override def toString : String = {
     "\n\n" +
-      util.Arrays.toString(visitCount) + "\n" +
-      util.Arrays.toString(reachProbabilitySum)
+      util.Arrays.toString(visitCount)
   }
 }

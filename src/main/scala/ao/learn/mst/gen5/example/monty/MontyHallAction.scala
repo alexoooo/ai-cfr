@@ -14,5 +14,5 @@ case class MontyPickDoor(door : Int) extends MontyHallAction
 case class MontyRevealNoPrize(door : Int) extends MontyHallAction
 
 
-case class MontyKeepOrSwitch(
+case class MontySwitch(
   switch : Boolean) extends MontyHallAction

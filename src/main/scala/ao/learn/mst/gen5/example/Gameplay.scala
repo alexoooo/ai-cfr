@@ -5,7 +5,7 @@ import ao.learn.mst.gen5.node.{Chance, Terminal, Decision}
 import scala.util.Random
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
-import ao.learn.mst.gen5.example.abstraction.{LosslessInfoLosslessDecisionAbstractionBuilder, SingleInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
+import ao.learn.mst.gen5.example.abstraction.{AbstractionUtils, LosslessInfoLosslessDecisionAbstractionBuilder, SingleInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.bernoulli.BernoulliBinaryBanditGame
@@ -18,6 +18,9 @@ import ao.learn.mst.gen5.example.matrix.MatrixGames
 import java.text.DecimalFormat
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
+import ao.learn.mst.gen5.example.monty.MontyHallGame
+import ao.learn.mst.lib.CommonUtils
+import com.google.common.base.Strings
 
 
 object Gameplay extends App
@@ -26,6 +29,24 @@ object Gameplay extends App
   implicit val sourceOfRandomness : Random =
     new Random()
 
+
+  //--------------------------------------------------------------------------------------------------------------------
+  val resultFormat = new DecimalFormat("0.0000")
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  val solutionIterationCount : Int =
+    1000
+
+  val averageStrategy : Boolean =
+    false
+//    true
+
+  def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
+    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
+
+
+  //--------------------------------------------------------------------------------------------------------------------
   play(
 //    DeterministicBinaryBanditGame.plusMinusOne
 //    BernoulliBinaryBanditGame.withAdvantageForTrue(0.01)
@@ -39,8 +60,12 @@ object Gameplay extends App
 //    MatrixGames.deadlock
 //    MatrixGames.prisonersDilemma
 //    MatrixGames.zeroSum
+//    MatrixGames.battleOfTheSexes
+//    MatrixGames.burningMoney
+
 //    PerfectCompleteGame
-    ImperfectGame
+//    ImperfectGame
+    MontyHallGame
   )
 
 
@@ -51,50 +76,15 @@ object Gameplay extends App
       solve(game)
 //      Seq.fill(game.playerCount)(new RandomPlayer[I, A](new Random))
 
-    val outcomeSums =
-      new Array[Double](game.playerCount)
-
-    val outcomeCount : Int =
-      100 * 1000
-
-    val displayInterval : Int =
-      outcomeCount / 10
-
-    def displayMeanOutcomes(gamesPlayed: Int) : Unit = {
-      val meanOutcomes : Seq[Double] =
-        outcomeSums.map(_ / gamesPlayed).toSeq
-
-      val formatter = new DecimalFormat("0.0000")
-      val formattedMeanOutcomes : Seq[String] =
-        meanOutcomes.map(formatter.format)
-
-      println(s"Average outcomes: ${formattedMeanOutcomes.mkString("\t")}")
-    }
-
-    for (i <- 1 to outcomeCount) {
-      val outcome : Seq[Double] =
-        playout(game, players)
-
-      for (p <- 0 until game.playerCount) {
-        outcomeSums(p) += outcome(p)
-      }
-
-      if (i % displayInterval == 0) {
-        displayMeanOutcomes(i)
-      }
-    }
-
-    displayMeanOutcomes(outcomeCount)
+    determineOutcome(game, players)
   }
 
 
+  //--------------------------------------------------------------------------------------------------------------------
   def solve[S, I, A](game : ExtensiveGame[S, I, A]) : Seq[ExtensivePlayer[I, A]] =
   {
-    val solver : ExtensiveSolver[S, I, A] =
-      new ChanceSampledCfrMinimizer[S, I, A]
-
     val solution : SolutionApproximation[I, A] =
-      solver.initialSolution(game)
+      solver().initialSolution(game)
 
     val abstractionBuilder : OpaqueAbstractionBuilder =
       LosslessInfoLosslessDecisionAbstractionBuilder
@@ -103,8 +93,24 @@ object Gameplay extends App
     val abstraction : ExtensiveAbstraction[I, A] =
       abstractionBuilder.generate(game)
 
+    val informationSets : Set[I] =
+      AbstractionUtils.informationSets(game)
+
+    val infoDisplayOrder : Seq[I] =
+      informationSets.toSeq.sortBy(_.toString)
+
+    def displayStrategy() : Unit = {
+      CommonUtils.displayDelimiter()
+      val strategy = solution.strategy
+      for (i <- infoDisplayOrder) {
+        val infoIndex = abstraction.informationSetIndex(i)
+        val probabilities = strategy.actionProbabilityMass(infoIndex)
+        println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
+      }
+    }
+
     val numberOfRounds : Int =
-      100 * 1000
+      solutionIterationCount
 
     val displayFrequency : Int =
       math.max(1, numberOfRounds / 1000)
@@ -112,7 +118,7 @@ object Gameplay extends App
     for (i <- 1 to numberOfRounds) {
       solution.optimize(abstraction)
       if (i % displayFrequency == 0) {
-        println(solution.strategy)
+        displayStrategy()
       }
     }
 
@@ -126,6 +132,49 @@ object Gameplay extends App
     Seq.fill(game.playerCount)(player)
   }
 
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  def determineOutcome[S, I, A](
+      game : ExtensiveGame[S, I, A],
+      players : Seq[ExtensivePlayer[I, A]]) : Unit =
+  {
+    val outcomeSums =
+      new Array[Double](game.playerCount)
+
+    val outcomeCount : Int =
+      100 * 1000
+
+    val displayInterval : Int =
+      outcomeCount / 10
+
+    CommonUtils.displayDelimiter()
+
+    for (i <- 1 to outcomeCount) {
+      val outcome : Seq[Double] =
+        playout(game, players)
+
+      for (p <- 0 until game.playerCount) {
+        outcomeSums(p) += outcome(p)
+      }
+
+      if (i % displayInterval == 0) {
+        displayMeanResults(outcomeSums, i)
+      }
+    }
+
+    displayMeanResults(outcomeSums, outcomeCount)
+  }
+
+  def displayMeanResults(outcomeSums : Seq[Double], gamesPlayed: Int) : Unit = {
+    val meanOutcomes : Seq[Double] =
+      outcomeSums.map(_ / gamesPlayed).toSeq
+
+    val formattedMeanOutcomes : Seq[String] =
+      meanOutcomes.map(resultFormat.format)
+
+    println(s"Average results: ${formattedMeanOutcomes.mkString("\t")}")
+  }
 
   //--------------------------------------------------------------------------------------------------------------------
   def playout[S, I, A](

@@ -1,7 +1,8 @@
 package ao.learn.mst.gen5.example.monty
 
 import ao.learn.mst.gen5.ExtensiveGame
-import ao.learn.mst.gen5.node.{Decision, Outcome, Chance, ExtensiveNode}
+import ao.learn.mst.gen5.node._
+import ao.learn.mst.gen5.node.Chance
 
 
 object MontyHallGame
@@ -22,7 +23,7 @@ object MontyHallGame
 
   def node(state: MontyHallState): ExtensiveNode[MontyHallInfo, MontyHallAction] = {
     val doors : Seq[Int] =
-      0 to  3
+      0 until  3
 
     state.actions.toList match {
       case Nil => {
@@ -51,15 +52,27 @@ object MontyHallGame
       }
 
       case List(MontyPlacePrize(p), MontyPickDoor(d), MontyRevealNoPrize(n)) => {
-        val choices : Seq[MontyKeepOrSwitch] =
+        val choices : Seq[MontySwitch] =
           Seq(false, true).map(
-            MontyKeepOrSwitch)
+            MontySwitch)
 
         Decision(0, MontySwitchDoorInfo(d, n), choices)
       }
 
-      case List(MontyPlacePrize(p), MontyPickDoor(d), MontyRevealNoPrize(n), MontyKeepOrSwitch(s)) => {
-        ???
+      case List(MontyPlacePrize(p), MontyPickDoor(d), MontyRevealNoPrize(n), MontySwitch(s)) => {
+        val selectedDoor : Int =
+          if (! s) {
+            d
+          } else {
+            doors.filter(
+              ! Set(d, n).contains(_))(0)
+          }
+
+        val victory : Boolean =
+          selectedDoor == p
+
+        Terminal(
+          Seq(if (victory) 1 else 0))
       }
     }
   }
