@@ -3,9 +3,10 @@ package ao.learn.mst.gen5
 import ao.learn.mst.gen5.solve.ExtensiveSolver
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
+import ao.learn.mst.gen5.example.sig.SignalingGame
+import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
 
 /**
  *
@@ -25,20 +26,8 @@ class BasicGameSolverSpec
       new ChanceSampledCfrMinimizer[S, I, A]
 
     "Solve basic small games" in {
-      def solveGame[S, I, A](
-        game       : ExtensiveGame[S, I, A],
-        iterations : Int)
-        : Seq[Seq[Double]] =
-      {
-        val solver : ExtensiveSolver[S, I, A] =
-          cfrAlgorithm()
-
-        val strategy : ExtensiveStrategyProfile =
-          SolverSpecUtils.solve(game, solver, iterations)
-
-        (0 until strategy.knownInformationSetCount)
-          .map(strategy.actionProbabilityMass)
-      }
+      def solveGame[S, I, A](game : ExtensiveGame[S, I, A], iterations : Int) : Seq[Seq[Double]] =
+        SolverSpecUtils.flatSolve(game, cfrAlgorithm(), iterations)
 
       "Perfect and complete information" in {
         val solution = solveGame(
@@ -66,6 +55,58 @@ class BasicGameSolverSpec
 
         playerOne(1) must be lessThan epsilonProbability
         playerTwo(0) must be lessThan epsilonProbability
+      }
+
+      "Signaling" in {
+        val solution = solveGame(
+          SignalingGame,
+          20)
+
+        val senderFalse   = solution(0)
+        val senderTrue    = solution(1)
+        val receiverFalse = solution(2)
+        val receiverTrue  = solution(3)
+
+        if (senderFalse(0) > senderFalse(1)) {
+          senderFalse  (1) must be lessThan epsilonProbability
+          senderTrue   (0) must be lessThan epsilonProbability
+          receiverFalse(1) must be lessThan epsilonProbability
+          receiverTrue (0) must be lessThan epsilonProbability
+        } else {
+          senderFalse  (0) must be lessThan epsilonProbability
+          senderTrue   (1) must be lessThan epsilonProbability
+          receiverFalse(0) must be lessThan epsilonProbability
+          receiverTrue (1) must be lessThan epsilonProbability
+        }
+      }
+
+      "Basic Monty Hall problem" in {
+        val solution = solveGame(
+          BasicMontyHallGame,
+          4)
+
+        val switchDecision =
+          solution(1)
+
+        switchDecision(0) must be lessThan epsilonProbability
+      }
+
+      "Monty Hall problem" in {
+        val solution : Seq[Seq[Double]] = solveGame(
+          MontyHallGame,
+          80)
+
+        val initialDoorChoice : Seq[Double] =
+          solution(0)
+
+        val switchChoices : Seq[Seq[Double]] =
+          solution.drop(1)
+
+        foreach (0 until initialDoorChoice.length) {c =>
+          if (initialDoorChoice(c) > epsilonProbability) {
+            switchChoices(c)(0) must be lessThan epsilonProbability
+          } else ok
+        }
       }
     }
   }

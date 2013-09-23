@@ -5,6 +5,17 @@ package ao.learn.mst.lib
  */
 object CommonUtils
 {
+  //--------------------------------------------------------------------------------------------------------------------
+  def normalizeToOne(weights: Seq[Double]) : Seq[Double] = {
+    assert(weights.min > 0)
+
+    val sum = weights.sum
+
+    weights.map(_ / sum)
+  }
+
+
+  //--------------------------------------------------------------------------------------------------------------------
   def displayDelimiter() : Unit =
     println(s"\n${"-" * 80}")
 

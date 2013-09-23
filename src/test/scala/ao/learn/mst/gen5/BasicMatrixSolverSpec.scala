@@ -22,42 +22,26 @@ class BasicMatrixSolverSpec
   {
     "Solve normal-form matrix games" in {
       def solveNormalFormGame[S, I, A](
-          game             : ExtensiveGame[S, I, A],
-          iterations       : Int,
-          actionCounts     : Option[(Int, Int)] = None,
-          twoPlayerZeroSum : Boolean = false): (Seq[Double], Seq[Double]) =
+          game       : ExtensiveGame[S, I, A],
+          iterations : Int,
+          zeroSum    : Boolean = false): (Seq[Double], Seq[Double]) =
       {
         val solver : ExtensiveSolver[S, I, A] =
-          new ChanceSampledCfrMinimizer[S, I, A](twoPlayerZeroSum)
+          new ChanceSampledCfrMinimizer[S, I, A](zeroSum)
 
         val strategy : ExtensiveStrategyProfile =
           SolverSpecUtils.solve(game, solver, iterations)
 
         val rowActionProbabilities : Seq[Double] =
-          actionCounts match {
-            case None    => strategy.actionProbabilityMass(0)
-            case Some(c) => strategy.actionProbabilityMass(0, c._1)
-          }
+          strategy.actionProbabilityMass(0)
 
         val columnActionProbabilities : Seq[Double] =
-          actionCounts match {
-            case None    => strategy.actionProbabilityMass(1)
-            case Some(c) => strategy.actionProbabilityMass(1, c._2)
-          }
+          strategy.actionProbabilityMass(1)
 
         (rowActionProbabilities, columnActionProbabilities)
       }
 
       "Classic 2x2 games" in {
-        "Matching Pennies" in {
-          val (row, col) = solveNormalFormGame(
-            MatrixGames.matchingPennies,
-            1, Some((2, 2)))
-
-          row.max should be lessThan 0.5 + epsilonProbability
-          col.max should be lessThan 0.5 + epsilonProbability
-        }
-
         "Deadlock" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.deadlock,
@@ -74,6 +58,15 @@ class BasicMatrixSolverSpec
 
           row(0) should be lessThan epsilonProbability
           col(0) should be lessThan epsilonProbability
+        }
+
+        "Matching Pennies" in {
+          val (row, col) = solveNormalFormGame(
+            MatrixGames.matchingPennies,
+            5 * 1000, zeroSum = true)
+
+          row.max should be lessThan 0.5 + epsilonProbability
+          col.max should be lessThan 0.5 + epsilonProbability
         }
 
         "Battle of the Sexes" in {
@@ -100,7 +93,7 @@ class BasicMatrixSolverSpec
         "Zero Sum" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.zeroSum,
-            4 * 1000, None, twoPlayerZeroSum = true)
+            7 * 1000, zeroSum = true)
 
           row(0) must be greaterThan(4.0/7 - epsilonProbability)
           row(1) must be greaterThan(3.0/7 - epsilonProbability)

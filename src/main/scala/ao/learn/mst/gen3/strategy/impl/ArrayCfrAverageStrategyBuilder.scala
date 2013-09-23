@@ -73,6 +73,10 @@ class ArrayCfrAverageStrategyBuilder
     informationSetIndex : Int
     ): Seq[Double] =
   {
+    if (! actionsInitialized(informationSetIndex)) {
+      return Seq.empty
+    }
+
     // In train.cpp, see the following relevant (lines 504 .. 509):
     //  /* compute sum */
     //  double sum = 0;

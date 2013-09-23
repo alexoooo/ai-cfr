@@ -2,6 +2,9 @@ package ao.learn.mst.gen5.example.abstraction
 
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
 import ao.learn.mst.gen5.node.{Decision, ExtensiveNode}
+import scala.collection.immutable.ListSet
+import scala.collection.parallel.mutable
+import scala.collection
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -25,17 +28,50 @@ object AbstractionUtils
           None
       }
 
-    val informationSets : Traversable[Decision[InformationSet, Action]] =
+    val decisions : Traversable[Decision[InformationSet, Action]] =
       nodes.flatMap(nodeInformationSet)
 
-    informationSets.toSet
+    withoutDuplicates(decisions)
+  }
+
+  private def withoutDuplicates[InformationSet, Action](
+    nodes : Traversable[Decision[InformationSet, Action]])
+    : Set[Decision[InformationSet, Action]] =
+  {
+    val decisionSet =
+      collection.mutable.Set[Decision[InformationSet, Action]]()
+
+    var decisionSeq =
+      collection.mutable.Buffer[Decision[InformationSet, Action]]()
+
+    for (n <- nodes) {
+      if (! decisionSet.contains(n)) {
+        decisionSet += n
+        decisionSeq += n
+      }
+    }
+
+    ListSet() ++ decisionSeq.reverse
   }
 
   def informationSets[State, InformationSet, Action](
     game: ExtensiveGame[State, InformationSet, Action]): Set[InformationSet] =
   {
-    decisions(game)
-      .map(_.informationSet)
+    val seenInfoSets =
+      collection.mutable.Set[InformationSet]()
+
+    var seenInfoSeq =
+      collection.mutable.Buffer[InformationSet]()
+
+    for (d <- decisions(game)) {
+      val info = d.informationSet
+      if (! seenInfoSets.contains(info)) {
+        seenInfoSets += info
+        seenInfoSeq  += info
+      }
+    }
+
+    ListSet() ++ seenInfoSeq.reverse
   }
 
 

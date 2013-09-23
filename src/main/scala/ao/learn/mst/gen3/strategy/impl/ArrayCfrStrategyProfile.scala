@@ -3,6 +3,7 @@ package ao.learn.mst.gen3.strategy.impl
 import ao.learn.mst.gen3.strategy._
 import scala.Array
 import java.util
+import ao.learn.mst.lib.CommonUtils
 
 
 class ArrayCfrStrategyProfile
@@ -93,7 +94,8 @@ class ArrayCfrStrategyProfile
       positiveRegretStrategy(informationSetIndex)
 
     if (strategy.isEmpty) {
-      Seq.fill(actionCount)(1.0 / actionCount)
+      CommonUtils.normalizeToOne(
+        Seq.fill(actionCount)(math.random))
     } else if (strategy.length == actionCount) {
       strategy
     } else {

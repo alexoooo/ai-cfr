@@ -93,7 +93,7 @@ class BasicBanditSolverSpec
       "Rock-paper-scissors" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsGame,
-          1, Some(3))
+          30)
 
         // (roughly) equal distribution
         optimalStrategy.min must be greaterThan(

@@ -13,14 +13,14 @@ import ao.learn.mst.gen5.example.bandit.uniform.UniformBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.gaussian.GaussianBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.rps.RockPaperScissorsGame
 import ao.learn.mst.gen5.example.bandit.rpsw.RockPaperScissorsWellGame
-import ao.learn.mst.gen5.example.bandit.sig.SignalingGame
 import ao.learn.mst.gen5.example.matrix.MatrixGames
 import java.text.DecimalFormat
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
-import ao.learn.mst.gen5.example.monty.MontyHallGame
+import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
 import ao.learn.mst.lib.CommonUtils
 import com.google.common.base.Strings
+import ao.learn.mst.gen5.example.sig.SignalingGame
 
 
 object Gameplay extends App
@@ -32,6 +32,7 @@ object Gameplay extends App
 
   //--------------------------------------------------------------------------------------------------------------------
   val resultFormat = new DecimalFormat("0.0000")
+  val countFormat  = new DecimalFormat(",000")
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -39,8 +40,8 @@ object Gameplay extends App
     1000
 
   val averageStrategy : Boolean =
-    false
-//    true
+//    false
+    true
 
   def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
     new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
@@ -54,7 +55,6 @@ object Gameplay extends App
 //    GaussianBinaryBanditGame.withAdvantageForTrue(0.01)
 //    RockPaperScissorsGame
 //    RockPaperScissorsWellGame
-//    SignalingGame
 
 //    MatrixGames.matchingPennies
 //    MatrixGames.deadlock
@@ -65,6 +65,9 @@ object Gameplay extends App
 
 //    PerfectCompleteGame
 //    ImperfectGame
+//    SignalingGame
+//    BasicMontyHallGame
+
     MontyHallGame
   )
 
@@ -76,7 +79,7 @@ object Gameplay extends App
       solve(game)
 //      Seq.fill(game.playerCount)(new RandomPlayer[I, A](new Random))
 
-    determineOutcome(game, players)
+    displayOutcome(game, players)
   }
 
 
@@ -99,8 +102,9 @@ object Gameplay extends App
     val infoDisplayOrder : Seq[I] =
       informationSets.toSeq.sortBy(_.toString)
 
-    def displayStrategy() : Unit = {
+    def displayStrategy(round : Long) : Unit = {
       CommonUtils.displayDelimiter()
+      println(s"round: ${countFormat.format(round)}")
       val strategy = solution.strategy
       for (i <- infoDisplayOrder) {
         val infoIndex = abstraction.informationSetIndex(i)
@@ -118,7 +122,7 @@ object Gameplay extends App
     for (i <- 1 to numberOfRounds) {
       solution.optimize(abstraction)
       if (i % displayFrequency == 0) {
-        displayStrategy()
+        displayStrategy(i)
       }
     }
 
@@ -135,7 +139,7 @@ object Gameplay extends App
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def determineOutcome[S, I, A](
+  def displayOutcome[S, I, A](
       game : ExtensiveGame[S, I, A],
       players : Seq[ExtensivePlayer[I, A]]) : Unit =
   {

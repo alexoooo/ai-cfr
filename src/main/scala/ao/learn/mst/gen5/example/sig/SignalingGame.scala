@@ -1,11 +1,11 @@
-package ao.learn.mst.gen5.example.bandit.sig
+package ao.learn.mst.gen5.example.sig
 
 import ao.learn.mst.gen5.ExtensiveGame
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.node.Chance
 
 /**
- * 15/09/13 8:20 PM
+ * http://en.wikipedia.org/wiki/Signaling_game
  */
 case object SignalingGame
   extends ExtensiveGame[SigState, SigInfo, SigAction]

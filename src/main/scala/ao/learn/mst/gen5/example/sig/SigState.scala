@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5.example.bandit.sig
+package ao.learn.mst.gen5.example.sig
 
 
 case class SigState(
