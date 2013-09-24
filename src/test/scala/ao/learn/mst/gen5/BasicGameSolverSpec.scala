@@ -7,6 +7,7 @@ import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
 import ao.learn.mst.gen5.example.sig.SignalingGame
 import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
+import ao.learn.mst.gen5.example.burning.BurningGame
 
 /**
  *
@@ -94,7 +95,7 @@ class BasicGameSolverSpec
       "Monty Hall problem" in {
         val solution : Seq[Seq[Double]] = solveGame(
           MontyHallGame,
-          80)
+          100)
 
         val initialDoorChoice : Seq[Double] =
           solution(0)
@@ -107,6 +108,20 @@ class BasicGameSolverSpec
             switchChoices(c)(0) must be lessThan epsilonProbability
           } else ok
         }
+      }
+
+      "Money-burning Battle of the Sexes" in {
+        val solution : Seq[Seq[Double]] = solveGame(
+          BurningGame,
+          4)
+
+        val burningDecision = solution(0)
+        val noBurnRowPlay   = solution(1)
+        val noBurnColPlay   = solution(3)
+
+        burningDecision(1) must be lessThan epsilonProbability
+        noBurnRowPlay  (1) must be lessThan epsilonProbability
+        noBurnColPlay  (1) must be lessThan epsilonProbability
       }
     }
   }

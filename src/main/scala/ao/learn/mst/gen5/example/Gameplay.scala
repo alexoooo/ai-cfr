@@ -21,6 +21,7 @@ import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
 import ao.learn.mst.lib.CommonUtils
 import com.google.common.base.Strings
 import ao.learn.mst.gen5.example.sig.SignalingGame
+import ao.learn.mst.gen5.example.burning.BurningGame
 
 
 object Gameplay extends App
@@ -37,11 +38,11 @@ object Gameplay extends App
 
   //--------------------------------------------------------------------------------------------------------------------
   val solutionIterationCount : Int =
-    1000
+    1000 * 1000
 
   val averageStrategy : Boolean =
-//    false
-    true
+    false
+//    true
 
   def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
     new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
@@ -67,8 +68,9 @@ object Gameplay extends App
 //    ImperfectGame
 //    SignalingGame
 //    BasicMontyHallGame
+//    MontyHallGame
 
-    MontyHallGame
+    BurningGame
   )
 
 
@@ -100,7 +102,7 @@ object Gameplay extends App
       AbstractionUtils.informationSets(game)
 
     val infoDisplayOrder : Seq[I] =
-      informationSets.toSeq.sortBy(_.toString)
+      informationSets.toSeq//.sortBy(_.toString)
 
     def displayStrategy(round : Long) : Unit = {
       CommonUtils.displayDelimiter()
