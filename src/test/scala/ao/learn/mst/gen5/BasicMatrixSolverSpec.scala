@@ -5,6 +5,9 @@ import ao.learn.mst.gen5.solve.ExtensiveSolver
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.matrix.MatrixGames
+import scala._
+import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
+import org.specs2.matcher.{MatchSuccess, Expectable, Matcher, MatchResult}
 
 /**
  * http://en.wikipedia.org/wiki/Normal_form_game
@@ -69,22 +72,49 @@ class BasicMatrixSolverSpec
           col.max should be lessThan 0.5 + epsilonProbability
         }
 
-        "Battle of the Sexes" in {
-          val (row, col) = solveNormalFormGame(
-            MatrixGames.battleOfTheSexes,
-            5 * 1000)
+        "Coordination games" in {
+          val beCoordinationSolution : Matcher[(Seq[Double], Seq[Double])] =
+            new Matcher[(Seq[Double], Seq[Double])] {
+              def apply[S <: (Seq[Double], Seq[Double])](t: Expectable[S]): MatchResult[S] = {
+                val (row: Seq[Double], col: Seq[Double]) = t.value
 
-          if (row(0) < 0.3) {
-            row(0) should be lessThan epsilonProbability
-            col(0) should be lessThan epsilonProbability
-          } else if (row(1) < 0.3) {
-            row(1) should be lessThan epsilonProbability
-            col(1) should be lessThan epsilonProbability
-          } else {
-            // what would the optimal strategy be?
-            ???
-//            row.max should be lessThan 0.5 + epsilonProbability
-//            col.max should be lessThan 0.5 + epsilonProbability
+                val isPureDiagonal =
+                  if (row(0) < 0.3) {
+                    row(0) < epsilonProbability && col(0) < epsilonProbability
+                  } else if (row(1) < 0.3) {
+                    row(1) < epsilonProbability && col(1) < epsilonProbability
+                  } else ???
+
+                result(isPureDiagonal, "is coordinated", "isn't coordinated", t)
+              }
+            }
+
+          "Pure coordination" in {
+            solveNormalFormGame(
+              MatrixGames.pureCoordination,
+              5
+            ) should beCoordinationSolution
+          }
+
+          "Battle of the Sexes" in {
+            solveNormalFormGame(
+              MatrixGames.battleOfTheSexes,
+              6
+            ) should beCoordinationSolution
+          }
+
+          "Choosing sides" in {
+            solveNormalFormGame(
+              MatrixGames.choosingSides,
+              10
+            ) should beCoordinationSolution
+          }
+
+          "Stag hunt" in {
+            solveNormalFormGame(
+              MatrixGames.stagHunt,
+              12
+            ) should beCoordinationSolution
           }
         }
       }

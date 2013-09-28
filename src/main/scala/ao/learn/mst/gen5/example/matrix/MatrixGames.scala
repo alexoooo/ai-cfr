@@ -6,22 +6,42 @@ package ao.learn.mst.gen5.example.matrix
 object MatrixGames
 {
   //--------------------------------------------------------------------------------------------------------------------
-  // http://en.wikipedia.org/wiki/Battle_of_the_sexes_(game_theory)#Burning_money
+  // http://en.wikipedia.org/wiki/Coordination_game
 
-  val burningMoney : MatrixGame =
+  def coordination(A: Double, a: Double, B: Double, b: Double, C:Double, c:Double, D:Double, d:Double) : MatrixGame = {
+    assert(A > B && D > C)
+    assert(a > c && d > b)
+
     fromMatrix(
-      Seq(( 2, 1), (-2, 0)),
-      Seq((-2, 0), ( 2, 4)))
+      Seq((A, a), (C, c)),
+      Seq((B, b), (D, d)))
+  }
 
 
-  //--------------------------------------------------------------------------------------------------------------------
   // http://en.wikipedia.org/wiki/Battle_of_the_sexes_(game_theory)
   // http://www.gametheory.net/dictionary/Games/BattleoftheSexes.html
-
   val battleOfTheSexes : MatrixGame =
-    fromMatrix(
-      Seq((1, 2), (0, 0)),
-      Seq((0, 0), (2, 1)))
+    coordination(1, 2, 0, 0, 0, 0, 2, 1)
+
+
+  // http://en.wikipedia.org/wiki/Stag_hunt
+  val stagHunt : MatrixGame =
+    stagHunt(2, 2, 1, 1, 0, 0, 1, 1)
+
+  def stagHunt(A: Double, a: Double, B: Double, b: Double, C: Double, c: Double, D: Double, d: Double): MatrixGame = {
+    assert(a > b && b >= d && d > c)
+    assert(A > B && B >= D && D > C)
+
+    coordination(A, a, B, c, C, b, D, d)
+  }
+
+
+  val choosingSides : MatrixGame =
+    coordination(10, 10, 0, 0, 0, 0, 10, 10)
+
+  val pureCoordination : MatrixGame =
+    coordination(10, 10, 0, 0, 0, 0, 5, 5)
+
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -75,6 +95,7 @@ object MatrixGames
 
   def prisonersDilemma(t : Double, r : Double, p : Double, s : Double) : MatrixGame = {
     assert(t > r && r > p && p > s)
+
     fromMatrix(
       Seq((r, r), (s, t)),
       Seq((t, s), (p, p))

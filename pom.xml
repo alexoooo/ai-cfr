@@ -33,6 +33,9 @@
         <junit.version>4.11</junit.version>
         <scalamock.version>3.0</scalamock.version>
         <mockito.version>1.9.5</mockito.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <!--

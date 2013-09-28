@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5.example
+package ao.learn.mst.gen5.example.player
 
 import ao.learn.mst.gen5.ExtensivePlayer
 import scala.util.Random

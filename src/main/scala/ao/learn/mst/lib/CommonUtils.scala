@@ -1,5 +1,7 @@
 package ao.learn.mst.lib
 
+import java.text.DecimalFormat
+
 /**
  * Common generic utilities for use within project.
  */
@@ -25,4 +27,17 @@ object CommonUtils
       .mkString("\t")
   }
 
+
+  //--------------------------------------------------------------------------------------------------------------------
+  private val outcomeFormat = new DecimalFormat("0.0000")
+
+  def formatGameValue(expectedOutcomes : Seq[Double]) : String = {
+    val formattedMeanOutcomes : Seq[String] =
+      expectedOutcomes.map(outcomeFormat.format)
+
+    formattedMeanOutcomes.mkString("\t")
+  }
+
+
 }
+

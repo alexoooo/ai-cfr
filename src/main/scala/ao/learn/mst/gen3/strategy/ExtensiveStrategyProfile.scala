@@ -2,7 +2,7 @@ package ao.learn.mst.gen3.strategy
 
 
 /**
- *
+ * Mixed strategy with probabilities of performing each action for every information set.
  */
 trait ExtensiveStrategyProfile
 {
@@ -15,9 +15,4 @@ trait ExtensiveStrategyProfile
     informationSetIndex:Int,
     actionCount:Int
     ): Seq[Double]
-
-//  def actionProbability(
-//    informationSetIndex:Int,
-//    actionCount:Int
-//    ): Double
 }
