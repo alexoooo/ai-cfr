@@ -79,3 +79,26 @@ object Terminal {
   def fromPayoffs(payoffs : Seq[Double]): Terminal[_, _]=
     new Terminal(payoffs)
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------
+sealed trait ExtensiveStateNode[State, InformationSet, Action]
+{
+  def state : State
+  def node  : ExtensiveNode[InformationSet, Action]
+}
+
+case class StateDecision[State, InformationSet, Action](
+  state : State,
+  node  : Decision[InformationSet, Action]
+) extends ExtensiveStateNode[State, InformationSet, Action]
+
+case class StateChance[State, InformationSet, Action](
+  state : State,
+  node  : Chance[InformationSet, Action]
+) extends ExtensiveStateNode[State, InformationSet, Action]
+
+case class StateTerminal[State, InformationSet, Action](
+  state : State,
+  node  : Terminal[InformationSet, Action]
+) extends ExtensiveStateNode[State, InformationSet, Action]

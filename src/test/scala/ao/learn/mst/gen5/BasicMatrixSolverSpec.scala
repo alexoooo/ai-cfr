@@ -79,9 +79,9 @@ class BasicMatrixSolverSpec
                 val (row: Seq[Double], col: Seq[Double]) = t.value
 
                 val isPureDiagonal =
-                  if (row(0) < 0.3) {
+                  if (row(0) < 0.2) {
                     row(0) < epsilonProbability && col(0) < epsilonProbability
-                  } else if (row(1) < 0.3) {
+                  } else if (row(1) < 0.2) {
                     row(1) < epsilonProbability && col(1) < epsilonProbability
                   } else ???
 
@@ -99,7 +99,7 @@ class BasicMatrixSolverSpec
           "Battle of the Sexes" in {
             solveNormalFormGame(
               MatrixGames.battleOfTheSexes,
-              6
+              10
             ) should beCoordinationSolution
           }
 
@@ -113,8 +113,27 @@ class BasicMatrixSolverSpec
           "Stag hunt" in {
             solveNormalFormGame(
               MatrixGames.stagHunt,
-              12
+              13
             ) should beCoordinationSolution
+          }
+        }
+
+        "Anti-coordination games" in {
+          "Chicken (aka. Hawk-dove)" in {
+            val (row, col) = solveNormalFormGame(
+              MatrixGames.chicken,
+              8)
+
+            if (row(0) < 0.2) {
+              row(0) must be lessThan epsilonProbability
+              col(1) must be lessThan epsilonProbability
+            } else if (row(1) < 0.2) {
+              row(1) must be lessThan epsilonProbability
+              col(0) must be lessThan epsilonProbability
+            } else {
+              println(s"!!: $row | $col")
+              ???
+            }
           }
         }
       }

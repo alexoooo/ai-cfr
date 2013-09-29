@@ -68,14 +68,14 @@ object SimpleGameSolution
       informationSets.toSeq//.sortBy(_.toString)
 
     def displayStrategy(round : Long) : Unit = {
-//      CommonUtils.displayDelimiter()
-//      println(s"round: ${countFormat.format(round)}")
+      CommonUtils.displayDelimiter()
+      println(s"round: ${countFormat.format(round)}")
       val strategy = solution.strategy
-//      for (i <- infoDisplayOrder) {
-//        val infoIndex = abstraction.informationSetIndex(i)
-//        val probabilities = strategy.actionProbabilityMass(infoIndex)
-//        println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
-//      }
+      for (i <- infoDisplayOrder) {
+        val infoIndex = abstraction.informationSetIndex(i)
+        val probabilities = strategy.actionProbabilityMass(infoIndex)
+        println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
+      }
 
       val gameValue : Seq[Double] =
         GameValueFinder.bestResponseProfile(

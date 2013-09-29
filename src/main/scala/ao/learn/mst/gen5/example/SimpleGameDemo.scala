@@ -34,7 +34,7 @@ object SimpleGameDemo extends App
 
   //--------------------------------------------------------------------------------------------------------------------
   val solutionIterationCount : Int =
-    1000
+    1000 * 1000
 
   val averageStrategy : Boolean =
 //    false
@@ -51,7 +51,7 @@ object SimpleGameDemo extends App
 //    UniformBinaryBanditGame.withAdvantageForTrue(0.01)
 //    GaussianBinaryBanditGame.withAdvantageForTrue(0.01)
 //    RockPaperScissorsGame
-    RockPaperScissorsWellGame
+//    RockPaperScissorsWellGame
 
 //    MatrixGames.matchingPennies
 //    MatrixGames.deadlock
@@ -61,13 +61,13 @@ object SimpleGameDemo extends App
 //    MatrixGames.stagHunt
 //    MatrixGames.choosingSides
 //    MatrixGames.pureCoordination
+    MatrixGames.chicken
 
 //    PerfectCompleteGame
 //    ImperfectGame
 //    SignalingGame
 //    BasicMontyHallGame
 //    MontyHallGame
-
 //    BurningGame
   )
 

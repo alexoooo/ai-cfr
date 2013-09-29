@@ -1,6 +1,8 @@
 package ao.learn.mst.gen5
 
-import ao.learn.mst.gen5.node.ExtensiveNode
+import ao.learn.mst.gen5.node._
+import ao.learn.mst.gen4.Rational
+import ao.learn.mst.gen5.node.StateDecision
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -28,6 +30,10 @@ trait ExtensiveGame[State, InformationSet, Action]
    */
   def initialState : State
 
+  def initialStateNode : ExtensiveStateNode[State, InformationSet, Action] =
+    stateNode(initialState)
+
+
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
@@ -35,6 +41,18 @@ trait ExtensiveGame[State, InformationSet, Action]
    * @return game tree node
    */
   def node(state : State) : ExtensiveNode[InformationSet, Action]
+
+  def stateNode(state : State) : ExtensiveStateNode[State, InformationSet, Action] =
+    node(state) match {
+      case decision: Decision[InformationSet, Action] =>
+        StateDecision(state, decision)
+
+      case chance: Chance[InformationSet, Action] =>
+        StateChance(state, chance)
+
+      case terminal: Terminal[InformationSet, Action] =>
+        StateTerminal(state, terminal)
+    }
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -48,6 +66,12 @@ trait ExtensiveGame[State, InformationSet, Action]
     action      : Action
     ) : State
 
-  def transitionNode(nonTerminal : State, action : Action) : ExtensiveNode[InformationSet, Action] =
-    node(transition(nonTerminal, action))
+  def transitionStateNode(
+    nonTerminal : ExtensiveStateNode[State, InformationSet, Action],
+    action      : Action)
+    : ExtensiveStateNode[State, InformationSet, Action] =
+  {
+    stateNode(transition(nonTerminal.state, action))
+  }
+
 }

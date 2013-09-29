@@ -6,6 +6,27 @@ package ao.learn.mst.gen5.example.matrix
 object MatrixGames
 {
   //--------------------------------------------------------------------------------------------------------------------
+  // Anti-coordination games
+
+  // http://en.wikipedia.org/wiki/Game_of_chicken
+  val chicken : MatrixGame =
+    chicken(0, 2, 6, 7)
+
+//    fromMatrix(
+//      Seq((0, 0), (7, 2)),
+//      Seq((2, 7), (6, 6)))
+
+  def chicken(crash: Double, lose: Double, tie: Double, win: Double) : MatrixGame = {
+    assert(win > tie && tie > lose && lose > crash)
+    //lose > crash && crash > win && win > tie)
+
+    fromMatrix(
+      Seq((tie, tie ), (lose , win)),
+      Seq((win, lose), (crash, crash)))
+  }
+
+
+  //--------------------------------------------------------------------------------------------------------------------
   // http://en.wikipedia.org/wiki/Coordination_game
 
   def coordination(A: Double, a: Double, B: Double, b: Double, C:Double, c:Double, D:Double, d:Double) : MatrixGame = {
