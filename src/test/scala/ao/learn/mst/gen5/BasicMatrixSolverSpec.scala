@@ -106,7 +106,7 @@ class BasicMatrixSolverSpec
           "Choosing sides" in {
             solveNormalFormGame(
               MatrixGames.choosingSides,
-              10
+              11
             ) should beCoordinationSolution
           }
 
@@ -122,7 +122,7 @@ class BasicMatrixSolverSpec
           "Chicken (aka. Hawk-dove)" in {
             val (row, col) = solveNormalFormGame(
               MatrixGames.chicken,
-              8)
+              9)
 
             if (row(0) < 0.2) {
               row(0) must be lessThan epsilonProbability

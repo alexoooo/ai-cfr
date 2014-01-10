@@ -9,7 +9,10 @@ import ao.learn.mst.gen5.example.player.MixedStrategyPlayer
 import scala.util.Random
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import java.text.DecimalFormat
-import ao.learn.mst.gen5.br.{BestResponsePlayer, GameValueFinder, BestResponseProfile}
+import ao.learn.mst.gen5.br._
+import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
+import ao.learn.mst.gen5.br.BestResponseProfile
+import ao.learn.mst.gen5.br.BestResponsePlayer
 
 /**
  *
@@ -22,26 +25,29 @@ object SimpleGameSolution
 
   //--------------------------------------------------------------------------------------------------------------------
   def forGame[S, I, A](
-      game            : ExtensiveGame[S, I, A],
-      iterations      : Int,
-      averageStrategy : Boolean = false)
+    game            : ExtensiveGame[S, I, A],
+    iterations      : Int,
+    averageStrategy : Boolean = false)
     : SimpleGameSolution[S, I, A] =
   {
-    val abstraction : ExtensiveAbstraction[I, A] =
+    val losslessAbstraction : ExtensiveAbstraction[I, A] =
       LosslessInfoLosslessDecisionAbstractionBuilder.generate(game)
 
     val strategy : ExtensiveStrategyProfile =
-      solve(game, averageStrategy, abstraction, iterations)
+      solve(game, averageStrategy, losslessAbstraction, iterations)
 
     val response : BestResponseProfile[I, A] =
-      GameValueFinder.bestResponseProfile(
-        game, abstraction, strategy)
+      BestResponseFinder.bestResponseProfile(
+        game, losslessAbstraction, strategy)
+
+//      GameValueFinder.bestResponseProfile(
+//        game, abstraction, strategy)
 
     SimpleGameSolution(
       game,
       iterations,
       averageStrategy,
-      abstraction,
+      losslessAbstraction,
       strategy,
       response)
   }
@@ -77,12 +83,16 @@ object SimpleGameSolution
         println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
       }
 
-      val gameValue : Seq[Double] =
-        GameValueFinder.bestResponseProfile(
-          game, abstraction, strategy
-        ).bestResponses.map(_.value)
+      ResponseTreeTraverser.traverseResponseTreeLeaves(
+        game, abstraction, strategy, 0
+      ).foreach(println)
 
-      println(s"value\t${CommonUtils.formatGameValue(gameValue)}")
+//      val gameValue : Seq[Double] =
+//        GameValueFinder.bestResponseProfile(
+//          game, abstraction, strategy
+//        ).bestResponses.map(_.value)
+//
+//      println(s"value\t${CommonUtils.formatGameValue(gameValue)}")
     }
 
     val displayFrequency : Int =

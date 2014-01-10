@@ -23,6 +23,7 @@ import com.google.common.base.Strings
 import ao.learn.mst.gen5.example.sig.SignalingGame
 import ao.learn.mst.gen5.example.burning.BurningGame
 import ao.learn.mst.gen5.example.player.MixedStrategyPlayer
+import ao.learn.mst.gen5.br.ResponseTreeTraverser
 
 
 object SimpleGameDemo extends App
@@ -34,7 +35,7 @@ object SimpleGameDemo extends App
 
   //--------------------------------------------------------------------------------------------------------------------
   val solutionIterationCount : Int =
-    1000 * 1000
+    1
 
   val averageStrategy : Boolean =
 //    false
@@ -53,7 +54,7 @@ object SimpleGameDemo extends App
 //    RockPaperScissorsGame
 //    RockPaperScissorsWellGame
 
-//    MatrixGames.matchingPennies
+    MatrixGames.matchingPennies
 //    MatrixGames.deadlock
 //    MatrixGames.prisonersDilemma
 //    MatrixGames.zeroSum
@@ -61,7 +62,7 @@ object SimpleGameDemo extends App
 //    MatrixGames.stagHunt
 //    MatrixGames.choosingSides
 //    MatrixGames.pureCoordination
-    MatrixGames.chicken
+//    MatrixGames.chicken
 
 //    PerfectCompleteGame
 //    ImperfectGame
