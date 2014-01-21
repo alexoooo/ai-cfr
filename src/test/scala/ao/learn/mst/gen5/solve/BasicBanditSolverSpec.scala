@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5
+package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
@@ -13,6 +13,7 @@ import ao.learn.mst.gen5.example.bandit.gaussian.GaussianBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.bernoulli.BernoulliBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.rps.RockPaperScissorsGame
 import ao.learn.mst.gen5.example.bandit.rpsw.RockPaperScissorsWellGame
+import ao.learn.mst.gen5.ExtensiveGame
 
 
 class BasicBanditSolverSpec

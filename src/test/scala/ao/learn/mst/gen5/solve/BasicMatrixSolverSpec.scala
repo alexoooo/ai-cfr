@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5
+package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.solve.ExtensiveSolver
@@ -8,6 +8,7 @@ import ao.learn.mst.gen5.example.matrix.MatrixGames
 import scala._
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import org.specs2.matcher.{MatchSuccess, Expectable, Matcher, MatchResult}
+import ao.learn.mst.gen5.ExtensiveGame
 
 /**
  * http://en.wikipedia.org/wiki/Normal_form_game

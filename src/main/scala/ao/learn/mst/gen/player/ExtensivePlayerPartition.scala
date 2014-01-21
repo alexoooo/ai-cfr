@@ -13,7 +13,7 @@ package ao.learn.mst.gen.player
 
 
 //--------------------------------------------------------------------------------------------------------------------
-sealed abstract class ExtensivePlayerPartition
+sealed trait ExtensivePlayerPartition
 
 case class Rational(position : ExtensivePlayerPosition) extends ExtensivePlayerPartition
 

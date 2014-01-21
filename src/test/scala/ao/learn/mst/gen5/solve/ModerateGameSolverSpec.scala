@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5
+package ao.learn.mst.gen5.solve
 
 import ao.learn.mst.gen5.solve.ExtensiveSolver
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer

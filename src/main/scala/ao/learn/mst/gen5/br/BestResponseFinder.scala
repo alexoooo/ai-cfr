@@ -182,11 +182,27 @@ object BestResponseFinder
           .toMap  
       
       val nextKnownActionValues : Map[I, Map[A, Double]] =
+        (knownActionValues.keySet ++ learnedActionValues.keySet)
+          .map(knownActionInfo => {
+            val knownForInfo : Map[A, Double] =
+              knownActionValues.getOrElse(knownActionInfo, Map.empty)
+
+            val learnedForInfo : Map[A, Double] =
+              learnedActionValues.getOrElse(knownActionInfo, Map.empty)
+
+            val newKnownForInfo : Map[A, Double] =
+              knownForInfo ++ learnedForInfo
+
+            (knownActionInfo, newKnownForInfo)
+          })
+          .toMap
+
         knownActionValues ++ learnedActionValues
 
       val learnedInfoValues : Map[I, Double] =
-        learnedActionValues
-          .mapValues(_.values.max)
+        learnableInfos
+          .map(info => (info, nextKnownActionValues(info).values.max))
+          .toMap
 
       val nextKnownInfoValues : Map[I, Double] =
         knownInfoValues ++ learnedInfoValues

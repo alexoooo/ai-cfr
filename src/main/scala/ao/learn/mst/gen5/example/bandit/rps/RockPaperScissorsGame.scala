@@ -53,12 +53,11 @@ case object RockPaperScissorsGame
     winner match {
       case None => zeroForAll
 
-      case Some(choice) => {
+      case Some(choice) =>
         val winningPlayer =
           state.choices.indexOf(choice)
 
         zeroForAll.updated(winningPlayer, 1.0)
-      }
     }
   }
 

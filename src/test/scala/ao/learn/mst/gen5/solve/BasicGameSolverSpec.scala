@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5
+package ao.learn.mst.gen5.solve
 
 import ao.learn.mst.gen5.solve.ExtensiveSolver
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
@@ -8,6 +8,7 @@ import ao.learn.mst.gen5.example.imperfect.ImperfectGame
 import ao.learn.mst.gen5.example.sig.SignalingGame
 import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
 import ao.learn.mst.gen5.example.burning.BurningGame
+import ao.learn.mst.gen5.ExtensiveGame
 
 /**
  *
