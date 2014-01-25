@@ -2,7 +2,7 @@ package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
-import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
+import ao.learn.mst.gen5.cfr.{OtherSampledCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.example.abstraction.{LosslessInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen5.node.Decision
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
@@ -21,14 +21,16 @@ class BasicBanditSolverSpec
 {
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
-      0.01
+//    0.01
+    0.05
 
 
   //--------------------------------------------------------------------------------------------------------------------
   "Counterfactual Regret Minimization algorithm" should
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-      new ChanceSampledCfrMinimizer[S, I, A]
+//      new ChanceSampledCfrMinimizer[S, I, A]
+      new OtherSampledCfrMinimizer[S, I, A]
 
 
     "Solve singleton information-set games:" in {
@@ -87,14 +89,13 @@ class BasicBanditSolverSpec
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
-
         }
       }
 
       "Rock-paper-scissors" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsGame,
-          30)
+          6 * 1000)
 
         // (roughly) equal distribution
         optimalStrategy.min must be greaterThan(
@@ -104,7 +105,7 @@ class BasicBanditSolverSpec
       "Rock-paper-scissors-well" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsWellGame,
-          100)
+          150 * 1000)
 
         // (roughly) equal distribution
         optimalStrategy(0) must be lessThan epsilonProbability

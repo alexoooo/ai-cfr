@@ -74,25 +74,25 @@ object SimpleGameSolution
       informationSets.toSeq//.sortBy(_.toString)
 
     def displayStrategy(round : Long) : Unit = {
-      CommonUtils.displayDelimiter()
-      println(s"round: ${countFormat.format(round)}")
-      val strategy = solution.strategy
-      for (i <- infoDisplayOrder) {
-        val infoIndex = abstraction.informationSetIndex(i)
-        val probabilities = strategy.actionProbabilityMass(infoIndex)
-        println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
-      }
-
-      ResponseTreeTraverser.traverseResponseTreeLeaves(
-        game, abstraction, strategy, 0
-      ).foreach(println)
-
-//      val gameValue : Seq[Double] =
-//        GameValueFinder.bestResponseProfile(
-//          game, abstraction, strategy
-//        ).bestResponses.map(_.value)
+//      CommonUtils.displayDelimiter()
+//      println(s"round: ${countFormat.format(round)}")
 //
-//      println(s"value\t${CommonUtils.formatGameValue(gameValue)}")
+//      for (i <- infoDisplayOrder) {
+//        val infoIndex = abstraction.informationSetIndex(i)
+//        val probabilities = solution.strategy.actionProbabilityMass(infoIndex)
+//        println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
+//      }
+//
+//      ResponseTreeTraverser.traverseResponseTreeLeaves(
+//        game, abstraction, solution.strategy, 0
+//      ).foreach(println)
+
+      val gameValue : Seq[Double] =
+        BestResponseFinder.bestResponseProfile(
+          game, abstraction, solution.strategy
+        ).bestResponses.map(_.value)
+
+      println(s"${countFormat.format(round)}\t${CommonUtils.formatGameValue(gameValue)}")
     }
 
     val displayFrequency : Int =

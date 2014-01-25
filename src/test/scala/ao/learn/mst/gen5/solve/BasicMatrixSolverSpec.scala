@@ -2,11 +2,10 @@ package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.solve.ExtensiveSolver
-import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
+import ao.learn.mst.gen5.cfr.{OtherSampledCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.matrix.MatrixGames
 import scala._
-import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import org.specs2.matcher.{MatchSuccess, Expectable, Matcher, MatchResult}
 import ao.learn.mst.gen5.ExtensiveGame
 
@@ -18,7 +17,8 @@ class BasicMatrixSolverSpec
 {
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
-    0.01
+//    0.01
+    0.02
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -31,7 +31,8 @@ class BasicMatrixSolverSpec
           zeroSum    : Boolean = false): (Seq[Double], Seq[Double]) =
       {
         val solver : ExtensiveSolver[S, I, A] =
-          new ChanceSampledCfrMinimizer[S, I, A](zeroSum)
+//          new ChanceSampledCfrMinimizer[S, I, A](zeroSum)
+          new OtherSampledCfrMinimizer[S, I, A](zeroSum)
 
         val strategy : ExtensiveStrategyProfile =
           SolverSpecUtils.solve(game, solver, iterations)
@@ -67,7 +68,7 @@ class BasicMatrixSolverSpec
         "Matching Pennies" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.matchingPennies,
-            5 * 1000, zeroSum = true)
+            10 * 1000, zeroSum = true)
 
           row.max should be lessThan 0.5 + epsilonProbability
           col.max should be lessThan 0.5 + epsilonProbability
@@ -84,7 +85,9 @@ class BasicMatrixSolverSpec
                     row(0) < epsilonProbability && col(0) < epsilonProbability
                   } else if (row(1) < 0.2) {
                     row(1) < epsilonProbability && col(1) < epsilonProbability
-                  } else ???
+                  } else {
+                    throw new UnsupportedOperationException(s"$row | $col")
+                  }
 
                 result(isPureDiagonal, "is coordinated", "isn't coordinated", t)
               }
@@ -93,14 +96,14 @@ class BasicMatrixSolverSpec
           "Pure coordination" in {
             solveNormalFormGame(
               MatrixGames.pureCoordination,
-              5
+              6
             ) should beCoordinationSolution
           }
 
           "Battle of the Sexes" in {
             solveNormalFormGame(
               MatrixGames.battleOfTheSexes,
-              10
+              20
             ) should beCoordinationSolution
           }
 
@@ -123,7 +126,7 @@ class BasicMatrixSolverSpec
           "Chicken (aka. Hawk-dove)" in {
             val (row, col) = solveNormalFormGame(
               MatrixGames.chicken,
-              9)
+              20)
 
             if (row(0) < 0.2) {
               row(0) must be lessThan epsilonProbability
@@ -132,8 +135,7 @@ class BasicMatrixSolverSpec
               row(1) must be lessThan epsilonProbability
               col(0) must be lessThan epsilonProbability
             } else {
-              println(s"!!: $row | $col")
-              ???
+              throw new UnsupportedOperationException(s"!!: $row | $col")
             }
           }
         }

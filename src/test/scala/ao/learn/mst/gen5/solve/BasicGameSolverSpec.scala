@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.solve
 
 import ao.learn.mst.gen5.solve.ExtensiveSolver
-import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
+import ao.learn.mst.gen5.cfr.{OtherSampledCfrMinimizer, ChanceSampledCfrMinimizer}
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
@@ -25,7 +25,8 @@ class BasicGameSolverSpec
   "Counterfactual Regret Minimization algorithm" should
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-      new ChanceSampledCfrMinimizer[S, I, A]
+//      new ChanceSampledCfrMinimizer[S, I, A]
+      new OtherSampledCfrMinimizer[S, I, A]
 
     "Solve basic small games" in {
       def solveGame[S, I, A](game : ExtensiveGame[S, I, A], iterations : Int) : Seq[Seq[Double]] =
@@ -34,7 +35,7 @@ class BasicGameSolverSpec
       "Perfect and complete information" in {
         val solution = solveGame(
           PerfectCompleteGame,
-          300)
+          400)
 
         val playerOne     = solution(0)
         val playerTwoDown = solution(1)
@@ -62,7 +63,7 @@ class BasicGameSolverSpec
       "Signaling" in {
         val solution = solveGame(
           SignalingGame,
-          20)
+          30)
 
         val senderFalse   = solution(0)
         val senderTrue    = solution(1)
@@ -96,7 +97,7 @@ class BasicGameSolverSpec
       "Monty Hall problem" in {
         val solution : Seq[Seq[Double]] = solveGame(
           MontyHallGame,
-          100)
+          200)
 
         val initialDoorChoice : Seq[Double] =
           solution(0)

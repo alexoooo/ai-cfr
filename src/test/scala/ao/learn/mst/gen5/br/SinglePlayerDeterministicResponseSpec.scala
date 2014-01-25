@@ -15,7 +15,7 @@ class SinglePlayerDeterministicResponseSpec
   extends SpecificationWithJUnit
 {
   //--------------------------------------------------------------------------------------------------------------------
-  "Best response strategy" should
+  "Best response strategy in simple single-player deterministic game" should
   {
     "Exist for deterministic binary bandit game" in {
       val game : ExtensiveGame[BinaryBanditState, Unit, Boolean] =

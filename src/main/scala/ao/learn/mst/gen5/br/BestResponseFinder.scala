@@ -5,6 +5,13 @@ import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.abstraction.AbstractionUtils
 import ao.learn.mst.gen5.node.Decision
 import com.google.common.collect.ImmutableTable
+import scala._
+import ao.learn.mst.gen5.br.BestResponseProfile
+import ao.learn.mst.gen5.br.ResponseTreeLeaf
+import ao.learn.mst.gen5.br.BestResponse
+import ao.learn.mst.gen5.br.BestResponseProfile
+import ao.learn.mst.gen5.br.ResponseTreeLeaf
+import ao.learn.mst.gen5.br.BestResponse
 
 /**
  *
@@ -314,28 +321,20 @@ object BestResponseFinder
       ResponseTreeTraverser.traverseResponseTreeLeaves(
         context.game, abstraction, mixedStrategy, context.respondingPlayer)
 
-    responseTreeLeaves
-      .groupBy(_.informationSet)
-      .mapValues(infoLeaves =>
-      infoLeaves
-          .groupBy(_.action)
-          .mapValues(actionLeaves =>
-            actionLeaves
-              .map(_.payoff)
-              .sum))
+    val infoToLeaves : Map[I, Traversable[ResponseTreeLeaf[S, I, A]]] =
+      responseTreeLeaves
+        .groupBy(_.informationSet)
 
+    def actionValues(leaves: Traversable[ResponseTreeLeaf[S, I, A]]): Map[A, Double] = {
+      val actionLeaves : Map[A, Traversable[ResponseTreeLeaf[S, I, A]]] =
+        leaves.groupBy(_.action)
 
-//    val infoActionValues : ImmutableTable.Builder[I, A, Double] =
-//      infoActionValues
-//
-//    for (leaf <- responseTreeLeaves) {
-//      infoActionValues.put(
-//        leaf.informationSet, leaf.action, leaf.counterfactualValue)
-//    }
-//
-//    val x =
-//      infoActionValues.build()
+      def expectedValueForLeaves(leaves: Traversable[ResponseTreeLeaf[S, I, A]]): Double =
+        leaves.map(_.counterfactualValue).sum
 
+      actionLeaves.mapValues(expectedValueForLeaves)
+    }
 
+    infoToLeaves.mapValues(actionValues)
   }
 }

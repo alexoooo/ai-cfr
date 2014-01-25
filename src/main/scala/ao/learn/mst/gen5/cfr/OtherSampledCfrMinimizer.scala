@@ -3,21 +3,16 @@ package ao.learn.mst.gen5.cfr
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.ExtensiveAbstraction
 import ao.learn.mst.gen3.strategy._
-import ao.learn.mst.gen3.strategy.impl.{AveragingCfrStrategyProfile, ArrayCfrAverageStrategyBuilder, MapCfrRegretBuffer, ArrayCfrStrategyProfile}
+import ao.learn.mst.gen3.strategy.impl.{AveragingCfrStrategyProfile, MapCfrRegretBuffer, ArrayCfrStrategyProfile}
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
 import scala.Function
-import ao.learn.mst.gen5.node.Decision
-import ao.learn.mst.gen5.node.Chance
 import scala.collection.immutable.SortedMap
-import ao.learn.mst.gen5.node.Chance
-import scala.util.Random
-import ao.learn.mst.gen2.info
 
 
 //----------------------------------------------------------------------------------------------------------------------
-case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
+case class OtherSampledCfrMinimizer[State, InformationSet, Action](
     averageStrategy : Boolean = false)
   extends ExtensiveSolver[State, InformationSet, Action]
 {
@@ -32,8 +27,8 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
 
   //--------------------------------------------------------------------------------------------------------------------
   private class Solution(
-    game: ExtensiveGame[State, InformationSet, Action])
-    extends SolutionApproximation[InformationSet, Action]
+      game: ExtensiveGame[State, InformationSet, Action])
+      extends SolutionApproximation[InformationSet, Action]
   {
     val strategyProfile : CfrStrategyProfile = {
       val baseStrategy = new ArrayCfrStrategyProfile
@@ -61,9 +56,12 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
 
       //----------------------------------------------------------------------------------------------------------------
       def updateFromRoot() {
-        cfrUpdate(
-          game.initialStateNode,
-          Seq.fill( game.playerCount )( 1.0 ))
+        for (playerIndex <- 0 until game.playerCount) {
+          cfrUpdate(
+            game.initialStateNode,
+            Seq.fill( game.playerCount )( 1.0 ),
+            playerIndex)
+        }
 
         buffer.commit(strategyProfile)
       }
@@ -72,20 +70,23 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
       //----------------------------------------------------------------------------------------------------------------
       private def cfrUpdate(
           stateNode          : ExtensiveStateNode[State, InformationSet, Action],
-          reachProbabilities : Seq[Double]
+          reachProbabilities : Seq[Double],
+          playerIndex        : Int
           ): Seq[Double] =
       {
         stateNode match {
           case stateDecision : StateDecision[State, InformationSet, Action] =>
-            walkDecision(stateDecision, reachProbabilities)
+            if (stateDecision.node.nextToAct.index == playerIndex) {
+              walkProponentDecision(stateDecision, reachProbabilities, playerIndex)
+            } else {
+              walkOpponentDecision(stateDecision, reachProbabilities, playerIndex)
+            }
 
           case stateChance : StateChance[State, InformationSet, Action] =>
-            walkChance(stateChance, reachProbabilities)
+            walkChance(stateChance, reachProbabilities, playerIndex)
 
-          case terminal : StateTerminal[State, InformationSet, Action] => {
-            // train.cpp line 606
+          case terminal : StateTerminal[State, InformationSet, Action] =>
             terminal.node.payoffs
-          }
         }
       }
 
@@ -93,7 +94,8 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
       //----------------------------------------------------------------------------------------------------------------
       private def walkChance(
           stateNode          : StateChance[State, InformationSet, Action],
-          reachProbabilities : Seq[Double]
+          reachProbabilities : Seq[Double],
+          playerIndex        : Int
           ): Seq[Double] =
       {
         val sampledOutcome : Outcome[Action] =
@@ -113,14 +115,66 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
         val nextReachProbabilities : Seq[Double] =
           reachProbabilities.map(_ * sampledProbability)
 
-        cfrUpdate(sampledStateNode, nextReachProbabilities)
+        cfrUpdate(sampledStateNode, nextReachProbabilities, playerIndex)
       }
 
-
+      
       //----------------------------------------------------------------------------------------------------------------
-      private def walkDecision(
+      private def walkOpponentDecision(
           stateNode          : StateDecision[State, InformationSet, Action],
-          reachProbabilities : Seq[Double]
+          reachProbabilities : Seq[Double],
+          playerIndex        : Int
+          ) : Seq[Double] =
+      {
+        val infoSet: InformationSet =
+          stateNode.node.informationSet
+
+        val informationSetIndex: Int =
+          abstraction.informationSetIndex(infoSet)
+
+        val actionCount: Int =
+          abstraction.actionCount(infoSet)
+
+        val actionProbabilities: Seq[Double] =
+          strategyProfile.positiveRegretStrategy(
+            informationSetIndex, actionCount)
+        
+        val sampledChoiceAndIndex: (Action, Int) =
+          stateNode.node.choices
+            .map(choice => {
+              val choiceIndex: Int =
+                abstraction.actionSubIndex(infoSet, choice)
+
+              val choiceWeight: Double =
+//                actionProbabilities(choiceIndex)
+                math.max(actionProbabilities(choiceIndex), 0.2 / actionCount)
+
+              ((choice, choiceIndex), choiceWeight * math.random)
+            })
+            .maxBy(_._2)._1
+
+        val sampledStateNode : ExtensiveStateNode[State, InformationSet, Action] =
+          game.transitionStateNode(stateNode, sampledChoiceAndIndex._1)
+
+        val sampleChoiceProbability: Double =
+          math.max(actionProbabilities(sampledChoiceAndIndex._2), 0.1 / actionCount)
+
+        val nextReachProbabilities : Seq[Double] =
+          updateReachProbability(
+            reachProbabilities,
+            game.playerCount,
+            stateNode.node.nextToAct.index,
+            sampleChoiceProbability)
+
+        cfrUpdate(sampledStateNode, nextReachProbabilities, playerIndex)
+      }
+      
+      
+      //----------------------------------------------------------------------------------------------------------------
+      private def walkProponentDecision(
+          stateNode          : StateDecision[State, InformationSet, Action],
+          reachProbabilities : Seq[Double],
+          playerIndex        : Int
           ) : Seq[Double] =
       {
         val infoSet : InformationSet =
@@ -143,7 +197,8 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
           childUtilities(
             stateNode,
             actionProbabilities,
-            reachProbabilities
+            reachProbabilities,
+            playerIndex
           ).transpose
 
         // Compute u1(σ, I(r1))) = sum[a∈A(I(r1)) | σ1(I(r1))(a) × u1(σ, I(r1), a)].
@@ -189,7 +244,8 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
       private def childUtilities(
           stateNode           : StateDecision[State, InformationSet, Action],
           actionProbabilities : Seq[Double],
-          reachProbabilities  : Seq[Double]
+          reachProbabilities  : Seq[Double],
+          playerIndex         : Int
           ): Seq[Seq[Double]] = // Action Index -> Player -> Payoff
       {
         def actionIndex(action : Action) : Int =
@@ -205,10 +261,9 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
         def sampleAction(choices : Traversable[Action]) : Action = {
           val sampledIndex : Int =
             (choices.size * math.random).toInt
-          
+
           choices.toSeq(sampledIndex)
         }
-          
 
         val sampledActions = SortedMap[Int, Action]() ++
           indexToAction.transform(
@@ -235,7 +290,7 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
               stateNode.node.nextToAct.index,
               actionProbability)
 
-          cfrUpdate(childStateNode, childReachProbabilities)
+          cfrUpdate(childStateNode, childReachProbabilities, playerIndex)
         }
       }
 
@@ -262,5 +317,5 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
     def strategy: ExtensiveStrategyProfile = {
       strategyProfile.toExtensiveStrategyProfile
     }
-  } 
+  }
 }

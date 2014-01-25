@@ -35,7 +35,7 @@ object SimpleGameDemo extends App
 
   //--------------------------------------------------------------------------------------------------------------------
   val solutionIterationCount : Int =
-    100000
+    1000000
 
   val averageStrategy : Boolean =
 //    false
@@ -51,13 +51,13 @@ object SimpleGameDemo extends App
 //    BernoulliBinaryBanditGame.withAdvantageForTrue(0.01)
 //    UniformBinaryBanditGame.withAdvantageForTrue(0.01)
 //    GaussianBinaryBanditGame.withAdvantageForTrue(0.01)
-    RockPaperScissorsGame
+//    RockPaperScissorsGame
 //    RockPaperScissorsWellGame
 
 //    MatrixGames.matchingPennies
 //    MatrixGames.deadlock
 //    MatrixGames.prisonersDilemma
-//    MatrixGames.zeroSum
+    MatrixGames.zeroSum
 //    MatrixGames.battleOfTheSexes
 //    MatrixGames.stagHunt
 //    MatrixGames.choosingSides
@@ -87,7 +87,7 @@ object SimpleGameDemo extends App
     val responseValues : Seq[Double] =
       solution.response.bestResponses.map(_.value)
 
-    println(s"\nresponse values: ${CommonUtils.formatGameValue(responseValues)}")
+    println(s"\nResponse values: ${CommonUtils.formatGameValue(responseValues)}")
 
     for (player <- 0 until game.playerCount) {
       val respondedStrategyPlayers : Seq[ExtensivePlayer[I, A]] =
