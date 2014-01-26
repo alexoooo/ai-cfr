@@ -3,15 +3,7 @@ package ao.learn.mst.gen5.br
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.abstraction.AbstractionUtils
-import ao.learn.mst.gen5.node.Decision
-import com.google.common.collect.ImmutableTable
 import scala._
-import ao.learn.mst.gen5.br.BestResponseProfile
-import ao.learn.mst.gen5.br.ResponseTreeLeaf
-import ao.learn.mst.gen5.br.BestResponse
-import ao.learn.mst.gen5.br.BestResponseProfile
-import ao.learn.mst.gen5.br.ResponseTreeLeaf
-import ao.learn.mst.gen5.br.BestResponse
 
 /**
  *

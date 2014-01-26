@@ -115,7 +115,7 @@ class BasicGameSolverSpec
       "Money-burning Battle of the Sexes" in {
         val solution : Seq[Seq[Double]] = solveGame(
           BurningGame,
-          4)
+          5)
 
         val burningDecision = solution(0)
         val noBurnRowPlay   = solution(1)

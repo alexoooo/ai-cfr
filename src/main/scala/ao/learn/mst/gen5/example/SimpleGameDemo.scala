@@ -4,7 +4,7 @@ import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensivePlayer, ExtensiveGame}
 import ao.learn.mst.gen5.node.{Chance, Terminal, Decision}
 import scala.util.Random
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
-import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
+import ao.learn.mst.gen5.cfr.{OtherSampledCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.example.abstraction.{AbstractionUtils, LosslessInfoLosslessDecisionAbstractionBuilder, SingleInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
@@ -35,14 +35,15 @@ object SimpleGameDemo extends App
 
   //--------------------------------------------------------------------------------------------------------------------
   val solutionIterationCount : Int =
-    1000000
+    1000
 
   val averageStrategy : Boolean =
 //    false
     true
 
   def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
-    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
+//    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
+    new OtherSampledCfrMinimizer[S, I, A](averageStrategy)
 
 
   //--------------------------------------------------------------------------------------------------------------------

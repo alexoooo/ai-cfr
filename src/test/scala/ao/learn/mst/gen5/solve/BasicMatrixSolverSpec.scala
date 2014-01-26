@@ -18,7 +18,7 @@ class BasicMatrixSolverSpec
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
 //    0.01
-    0.02
+    0.015
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ class BasicMatrixSolverSpec
         "Matching Pennies" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.matchingPennies,
-            10 * 1000, zeroSum = true)
+            12 * 1000, zeroSum = true)
 
           row.max should be lessThan 0.5 + epsilonProbability
           col.max should be lessThan 0.5 + epsilonProbability
@@ -96,7 +96,7 @@ class BasicMatrixSolverSpec
           "Pure coordination" in {
             solveNormalFormGame(
               MatrixGames.pureCoordination,
-              6
+              10
             ) should beCoordinationSolution
           }
 
@@ -145,7 +145,7 @@ class BasicMatrixSolverSpec
         "Zero Sum" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.zeroSum,
-            7 * 1000, zeroSum = true)
+            500 * 1000, zeroSum = true)
 
           row(0) must be greaterThan(4.0/7 - epsilonProbability)
           row(1) must be greaterThan(3.0/7 - epsilonProbability)

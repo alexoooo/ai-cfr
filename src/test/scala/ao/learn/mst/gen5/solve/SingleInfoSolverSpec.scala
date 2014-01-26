@@ -16,13 +16,13 @@ import ao.learn.mst.gen5.example.bandit.rpsw.RockPaperScissorsWellGame
 import ao.learn.mst.gen5.ExtensiveGame
 
 
-class BasicBanditSolverSpec
+class SingleInfoSolverSpec
   extends SpecificationWithJUnit
 {
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
 //    0.01
-    0.05
+    0.02
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ class BasicBanditSolverSpec
       "Rock-paper-scissors" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsGame,
-          6 * 1000)
+          150 * 1000)
 
         // (roughly) equal distribution
         optimalStrategy.min must be greaterThan(
@@ -105,11 +105,12 @@ class BasicBanditSolverSpec
       "Rock-paper-scissors-well" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsWellGame,
-          150 * 1000)
+          250 * 1000)
 
-        // (roughly) equal distribution
+        // rock is dominated
         optimalStrategy(0) must be lessThan epsilonProbability
 
+        // mixing evenly between paper, scissors, and well is an equilibrium.
         optimalStrategy.max must be lessThan(
           1.0/3 + epsilonProbability)
       }

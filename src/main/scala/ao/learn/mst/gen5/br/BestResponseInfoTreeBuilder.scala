@@ -34,20 +34,6 @@ object BestResponseInfoTreeBuilder
     LiteralBestResponseInfoTree(
       infoRoots,
       playerNonTerminalInfoActions)
-
-
-//        .mapValues((actions: Set[A]) =>
-//          actions.map(action => (action, game.)))
-
-
-
-    //    val allInfoActions : Map[I, Map[A, I]] =
-    //      AbstractionUtils.decisions(game)
-    //        .filter(decision => decision.nextToAct.index == respondingPlayer)
-    //        .map(decision => decision.informationSet -> decision.choices.toSet)
-    //        .toMap
-    //        .mapValues((actions: Set[A]) =>
-    //          actions.map(action => (action, game.)))
   }
 
   private case class LiteralBestResponseInfoTree[S, I, A](
@@ -57,9 +43,6 @@ object BestResponseInfoTreeBuilder
   {
     def root(player: Int): I =
       infoRoots(player)
-
-    def nonTerminalInformationSets(player: Int): Set[I] =
-      nonTerminalInfoActions(player).keySet
 
     def actionTransitions(informationSet: I, player: Int): Map[A, I] =
       nonTerminalInfoActions(player)(informationSet)
