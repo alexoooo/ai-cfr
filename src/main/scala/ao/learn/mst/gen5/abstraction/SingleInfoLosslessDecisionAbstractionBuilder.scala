@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.example.abstraction
 
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
-import ao.learn.mst.gen5.node.{Decision, ExtensiveNode}
+import ao.learn.mst.gen5.node.ExtensiveNode
 
 
 //----------------------------------------------------------------------------------------------------------------------

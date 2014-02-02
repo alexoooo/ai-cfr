@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.br
 
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
-import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.abstraction.AbstractionUtils
 import scala._
 

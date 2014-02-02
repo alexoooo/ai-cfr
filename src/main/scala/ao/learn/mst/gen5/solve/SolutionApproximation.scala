@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.solve
 
 import ao.learn.mst.gen5.ExtensiveAbstraction
-import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 
 
 trait SolutionApproximation[InformationSet, Action]

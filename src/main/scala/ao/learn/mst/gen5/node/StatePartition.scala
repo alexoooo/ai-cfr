@@ -1,4 +1,4 @@
-package ao.learn.mst.gen4.sp
+package ao.learn.mst.gen5.node
 
 /**
  * Types of game states.

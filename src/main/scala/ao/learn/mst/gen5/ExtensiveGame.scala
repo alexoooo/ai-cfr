@@ -1,7 +1,6 @@
 package ao.learn.mst.gen5
 
 import ao.learn.mst.gen5.node._
-import ao.learn.mst.gen4.Rational
 import ao.learn.mst.gen5.node.StateDecision
 
 

@@ -3,8 +3,7 @@ package ao.learn.mst.gen5.br
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.node.Chance
-import ao.learn.mst.gen4.Rational
-import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 
 
 object ResponseTreeTraverser

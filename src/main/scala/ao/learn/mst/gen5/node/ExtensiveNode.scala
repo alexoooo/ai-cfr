@@ -1,8 +1,5 @@
 package ao.learn.mst.gen5.node
 
-import ao.learn.mst.gen4.{Nature, Rational, Player}
-import ao.learn.mst.gen4.sp.{TerminalPartition, ChancePartition, DecisionPartition, StatePartition}
-
 
 //----------------------------------------------------------------------------------------------------------------------
 sealed trait ExtensiveNode[InformationSet, Action] {

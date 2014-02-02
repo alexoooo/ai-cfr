@@ -1,4 +1,4 @@
-package ao.learn.mst.cfr
+package ao.learn.mst.gen2.cfr
 
 import ao.learn.mst.gen2.info.{InformationSet, InformationSetIndex}
 import ao.learn.mst.gen2.game._

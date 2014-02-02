@@ -2,18 +2,13 @@ package ao.learn.mst.gen5.cfr
 
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.ExtensiveAbstraction
-import ao.learn.mst.gen3.strategy._
-import ao.learn.mst.gen3.strategy.impl.{AveragingCfrStrategyProfile, ArrayCfrAverageStrategyBuilder, MapCfrRegretBuffer, ArrayCfrStrategyProfile}
+import ao.learn.mst.gen5.strategy._
+import ao.learn.mst.gen5.strategy.impl.{AveragingCfrStrategyProfile, MapCfrRegretBuffer, ArrayCfrStrategyProfile}
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
 import scala.Function
-import ao.learn.mst.gen5.node.Decision
-import ao.learn.mst.gen5.node.Chance
 import scala.collection.immutable.SortedMap
-import ao.learn.mst.gen5.node.Chance
-import scala.util.Random
-import ao.learn.mst.gen2.info
 
 
 //----------------------------------------------------------------------------------------------------------------------

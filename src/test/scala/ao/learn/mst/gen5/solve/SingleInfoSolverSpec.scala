@@ -5,7 +5,7 @@ import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, MonteCarloCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.example.abstraction.{LosslessInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen5.node.Decision
-import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.uniform.UniformBinaryBanditGame
 import scala.util.Random

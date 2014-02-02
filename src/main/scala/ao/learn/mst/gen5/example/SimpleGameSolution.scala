@@ -2,12 +2,11 @@ package ao.learn.mst.gen5.example
 
 import ao.learn.mst.gen5.{ExtensivePlayer, ExtensiveAbstraction, ExtensiveGame}
 import ao.learn.mst.gen5.example.abstraction.{AbstractionUtils, LosslessInfoLosslessDecisionAbstractionBuilder}
-import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.solve.{ExtensiveSolver, SolutionApproximation}
 import ao.learn.mst.lib.CommonUtils
 import ao.learn.mst.gen5.example.player.MixedStrategyPlayer
 import scala.util.Random
-import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
 import java.text.DecimalFormat
 import ao.learn.mst.gen5.br._
 import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer

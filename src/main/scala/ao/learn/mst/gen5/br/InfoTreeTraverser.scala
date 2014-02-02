@@ -4,7 +4,6 @@ import ao.learn.mst.gen5.ExtensiveGame
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.node.Chance
 import scala.Some
-import ao.learn.mst.gen4.Rational
 import scala.util.control.Breaks
 
 /**

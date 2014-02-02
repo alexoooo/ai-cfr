@@ -2,7 +2,7 @@ package ao.learn.mst.gen5.example.player
 
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensivePlayer}
 import scala.util.Random
-import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 
 
 class MixedStrategyPlayer[InformationSet, Action](

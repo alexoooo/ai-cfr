@@ -1,6 +1,6 @@
-package ao.learn.mst.gen3.strategy.impl
+package ao.learn.mst.gen5.strategy.impl
 
-import ao.learn.mst.gen3.strategy._
+import ao.learn.mst.gen5.strategy._
 import scala.Array
 import java.util
 import ao.learn.mst.lib.CommonUtils

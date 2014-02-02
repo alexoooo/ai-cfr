@@ -1,4 +1,4 @@
-package ao.learn.mst.gen3.strategy
+package ao.learn.mst.gen5.strategy
 
 import ao.learn.mst.gen5.ExtensiveAbstraction
 

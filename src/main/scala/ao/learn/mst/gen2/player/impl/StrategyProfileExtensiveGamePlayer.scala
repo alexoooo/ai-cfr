@@ -3,7 +3,7 @@ package ao.learn.mst.gen2.player.impl
 import ao.learn.mst.gen2.player.ExtensiveGamePlayer
 import ao.learn.mst.gen2.game.ExtensiveGameDecision
 import ao.learn.mst.gen2.player.model.FiniteAction
-import ao.learn.mst.cfr.StrategyProfile
+import ao.learn.mst.gen2.cfr.StrategyProfile
 import scala.util.Random
 
 /**

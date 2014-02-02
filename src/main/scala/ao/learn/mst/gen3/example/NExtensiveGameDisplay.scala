@@ -1,6 +1,6 @@
 package ao.learn.mst.gen3.example
 
-import ao.learn.mst.cfr._
+import ao.learn.mst.gen2.cfr._
 import ao.learn.mst.gen3.game._
 import ao.learn.mst.gen2.info.InformationSet
 import ao.learn.mst.gen3.NExtensiveAction

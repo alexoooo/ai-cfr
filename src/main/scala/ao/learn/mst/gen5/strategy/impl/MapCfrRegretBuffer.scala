@@ -1,6 +1,6 @@
-package ao.learn.mst.gen3.strategy.impl
+package ao.learn.mst.gen5.strategy.impl
 
-import ao.learn.mst.gen3.strategy.{CfrRegretConsumer, CfrStrategyBuilder, CfrRegretBuffer, CfrStrategyProfile}
+import ao.learn.mst.gen5.strategy.{CfrRegretConsumer, CfrStrategyBuilder, CfrRegretBuffer, CfrStrategyProfile}
 
 /**
  * Uses mutable Map representation

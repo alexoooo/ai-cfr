@@ -1,6 +1,6 @@
-package ao.learn.mst.gen3.strategy.impl
+package ao.learn.mst.gen5.strategy.impl
 
-import ao.learn.mst.gen3.strategy.{CfrStrategyProfile, CfrRegretConsumer, ExtensiveStrategyProfile, CfrStrategyBuilder}
+import ao.learn.mst.gen5.strategy.{CfrStrategyProfile, CfrRegretConsumer, ExtensiveStrategyProfile, CfrStrategyBuilder}
 
 
 

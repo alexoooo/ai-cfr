@@ -2,7 +2,7 @@ package ao.learn.mst.example
 
 import xml.PrettyPrinter
 import ao.learn.mst.gen2.info.{InformationSetIndex, SingleInformationSetIndexer}
-import ao.learn.mst.cfr._
+import ao.learn.mst.gen2.cfr._
 import ao.learn.mst.gen2.game._
 import ao.learn.mst.example.kuhn.adapt.KuhnGame
 //import org.joda.time.{Duration, LocalTime, DateTime}
