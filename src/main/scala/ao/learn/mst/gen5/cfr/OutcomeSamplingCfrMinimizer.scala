@@ -3,7 +3,7 @@ package ao.learn.mst.gen5.cfr
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.ExtensiveAbstraction
 import ao.learn.mst.gen5.strategy._
-import ao.learn.mst.gen5.strategy.impl.{ArrayCfrAverageStrategyBuilder, ArrayCfrStrategyProfile}
+import ao.learn.mst.gen5.strategy.impl.{MapCfrOutcomeRegretBuffer, ArrayCfrAverageStrategyBuilder, ArrayCfrStrategyProfile}
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
@@ -40,6 +40,9 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
       game: ExtensiveGame[State, InformationSet, Action])
       extends SolutionApproximation[InformationSet, Action]
   {
+    val explorationProbability: Double =
+      0.6
+
     val strategyProfile: CfrStrategyProfile =
       new ArrayCfrStrategyProfile
 
@@ -61,7 +64,12 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
       abstraction: ExtensiveAbstraction[InformationSet, Action])
     {
       //----------------------------------------------------------------------------------------------------------------
-      def walkTreeFromRoot() {
+      private val buffer: CfrOutcomeRegretBuffer =
+        new MapCfrOutcomeRegretBuffer
+
+
+      //----------------------------------------------------------------------------------------------------------------
+      def walkTreeFromRoot(): Unit = {
         for (playerIndex <- 0 until game.playerCount) {
           walkTree(
             playerIndex,
@@ -71,6 +79,8 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
             new ProbRef(1.0),
             new ProbRef(1.0))
         }
+
+        buffer.commit(strategyProfile)
       }
 
 
@@ -133,7 +143,7 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
 
             val takeAction: Int =
               if (nextToAct == updatePlayer) {
-                sampleAction(curMoveProbs, sampleProb, 0.6)
+                sampleAction(curMoveProbs, sampleProb, explorationProbability)
               } else {
                 sampleAction(curMoveProbs, sampleProb, 0.0)
               }
@@ -206,7 +216,7 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
                       -U * itlReach
                     }
 
-              strategyProfile.update(
+              buffer.bufferRegret(
                 infoIndex, counterfactualRegret)
             }
 

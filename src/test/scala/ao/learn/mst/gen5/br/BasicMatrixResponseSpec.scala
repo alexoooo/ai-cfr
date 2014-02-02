@@ -1,14 +1,9 @@
 package ao.learn.mst.gen5.br
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.ExtensiveGame
-import ao.learn.mst.gen5.example.bandit.BinaryBanditState
-import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
 import ao.learn.mst.gen5.example.SimpleGameSolution
 import ao.learn.mst.gen5.example.matrix._
 import ao.learn.mst.gen5.example.matrix.MatrixGame
-import ao.learn.mst.gen5.br.BestResponseProfile
-import ao.learn.mst.gen5.br.BestResponse
 
 /**
  * 20/01/14 9:37 PM

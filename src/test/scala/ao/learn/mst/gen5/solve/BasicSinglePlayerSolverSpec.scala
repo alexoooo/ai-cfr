@@ -1,6 +1,6 @@
 package ao.learn.mst.gen5.solve
 
-import ao.learn.mst.gen5.cfr.{ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
 import ao.learn.mst.gen5.ExtensiveGame
@@ -21,6 +21,7 @@ class BasicSinglePlayerSolverSpec
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
       new ChanceSampledCfrMinimizer[S, I, A]
+//      new OutcomeSamplingCfrMinimizer[S, I, A]
 
 
     "Solve basic small games" in {

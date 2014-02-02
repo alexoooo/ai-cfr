@@ -55,16 +55,15 @@ class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
   {
     root match {
       case terminal: ExtensiveGameTerminal => null
-      case nonTerminal: ExtensiveGameNonTerminal => {
-          for (action <- root.actions) {
-            val childNode = nonTerminal.child(action)
-            val matchingNode = getDecisionForInformationSet(childNode, informationSet)
-            if (matchingNode != null) {
-              return matchingNode
-            }
+      case nonTerminal: ExtensiveGameNonTerminal =>
+        for (action <- root.actions) {
+          val childNode = nonTerminal.child(action)
+          val matchingNode = getDecisionForInformationSet(childNode, informationSet)
+          if (matchingNode != null) {
+            return matchingNode
           }
-          null
         }
+        null
     }
   }
 
@@ -91,14 +90,13 @@ class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
           strategyProfile,
           reachProbabilities)
 
-      case terminal : ExtensiveGameTerminal => {
+      case terminal : ExtensiveGameTerminal =>
         // train.cpp line 606
 
         val rationalPlayers: Seq[DeliberatePlayer] =
           (0 until game.rationalPlayerCount).map( DeliberatePlayer )
 
         rationalPlayers.map(terminal.payoff.outcomes(_))
-      }
     }
   }
 

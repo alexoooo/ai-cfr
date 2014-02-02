@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, MonteCarloCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.OutcomeSamplingCfrMinimizer
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.matrix.MatrixGames
 import scala._
@@ -17,7 +17,6 @@ class BasicMatrixSolverSpec
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
     0.01
-//    0.015
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -67,7 +66,7 @@ class BasicMatrixSolverSpec
         "Matching Pennies" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.matchingPennies,
-            15 * 1000, zeroSum = true)
+            20 * 1000, zeroSum = true)
 
           row.max should be lessThan 0.5 + epsilonProbability
           col.max should be lessThan 0.5 + epsilonProbability

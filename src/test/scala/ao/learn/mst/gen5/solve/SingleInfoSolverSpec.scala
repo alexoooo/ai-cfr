@@ -1,10 +1,7 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
-import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, MonteCarloCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
-import ao.learn.mst.gen5.example.abstraction.{LosslessInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
-import ao.learn.mst.gen5.node.Decision
+import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.uniform.UniformBinaryBanditGame
@@ -22,15 +19,15 @@ class SingleInfoSolverSpec
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
 //    0.01
-    0.02
+    0.03
 
 
   //--------------------------------------------------------------------------------------------------------------------
   "Counterfactual Regret Minimization algorithm" should
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-      new ChanceSampledCfrMinimizer[S, I, A]
-//      new OutcomeSamplingCfrMinimizer[S, I, A]
+//      new ChanceSampledCfrMinimizer[S, I, A]
+      new OutcomeSamplingCfrMinimizer[S, I, A]
 
 
     "Solve singleton information-set games:" in {
@@ -95,7 +92,7 @@ class SingleInfoSolverSpec
       "Rock-paper-scissors" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsGame,
-          150 * 1000)
+          500 * 1000)
 
         // (roughly) equal distribution
         optimalStrategy.min must be greaterThan(
@@ -105,7 +102,7 @@ class SingleInfoSolverSpec
       "Rock-paper-scissors-well" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsWellGame,
-          400 * 1000)
+          500 * 1000)
 
         // rock is dominated
         optimalStrategy(0) must be lessThan epsilonProbability

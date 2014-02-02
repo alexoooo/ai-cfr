@@ -3,7 +3,7 @@ package ao.learn.mst.gen5.cfr
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.ExtensiveAbstraction
 import ao.learn.mst.gen5.strategy._
-import ao.learn.mst.gen5.strategy.impl.{AveragingCfrStrategyProfile, MapCfrRegretBuffer, ArrayCfrStrategyProfile}
+import ao.learn.mst.gen5.strategy.impl.{AveragingCfrStrategyProfile, MapCfrChanceRegretBuffer, ArrayCfrStrategyProfile}
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
@@ -50,8 +50,8 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
     private class Optimization(
       abstraction: ExtensiveAbstraction[InformationSet, Action])
     {
-      val buffer : CfrRegretBuffer =
-        new MapCfrRegretBuffer
+      val buffer : CfrChanceRegretBuffer =
+        new MapCfrChanceRegretBuffer
 
 
       //----------------------------------------------------------------------------------------------------------------
@@ -77,10 +77,9 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
           case stateChance : StateChance[State, InformationSet, Action] =>
             walkChance(stateChance, reachProbabilities)
 
-          case terminal : StateTerminal[State, InformationSet, Action] => {
+          case terminal : StateTerminal[State, InformationSet, Action] =>
             // train.cpp line 606
             terminal.node.payoffs
-          }
         }
       }
 

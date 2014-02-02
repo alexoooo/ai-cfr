@@ -1,12 +1,11 @@
 package ao.learn.mst.gen5.solve
 
-import ao.learn.mst.gen5.solve.ExtensiveSolver
-import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, MonteCarloCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.OutcomeSamplingCfrMinimizer
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
 import ao.learn.mst.gen5.example.sig.SignalingGame
-import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
+import ao.learn.mst.gen5.example.monty.BasicMontyHallGame
 import ao.learn.mst.gen5.example.burning.BurningGame
 import ao.learn.mst.gen5.ExtensiveGame
 
@@ -35,17 +34,17 @@ class BasicTwoPlayerSolverSpec
       "Perfect and complete information" in {
         val solution = solveGame(
           PerfectCompleteGame,
-          1000)
+          10 * 1000)
 
         val playerOne     = solution(0)
-        //val playerTwoDown = solution(1)
+        val playerTwoDown = solution(1)
         val playerTwoUp   = solution(2)
 
         playerOne(0) must be lessThan epsilonProbability
         playerTwoUp(1) must be lessThan epsilonProbability
 
         // there is no guarantee for actions that opponent will not allow to reach
-        //playerTwoDown(0) must be lessThan playerTwoDown(1)/2
+        playerTwoDown(0) must be lessThan 0.5
         //playerTwoDown(0) must be lessThan epsilonProbability
       }
 
@@ -64,7 +63,7 @@ class BasicTwoPlayerSolverSpec
       "Signaling" in {
         val solution = solveGame(
           SignalingGame,
-          100)
+          1000)
 
         val senderFalse   = solution(0)
         val senderTrue    = solution(1)

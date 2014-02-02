@@ -1,14 +1,14 @@
 package ao.learn.mst.gen5.example
 
-import ao.learn.mst.example.kuhn.action.{KuhnDecision, KuhnActionSequence, KuhnGenAction, KuhnCardSequence}
+import ao.learn.mst.gen2.example.kuhn.action.{KuhnDecision, KuhnActionSequence, KuhnGenAction, KuhnCardSequence}
 import ao.learn.mst.gen5.ExtensiveGame
 import ao.learn.mst.gen5.node._
-import ao.learn.mst.example.kuhn.card.KuhnDeck
+import ao.learn.mst.gen2.example.kuhn.card.KuhnDeck
 import scala._
-import ao.learn.mst.example.kuhn.view.KuhnObservation
+import ao.learn.mst.gen2.example.kuhn.view.KuhnObservation
 import ao.learn.mst.gen5.node.Chance
-import ao.learn.mst.example.kuhn.state.KuhnStake
-import ao.learn.mst.example.kuhn.state.KuhnState
+import ao.learn.mst.gen2.example.kuhn.state.KuhnStake
+import ao.learn.mst.gen2.example.kuhn.state.KuhnState
 
 
 //----------------------------------------------------------------------------------------------------------------------
