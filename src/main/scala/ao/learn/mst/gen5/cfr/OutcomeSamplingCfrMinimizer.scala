@@ -257,43 +257,6 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
 
         throw new IllegalStateException()
       }
-
-
-      @tailrec
-      private def probe(stateNode: ExtensiveStateNode[State, InformationSet, Action]): Seq[Double] =
-      {
-        stateNode.node match {
-          case Terminal(payoffs) => payoffs
-
-          case Chance(outcomes) =>
-            val sampledAction: Action =
-              outcomes
-                .map(o => (o.action, o.probability * math.random))
-                .maxBy(_._2)._1
-
-            val sampledOutcomeState: ExtensiveStateNode[State, InformationSet, Action] =
-              game.transitionStateNode(stateNode, sampledAction)
-
-            probe(sampledOutcomeState)
-
-          case Decision(_, info, choices) =>
-            val strategy: Seq[Double] =
-              strategyProfile.positiveRegretMatchingStrategy(
-                abstraction.informationSetIndex(info), abstraction.actionCount(info))
-
-            val actionWeight: Map[Action, Double] =
-              choices
-                .map(c => (c, strategy(abstraction.actionSubIndex(info, c))))
-                .toMap
-
-            val sampledAction: Action =
-              actionWeight
-                .map(aw => (aw._1, aw._2 * math.random))
-                .maxBy(_._2)._1
-
-            probe(game.transitionStateNode(stateNode, sampledAction))
-        }
-      }
     }
 
 

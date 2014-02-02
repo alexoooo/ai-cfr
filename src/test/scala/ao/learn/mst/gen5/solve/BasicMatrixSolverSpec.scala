@@ -69,7 +69,7 @@ class BasicMatrixSolverSpec
         "Matching Pennies" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.matchingPennies,
-            13 * 1000, zeroSum = true)
+            15 * 1000, zeroSum = true)
 
           row.max should be lessThan 0.5 + epsilonProbability
           col.max should be lessThan 0.5 + epsilonProbability
