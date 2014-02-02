@@ -14,11 +14,11 @@ class AveragingCfrStrategyProfile(
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def positiveRegretStrategy(informationSetIndex: Int): Seq[Double] =
-    baseProfile.positiveRegretStrategy(informationSetIndex)
+  def positiveRegretMatchingStrategy(informationSetIndex: Int): Seq[Double] =
+    baseProfile.positiveRegretMatchingStrategy(informationSetIndex)
 
-  def positiveRegretStrategy(informationSetIndex: Int, actionCount: Int): Seq[Double] =
-    baseProfile.positiveRegretStrategy(informationSetIndex, actionCount)
+  def positiveRegretMatchingStrategy(informationSetIndex: Int, actionCount: Int): Seq[Double] =
+    baseProfile.positiveRegretMatchingStrategy(informationSetIndex, actionCount)
 
   def toExtensiveStrategyProfile: ExtensiveStrategyProfile =
     average.toExtensiveStrategyProfile
@@ -26,12 +26,18 @@ class AveragingCfrStrategyProfile(
 
   //--------------------------------------------------------------------------------------------------------------------
   def update(informationSetIndex: Int, actionRegret: Seq[Double], opponentReachProbability: Double) {
-    val actionCount = actionRegret.length
+    val actionCount:Int =
+      actionRegret.length
 
-    val strategy : Seq[Double] =
-      positiveRegretStrategy(informationSetIndex, actionCount)
+    val strategy: Seq[Double] =
+      positiveRegretMatchingStrategy(informationSetIndex, actionCount)
 
     baseProfile.update(informationSetIndex, actionRegret, opponentReachProbability)
+
     average.update(informationSetIndex, strategy, opponentReachProbability)
   }
+
+
+  def update(informationSetIndex: Int, counterfactualRegret: Seq[Double]): Unit =
+    ???
 }

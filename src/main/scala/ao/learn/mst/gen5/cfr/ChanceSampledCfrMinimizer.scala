@@ -134,7 +134,7 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
 
         // Compute σ1(I(r1)) according to Equation 8.
         val actionProbabilities: Seq[Double] =
-          strategyProfile.positiveRegretStrategy(
+          strategyProfile.positiveRegretMatchingStrategy(
             informationSetIndex, actionCount)
 
         // for Each action a ∈ A(I(r1))

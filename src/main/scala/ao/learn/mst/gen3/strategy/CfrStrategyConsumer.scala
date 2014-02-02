@@ -8,5 +8,5 @@ trait CfrStrategyConsumer
   def update(
     informationSetIndex: Int,
     currentPositiveRegretStrategy: Seq[Double],
-    opponentReachProbability: Double) : Unit
+    externalReachProbability: Double) : Unit
 }

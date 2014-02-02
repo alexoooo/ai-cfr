@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.solve
 
 import ao.learn.mst.gen5.solve.ExtensiveSolver
-import ao.learn.mst.gen5.cfr.{OtherSampledCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, MonteCarloCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
@@ -13,7 +13,7 @@ import ao.learn.mst.gen5.ExtensiveGame
 /**
  *
  */
-class BasicGameSolverSpec
+class BasicTwoPlayerSolverSpec
   extends SpecificationWithJUnit
 {
   //--------------------------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ class BasicGameSolverSpec
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
 //      new ChanceSampledCfrMinimizer[S, I, A]
-      new OtherSampledCfrMinimizer[S, I, A]
+      new OutcomeSamplingCfrMinimizer[S, I, A]
 
     "Solve basic small games" in {
       def solveGame[S, I, A](game : ExtensiveGame[S, I, A], iterations : Int) : Seq[Seq[Double]] =
@@ -35,23 +35,24 @@ class BasicGameSolverSpec
       "Perfect and complete information" in {
         val solution = solveGame(
           PerfectCompleteGame,
-          400)
+          1000)
 
         val playerOne     = solution(0)
-        val playerTwoDown = solution(1)
+        //val playerTwoDown = solution(1)
         val playerTwoUp   = solution(2)
 
         playerOne(0) must be lessThan epsilonProbability
         playerTwoUp(1) must be lessThan epsilonProbability
 
+        // there is no guarantee for actions that opponent will not allow to reach
         //playerTwoDown(0) must be lessThan playerTwoDown(1)/2
-        playerTwoDown(0) must be lessThan epsilonProbability
+        //playerTwoDown(0) must be lessThan epsilonProbability
       }
 
       "Imperfect information" in {
         val solution = solveGame(
           ImperfectGame,
-          110)
+          1000)
 
         val playerOne = solution(0)
         val playerTwo = solution(1)
@@ -63,7 +64,7 @@ class BasicGameSolverSpec
       "Signaling" in {
         val solution = solveGame(
           SignalingGame,
-          30)
+          100)
 
         val senderFalse   = solution(0)
         val senderTrue    = solution(1)
@@ -83,47 +84,18 @@ class BasicGameSolverSpec
         }
       }
 
-      "Basic Monty Hall problem" in {
-        val solution = solveGame(
-          BasicMontyHallGame,
-          4)
-
-        val switchDecision =
-          solution(1)
-
-        switchDecision(0) must be lessThan epsilonProbability
-      }
-
-      "Monty Hall problem" in {
-        val solution : Seq[Seq[Double]] = solveGame(
-          MontyHallGame,
-          200)
-
-        val initialDoorChoice : Seq[Double] =
-          solution(0)
-
-        val switchChoices : Seq[Seq[Double]] =
-          solution.drop(1)
-
-        foreach (0 until initialDoorChoice.length) {c =>
-          if (initialDoorChoice(c) > epsilonProbability) {
-            switchChoices(c)(0) must be lessThan epsilonProbability
-          } else ok
-        }
-      }
-
       "Money-burning Battle of the Sexes" in {
         val solution : Seq[Seq[Double]] = solveGame(
           BurningGame,
-          5)
+          10 * 1000)
 
         val burningDecision = solution(0)
         val noBurnRowPlay   = solution(1)
         val noBurnColPlay   = solution(3)
 
-        burningDecision(1) must be lessThan epsilonProbability
-        noBurnRowPlay  (1) must be lessThan epsilonProbability
-        noBurnColPlay  (1) must be lessThan epsilonProbability
+        burningDecision.lift(1).getOrElse(0.0) must be lessThan epsilonProbability
+        noBurnRowPlay  .lift(1).getOrElse(0.0) must be lessThan epsilonProbability
+        noBurnColPlay  .lift(1).getOrElse(0.0) must be lessThan epsilonProbability
       }
     }
   }

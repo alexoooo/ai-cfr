@@ -50,7 +50,7 @@ object PerfectCompleteGame
       case List(
           actionOne : PerfectPlayerOneAction,
           actionTwo : PerfectPlayerTwoAction) =>
-      {
+
         val outcome : (Double, Double) =
           (actionOne.decision, actionTwo.decision) match {
             case (true , true ) => (0, 0)
@@ -61,7 +61,6 @@ object PerfectCompleteGame
 
         Terminal(
           Seq(outcome._1, outcome._2))
-      }
     }
   }
 

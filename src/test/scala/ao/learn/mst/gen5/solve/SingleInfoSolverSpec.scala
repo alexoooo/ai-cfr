@@ -2,7 +2,7 @@ package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
-import ao.learn.mst.gen5.cfr.{OtherSampledCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, MonteCarloCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.example.abstraction.{LosslessInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen5.node.Decision
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
@@ -29,8 +29,8 @@ class SingleInfoSolverSpec
   "Counterfactual Regret Minimization algorithm" should
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-//      new ChanceSampledCfrMinimizer[S, I, A]
-      new OtherSampledCfrMinimizer[S, I, A]
+      new ChanceSampledCfrMinimizer[S, I, A]
+//      new OutcomeSamplingCfrMinimizer[S, I, A]
 
 
     "Solve singleton information-set games:" in {
@@ -105,7 +105,7 @@ class SingleInfoSolverSpec
       "Rock-paper-scissors-well" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsWellGame,
-          250 * 1000)
+          400 * 1000)
 
         // rock is dominated
         optimalStrategy(0) must be lessThan epsilonProbability

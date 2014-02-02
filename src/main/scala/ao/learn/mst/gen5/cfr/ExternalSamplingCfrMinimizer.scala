@@ -12,10 +12,15 @@ import scala.collection.immutable.SortedMap
 
 
 //----------------------------------------------------------------------------------------------------------------------
-case class FullySampledCfrMinimizer[State, InformationSet, Action](
+case class ExternalSamplingCfrMinimizer[State, InformationSet, Action](
     averageStrategy : Boolean = false)
   extends ExtensiveSolver[State, InformationSet, Action]
 {
+  //--------------------------------------------------------------------------------------------------------------------
+  private val uniformSampleProbability : Double =
+    0.05
+
+
   //--------------------------------------------------------------------------------------------------------------------
   def initialSolution(
     game: ExtensiveGame[State, InformationSet, Action]
@@ -135,28 +140,60 @@ case class FullySampledCfrMinimizer[State, InformationSet, Action](
         val actionCount: Int =
           abstraction.actionCount(infoSet)
 
-        val actionProbabilities: Seq[Double] =
-          strategyProfile.positiveRegretStrategy(
-            informationSetIndex, actionCount)
-        
-        val sampledChoiceAndIndex: (Action, Int) =
-          stateNode.node.choices
-            .map(choice => {
-              val choiceIndex: Int =
-                abstraction.actionSubIndex(infoSet, choice)
+        val uniformSample: Boolean =
+          math.random <= uniformSampleProbability
 
-              val choiceWeight: Double =
-                math.max(actionProbabilities(choiceIndex), 0.2 / actionCount)
+        val (sampledStateNode, sampleChoiceProbability) =
+          if (uniformSample)
+          {
+            val sampleChoiceProbability =
+              1.0 / actionCount
 
-              ((choice, choiceIndex), choiceWeight * math.random)
-            })
-            .maxBy(_._2)._1
+            val sampledChoiceAndIndex: (Action, Int) =
+              stateNode.node.choices
+                .map(choice => {
+                  val choiceIndex: Int =
+                    abstraction.actionSubIndex(infoSet, choice)
 
-        val sampledStateNode : ExtensiveStateNode[State, InformationSet, Action] =
-          game.transitionStateNode(stateNode, sampledChoiceAndIndex._1)
+                  val choiceWeight: Double =
+                    sampleChoiceProbability
 
-        val sampleChoiceProbability: Double =
-          math.max(actionProbabilities(sampledChoiceAndIndex._2), 0.1 / actionCount)
+                  ((choice, choiceIndex), choiceWeight * math.random)
+                })
+                .maxBy(_._2)._1
+
+            val sampledStateNode : ExtensiveStateNode[State, InformationSet, Action] =
+              game.transitionStateNode(stateNode, sampledChoiceAndIndex._1)
+
+            (sampledStateNode, sampleChoiceProbability)
+          }
+          else
+          {
+            val actionProbabilities: Seq[Double] =
+              strategyProfile.positiveRegretMatchingStrategy(
+                informationSetIndex, actionCount)
+
+            val sampledChoiceAndIndex: (Action, Int) =
+              stateNode.node.choices
+                .map(choice => {
+                  val choiceIndex: Int =
+                    abstraction.actionSubIndex(infoSet, choice)
+
+                  val choiceWeight: Double =
+                    actionProbabilities(choiceIndex)
+
+                  ((choice, choiceIndex), choiceWeight * math.random)
+                })
+                .maxBy(_._2)._1
+
+            val sampledStateNode : ExtensiveStateNode[State, InformationSet, Action] =
+              game.transitionStateNode(stateNode, sampledChoiceAndIndex._1)
+
+            val sampleChoiceProbability =
+              actionProbabilities(sampledChoiceAndIndex._2)
+
+            (sampledStateNode, sampleChoiceProbability)
+          }
 
         val nextReachProbabilities : Seq[Double] =
           updateReachProbability(
@@ -187,7 +224,7 @@ case class FullySampledCfrMinimizer[State, InformationSet, Action](
 
         // Compute σ1(I(r1)) according to Equation 8.
         val actionProbabilities: Seq[Double] =
-          strategyProfile.positiveRegretStrategy(
+          strategyProfile.positiveRegretMatchingStrategy(
             informationSetIndex, actionCount)
 
         // for Each action a ∈ A(I(r1))

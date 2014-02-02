@@ -1,12 +1,11 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.solve.ExtensiveSolver
-import ao.learn.mst.gen5.cfr.{OtherSampledCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, MonteCarloCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen3.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.matrix.MatrixGames
 import scala._
-import org.specs2.matcher.{MatchSuccess, Expectable, Matcher, MatchResult}
+import org.specs2.matcher.{Expectable, Matcher, MatchResult}
 import ao.learn.mst.gen5.ExtensiveGame
 
 /**
@@ -17,8 +16,8 @@ class BasicMatrixSolverSpec
 {
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
-//    0.01
-    0.015
+    0.01
+//    0.015
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -32,7 +31,9 @@ class BasicMatrixSolverSpec
       {
         val solver : ExtensiveSolver[S, I, A] =
 //          new ChanceSampledCfrMinimizer[S, I, A](zeroSum)
-          new OtherSampledCfrMinimizer[S, I, A](zeroSum)
+//          new ExternalSamplingCfrMinimizer[S, I, A](zeroSum)
+//          new MonteCarloCfrMinimizer[S, I, A](zeroSum)
+          new OutcomeSamplingCfrMinimizer[S, I, A](zeroSum)
 
         val strategy : ExtensiveStrategyProfile =
           SolverSpecUtils.solve(game, solver, iterations)
@@ -59,7 +60,7 @@ class BasicMatrixSolverSpec
         "Prisoner's Dilemma" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.prisonersDilemma,
-            60)
+            1000)
 
           row(0) should be lessThan epsilonProbability
           col(0) should be lessThan epsilonProbability
@@ -68,7 +69,7 @@ class BasicMatrixSolverSpec
         "Matching Pennies" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.matchingPennies,
-            12 * 1000, zeroSum = true)
+            13 * 1000, zeroSum = true)
 
           row.max should be lessThan 0.5 + epsilonProbability
           col.max should be lessThan 0.5 + epsilonProbability
@@ -96,7 +97,7 @@ class BasicMatrixSolverSpec
           "Pure coordination" in {
             solveNormalFormGame(
               MatrixGames.pureCoordination,
-              10
+              20
             ) should beCoordinationSolution
           }
 
@@ -110,14 +111,14 @@ class BasicMatrixSolverSpec
           "Choosing sides" in {
             solveNormalFormGame(
               MatrixGames.choosingSides,
-              11
+              15
             ) should beCoordinationSolution
           }
 
           "Stag hunt" in {
             solveNormalFormGame(
               MatrixGames.stagHunt,
-              13
+              100
             ) should beCoordinationSolution
           }
         }
@@ -126,7 +127,7 @@ class BasicMatrixSolverSpec
           "Chicken (aka. Hawk-dove)" in {
             val (row, col) = solveNormalFormGame(
               MatrixGames.chicken,
-              20)
+              2 * 1000)
 
             if (row(0) < 0.2) {
               row(0) must be lessThan epsilonProbability
@@ -145,7 +146,7 @@ class BasicMatrixSolverSpec
         "Zero Sum" in {
           val (row, col) = solveNormalFormGame(
             MatrixGames.zeroSum,
-            500 * 1000, zeroSum = true)
+            100 * 1000, zeroSum = true)
 
           row(0) must be greaterThan(4.0/7 - epsilonProbability)
           row(1) must be greaterThan(3.0/7 - epsilonProbability)

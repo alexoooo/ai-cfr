@@ -1,24 +1,22 @@
 package ao.learn.mst.gen3.strategy.impl
 
-import ao.learn.mst.gen3.strategy.{CfrStrategyConsumer, CfrStrategyBuilder, ExtensiveStrategyProfile}
+import ao.learn.mst.gen3.strategy.{CfrAverageStrategyBuilder, ExtensiveStrategyProfile}
 
 /**
- * 22/09/13 4:39 PM
+ *
  */
 class ArrayCfrAverageStrategyBuilder
-  extends CfrStrategyConsumer
-  with    CfrStrategyBuilder
+    extends CfrAverageStrategyBuilder
 {
   //--------------------------------------------------------------------------------------------------------------------
   private var actionProbabilitySums = Array[Array[Double]]()
-  private var reachProbabilitySum   = Array[Double       ]()
 
 
   //--------------------------------------------------------------------------------------------------------------------
   def update(
-      informationSetIndex: Int,
-      currentPositiveRegretStrategy: Seq[Double],
-      opponentReachProbability: Double) : Unit =
+      informationSetIndex           : Int,
+      currentPositiveRegretStrategy : Seq[Double],
+      externalReachProbability      : Double) : Unit =
   {
     val actionCount = currentPositiveRegretStrategy.length
     initializeInformationSetIfRequired(informationSetIndex, actionCount)
@@ -31,12 +29,8 @@ class ArrayCfrAverageStrategyBuilder
     for (action <- 0 until actionCount)
     {
       actionProbabilitySums( informationSetIndex )( action ) +=
-        opponentReachProbability * currentPositiveRegretStrategy( action )
+        externalReachProbability * currentPositiveRegretStrategy( action )
     }
-
-    // technically not necessary because we can weigh
-    //  by sum of parent's child (i.e. sibling + self)
-    reachProbabilitySum( informationSetIndex ) += opponentReachProbability
   }
 
 
@@ -53,7 +47,7 @@ class ArrayCfrAverageStrategyBuilder
 
   //--------------------------------------------------------------------------------------------------------------------
   private def informationSetCount: Int =
-    reachProbabilitySum.length
+    actionProbabilitySums.length
 
   private def actionCount(informationSetIndex: Int) : Int = {
     val actions : Array[Double] =
@@ -88,21 +82,20 @@ class ArrayCfrAverageStrategyBuilder
     //
     // This sum is used to normalize relative to siblings (train.cpp line 516):
     //  probability[i] = average_probability[u.get_id()][bucket][i]/sum;
-    //
-    // Here we are dividing by sum of reach probabilities for the information set.
-    // Note: should it be normalized in relation to siblings instead? (would that make a difference?)
+
+    val intoStrategyTotal: Double =
+      actionProbabilitySums(informationSetIndex).sum
 
     val averageStrategy : Seq[Double] =
       actionProbabilitySums(informationSetIndex)
-        .map(_ / reachProbabilitySum(informationSetIndex))
-//        .map(_ / visitCount(informationSetIndex))
+        .map(_ / intoStrategyTotal)
 
     averageStrategy
   }
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  private def initializeInformationSetIfRequired(informationSetIndex: Int, requiredActionCount : Int)
+  private def initializeInformationSetIfRequired(informationSetIndex: Int, requiredActionCount : Int): Unit =
   {
     if (! informationSetInitialized(informationSetIndex)) {
       initializeInformationSet(informationSetIndex)
@@ -118,32 +111,29 @@ class ArrayCfrAverageStrategyBuilder
   }
 
 
-  def informationSetInitialized(informationSetIndex: Int) =
+  private def informationSetInitialized(informationSetIndex: Int) =
     informationSetIndex < informationSetCount
 
-  def initializeInformationSet(informationSetIndex: Int) {
+  private def initializeInformationSet(informationSetIndex: Int): Unit = {
     val count = informationSetIndex + 1
 
-    actionProbabilitySums = actionProbabilitySums.padTo(count, null      )
-    reachProbabilitySum   = reachProbabilitySum  .padTo(count, 0.toDouble)
+    actionProbabilitySums = actionProbabilitySums.padTo(count, null)
   }
 
 
-  private def actionsInitialized(informationSetIndex: Int) : Boolean =
+  private def actionsInitialized(informationSetIndex: Int): Boolean =
     actionProbabilitySums.length > informationSetIndex &&
       actionProbabilitySums( informationSetIndex ) != null
 
-  private def initializeActions(informationSetIndex: Int)
-  {
+  private def initializeActions(informationSetIndex: Int): Unit = {
     actionProbabilitySums(informationSetIndex) = new Array[Double](0)
   }
 
 
-  def actionCountInitialized(informationSetIndex: Int, requiredActionCount : Int) =
+  private def actionCountInitialized(informationSetIndex: Int, requiredActionCount : Int) =
     requiredActionCount <= actionCount(informationSetIndex)
 
-  private def initializeActionCount(informationSetIndex: Int, requiredActionCount : Int)
-  {
+  private def initializeActionCount(informationSetIndex: Int, requiredActionCount : Int): Unit = {
     actionProbabilitySums(informationSetIndex) =
       actionProbabilitySums(informationSetIndex)
         .padTo(requiredActionCount, 0.toDouble)

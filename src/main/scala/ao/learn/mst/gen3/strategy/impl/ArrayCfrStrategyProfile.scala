@@ -14,43 +14,48 @@ class ArrayCfrStrategyProfile
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  private var visitCount            = Array[Long         ]()
-  private var regretSums            = Array[Array[Double]]()
+//  private var visitCount = Array[Long         ]()
+  private var regretSums = Array[Array[Double]]()
 
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def update(
-    informationSetIndex : Int,
-    actionRegret        : Seq[Double],
-    reachProbability    : Double)
+  def update(informationSetIndex: Int, counterfactualRegret: Seq[Double]): Unit =
   {
-    val actionCount = actionRegret.length
+    val actionCount = counterfactualRegret.length
     initializeInformationSetIfRequired(informationSetIndex, actionCount)
-
-    val counterfactualRegret =
-      actionRegret.map(_ * reachProbability)
 
     for (action <- 0 until actionCount) {
       // Corresponds to line 682 in train.cpp,
       //  over there the addend is called "delta_regret".
       regretSums( informationSetIndex )( action ) +=
         counterfactualRegret( action )
-
-      // note that the explanation on:
-      //  http://pokerai.org/pf3/viewtopic.php?f=3&t=2662
-      // suggests that it should be:
-      //   math.max(0, actionRegret( action ))
-      // which appears to be incorrect.
     }
+  }
 
-    visitCount( informationSetIndex ) += 1
+
+  //--------------------------------------------------------------------------------------------------------------------
+  def update(
+    informationSetIndex : Int,
+    actionRegret        : Seq[Double],
+    reachProbability    : Double): Unit =
+  {
+    // note that the explanation on:
+    //  http://pokerai.org/pf3/viewtopic.php?f=3&t=2662
+    // suggests that it should be:
+    //   math.max(0, actionRegret( action ))
+    // which appears to be incorrect.
+
+    val counterfactualRegret: Seq[Double] =
+      actionRegret.map(_ * reachProbability)
+
+    update(informationSetIndex, counterfactualRegret)
   }
 
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def positiveRegretStrategy(
+  def positiveRegretMatchingStrategy(
       informationSetIndex: Int
       ): Seq[Double] =
   {
@@ -83,7 +88,7 @@ class ArrayCfrStrategyProfile
   }
 
   // verified against Leduc CFR train.get_probability (line 450)
-  def positiveRegretStrategy(
+  def positiveRegretMatchingStrategy(
     informationSetIndex: Int,
     actionCount: Int
     ): Seq[Double] =
@@ -91,7 +96,7 @@ class ArrayCfrStrategyProfile
     initializeInformationSetIfRequired(informationSetIndex, actionCount)
 
     val strategy : Seq[Double] =
-      positiveRegretStrategy(informationSetIndex)
+      positiveRegretMatchingStrategy(informationSetIndex)
 
     if (strategy.isEmpty) {
       CommonUtils.normalizeToOne(
@@ -108,7 +113,7 @@ class ArrayCfrStrategyProfile
   def toExtensiveStrategyProfile: ExtensiveStrategyProfile = {
     val averageStrategies : Seq[Seq[Double]] =
       (0 until informationSetCount)
-        .map(positiveRegretStrategy)
+        .map(positiveRegretMatchingStrategy)
 
     SeqExtensiveStrategyProfile(averageStrategies)
   }
@@ -116,7 +121,8 @@ class ArrayCfrStrategyProfile
 
   //--------------------------------------------------------------------------------------------------------------------
   private def informationSetCount: Int =
-    visitCount.length
+    regretSums.length
+//    visitCount.length
 
   private def actionCount(informationSetIndex: Int) : Int = {
     val actions : Array[Double] =
@@ -153,7 +159,7 @@ class ArrayCfrStrategyProfile
   def initializeInformationSet(informationSetIndex: Int) {
     val count = informationSetIndex + 1
 
-    visitCount = visitCount.padTo(count, 0.toLong)
+//    visitCount = visitCount.padTo(count, 0.toLong)
     regretSums = regretSums.padTo(count, null    )
   }
 
@@ -180,8 +186,8 @@ class ArrayCfrStrategyProfile
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  override def toString : String = {
-    "\n\n" +
-      util.Arrays.toString(visitCount)
-  }
+//  override def toString : String = {
+//    "\n\n" +
+//      util.Arrays.toString(visitCount)
+//  }
 }
