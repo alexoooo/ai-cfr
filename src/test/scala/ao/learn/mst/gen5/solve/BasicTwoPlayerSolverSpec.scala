@@ -1,11 +1,10 @@
 package ao.learn.mst.gen5.solve
 
-import ao.learn.mst.gen5.cfr.OutcomeSamplingCfrMinimizer
+import ao.learn.mst.gen5.cfr.{ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer}
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
 import ao.learn.mst.gen5.example.sig.SignalingGame
-import ao.learn.mst.gen5.example.monty.BasicMontyHallGame
 import ao.learn.mst.gen5.example.burning.BurningGame
 import ao.learn.mst.gen5.ExtensiveGame
 
@@ -25,7 +24,8 @@ class BasicTwoPlayerSolverSpec
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
 //      new ChanceSampledCfrMinimizer[S, I, A]
-      new OutcomeSamplingCfrMinimizer[S, I, A]
+//      new OutcomeSamplingCfrMinimizer[S, I, A]
+      new ProbingCfrMinimizer[S, I, A]
 
     "Solve basic small games" in {
       def solveGame[S, I, A](game : ExtensiveGame[S, I, A], iterations : Int) : Seq[Seq[Double]] =
@@ -34,7 +34,7 @@ class BasicTwoPlayerSolverSpec
       "Perfect and complete information" in {
         val solution = solveGame(
           PerfectCompleteGame,
-          10 * 1000)
+          1000)
 
         val playerOne     = solution(0)
         val playerTwoDown = solution(1)

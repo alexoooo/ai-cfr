@@ -195,7 +195,7 @@ class CfrMinimizerSpec
         optimalStrategyProfile.averageStrategy(kuhnInfo(playerCard, actionSequence), 2)(action.id)
 
       def kuhnInfo(playerCard: KuhnCard, actionSequence: KuhnActionSequence): InformationSet =
-        informationSetIndex.informationSets.find(_ match {
+        informationSetIndex.informationSets.find({
           case kuhnDecision: KuhnGameInfo =>
             kuhnDecision.contains(playerCard, actionSequence)
           case _ => false

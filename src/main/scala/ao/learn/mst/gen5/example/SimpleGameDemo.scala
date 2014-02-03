@@ -4,7 +4,7 @@ import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensivePlayer, ExtensiveGame}
 import ao.learn.mst.gen5.node.{Chance, Terminal, Decision}
 import scala.util.Random
 import ao.learn.mst.gen5.solve.ExtensiveSolver
-import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.example.abstraction.{AbstractionUtils, SingleInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
@@ -39,7 +39,8 @@ object SimpleGameDemo extends App
   def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
 //    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
 //    new ExternalSamplingCfrMinimizer[S, I, A](averageStrategy)
-    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
+//    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
+    new ProbingCfrMinimizer[S, I, A](averageStrategy)
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -51,10 +52,10 @@ object SimpleGameDemo extends App
 //    RockPaperScissorsGame
 //    RockPaperScissorsWellGame
 
-    MatrixGames.matchingPennies
+//    MatrixGames.matchingPennies
 //    MatrixGames.deadlock
 //    MatrixGames.prisonersDilemma
-//    MatrixGames.zeroSum
+    MatrixGames.zeroSum
 //    MatrixGames.battleOfTheSexes
 //    MatrixGames.stagHunt
 //    MatrixGames.choosingSides

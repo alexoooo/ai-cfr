@@ -1,6 +1,6 @@
 package ao.learn.mst.gen5.solve
 
-import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
 import ao.learn.mst.gen5.ExtensiveGame
@@ -22,6 +22,7 @@ class BasicSinglePlayerSolverSpec
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
       new ChanceSampledCfrMinimizer[S, I, A]
 //      new OutcomeSamplingCfrMinimizer[S, I, A]
+//      new ProbingCfrMinimizer[S, I, A]
 
 
     "Solve basic small games" in {
@@ -31,7 +32,7 @@ class BasicSinglePlayerSolverSpec
       "Basic Monty Hall problem" in {
         val solution = solveGame(
           BasicMontyHallGame,
-          4)
+          100)
 
         val switchDecision =
           solution(1)
@@ -42,7 +43,7 @@ class BasicSinglePlayerSolverSpec
       "Monty Hall problem" in {
         val solution : Seq[Seq[Double]] = solveGame(
           MontyHallGame,
-          1000)
+          2 * 1000)
 
         val initialDoorChoice : Seq[Double] =
           solution(0)
