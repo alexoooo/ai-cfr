@@ -23,31 +23,28 @@ case object BurningGame
 
   def node(state: BurningState): ExtensiveNode[BurningInfo, BurningAction] =
     state.actions.toList match {
-      case Nil => {
+      case Nil =>
         val actions =
           choices.map(
             BurningBurnAction)
 
         Decision(0, BurningInitialDecisionInfo, actions)
-      }
 
-      case List(BurningBurnAction(burn)) => {
+      case List(BurningBurnAction(burn)) =>
         val actions =
           choices.map(
             BurningRowAction)
 
         Decision(0, BurningRowDecisionInfo(burn), actions)
-      }
 
-      case List(BurningBurnAction(burn), BurningRowAction(_)) => {
+      case List(BurningBurnAction(burn), BurningRowAction(_)) =>
         val actions =
           choices.map(
             BurningColumnAction)
 
         Decision(0, BurningColumnDecisionInfo(burn), actions)
-      }
 
-      case List(BurningBurnAction(burn), BurningRowAction(r), BurningColumnAction(c)) => {
+      case List(BurningBurnAction(burn), BurningRowAction(r), BurningColumnAction(c)) =>
         Terminal(
           if (! burn) {
             (r, c) match {
@@ -65,6 +62,5 @@ case object BurningGame
             }
           }
         )
-      }
     }
 }
