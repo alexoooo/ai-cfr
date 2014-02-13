@@ -31,8 +31,8 @@ class BasicMatrixSolverSpec
       {
         val solver : ExtensiveSolver[S, I, A] =
 //          new ChanceSampledCfrMinimizer[S, I, A](zeroSum)
-//          new OutcomeSamplingCfrMinimizer[S, I, A](zeroSum)
-          new ProbingCfrMinimizer[S, I, A](zeroSum)
+          new OutcomeSamplingCfrMinimizer[S, I, A](zeroSum)
+//          new ProbingCfrMinimizer[S, I, A](zeroSum)
 
         val strategy : ExtensiveStrategyProfile =
           SolverSpecUtils.solve(game, solver, iterations)

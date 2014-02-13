@@ -9,7 +9,8 @@ object CommonUtils
 {
   //--------------------------------------------------------------------------------------------------------------------
   def normalizeToOne(weights: Seq[Double]) : Seq[Double] = {
-    assert(weights.min > 0)
+    assert(weights.min >= 0)
+    assert(weights.max > 0)
 
     val sum = weights.sum
 

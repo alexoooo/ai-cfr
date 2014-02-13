@@ -16,9 +16,10 @@ import ao.learn.mst.gen5.example.matrix.MatrixGames
 import java.text.DecimalFormat
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
-import ao.learn.mst.gen5.example.monty.BasicMontyHallGame
+import ao.learn.mst.gen5.example.monty.{MontyHallGame, BasicMontyHallGame}
 import ao.learn.mst.lib.CommonUtils
 import ao.learn.mst.gen5.br.ResponseTreeTraverser
+import ao.learn.mst.gen5.example.stochastic.CoinFlipDeterministicGame
 
 
 object SimpleGameDemo extends App
@@ -30,17 +31,17 @@ object SimpleGameDemo extends App
 
   //--------------------------------------------------------------------------------------------------------------------
   val solutionIterationCount : Int =
-    100 * 1000
+    1000
 
   val averageStrategy : Boolean =
 //    false
     true
 
-  def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
-//    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
-//    new ExternalSamplingCfrMinimizer[S, I, A](averageStrategy)
-//    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
-    new ProbingCfrMinimizer[S, I, A](averageStrategy)
+//  def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
+////    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
+////    new ExternalSamplingCfrMinimizer[S, I, A](averageStrategy)
+////    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
+//    new ProbingCfrMinimizer[S, I, A](averageStrategy)
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -55,7 +56,7 @@ object SimpleGameDemo extends App
 //    MatrixGames.matchingPennies
 //    MatrixGames.deadlock
 //    MatrixGames.prisonersDilemma
-    MatrixGames.zeroSum
+//    MatrixGames.zeroSum
 //    MatrixGames.battleOfTheSexes
 //    MatrixGames.stagHunt
 //    MatrixGames.choosingSides
@@ -68,6 +69,7 @@ object SimpleGameDemo extends App
 //    BasicMontyHallGame
 //    MontyHallGame
 //    BurningGame
+    CoinFlipDeterministicGame
   )
 
 

@@ -37,15 +37,23 @@ case class SeqExtensiveStrategyProfile(
   def actionProbabilityMass(
       informationSetIndex:Int, actionCount:Int): Seq[Double] =
   {
+    assert(actionCount >= 1)
+
     if (informationSetIndex >= knownInformationSetCount) {
       return defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)
     }
 
-    val actionProbabilities : Seq[Double] =
-      probabilities(informationSetIndex)
+    val actionProbabilities: Seq[Double] = {
+      val allProbabilities: Seq[Double] =
+        probabilities(informationSetIndex)
 
-    assert(actionProbabilities.length <= actionCount,
-      "Requesting fewer actions than available is not supported.")
+      if (allProbabilities.length >= actionCount) {
+        allProbabilities
+      } else {
+        CommonUtils.normalizeToOne(
+          allProbabilities.take(actionCount))
+      }
+    }
 
     if (actionProbabilities.isEmpty) {
       defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)

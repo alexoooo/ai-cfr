@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.example
 
 import ao.learn.mst.gen5.{ExtensivePlayer, ExtensiveAbstraction, ExtensiveGame}
-import ao.learn.mst.gen5.example.abstraction.{AbstractionUtils, LosslessInfoLosslessDecisionAbstractionBuilder}
+import ao.learn.mst.gen5.example.abstraction.{SingleInfoLosslessDecisionAbstractionBuilder, AbstractionUtils, LosslessInfoLosslessDecisionAbstractionBuilder}
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.solve.{ExtensiveSolver, SolutionApproximation}
 import ao.learn.mst.lib.CommonUtils
@@ -9,9 +9,10 @@ import ao.learn.mst.gen5.example.player.MixedStrategyPlayer
 import scala.util.Random
 import java.text.DecimalFormat
 import ao.learn.mst.gen5.br._
-import ao.learn.mst.gen5.cfr.ChanceSampledCfrMinimizer
+import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, ProbingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.br.BestResponseProfile
 import ao.learn.mst.gen5.br.BestResponsePlayer
+import ao.learn.mst.gen5.abstraction.InfoPerDecisionSetAbstraction
 
 /**
  *
@@ -30,7 +31,8 @@ object SimpleGameSolution
     : SimpleGameSolution[S, I, A] =
   {
     val losslessAbstraction : ExtensiveAbstraction[I, A] =
-      LosslessInfoLosslessDecisionAbstractionBuilder.generate(game)
+      //LosslessInfoLosslessDecisionAbstractionBuilder.generate(game)
+      new InfoPerDecisionSetAbstraction()
 
     val strategy : ExtensiveStrategyProfile =
       solve(game, averageStrategy, losslessAbstraction, iterations)
@@ -61,7 +63,9 @@ object SimpleGameSolution
     : ExtensiveStrategyProfile =
   {
     val solver : ExtensiveSolver[S, I, A] =
-      new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
+//      new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
+      new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
+//      new ProbingCfrMinimizer[S, I, A](averageStrategy)
 
     val solution : SolutionApproximation[I, A] =
       solver.initialSolution(game)
@@ -76,11 +80,11 @@ object SimpleGameSolution
 //      CommonUtils.displayDelimiter()
 //      println(s"round: ${countFormat.format(round)}")
 //
-//      for (i <- infoDisplayOrder) {
-//        val infoIndex = abstraction.informationSetIndex(i)
-//        val probabilities = solution.strategy.actionProbabilityMass(infoIndex)
-//        println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
-//      }
+      for (i <- infoDisplayOrder) {
+        val infoIndex = abstraction.informationSetIndex(i)
+        val probabilities = solution.strategy.actionProbabilityMass(infoIndex)
+        println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
+      }
 //
 //      ResponseTreeTraverser.traverseResponseTreeLeaves(
 //        game, abstraction, solution.strategy, 0

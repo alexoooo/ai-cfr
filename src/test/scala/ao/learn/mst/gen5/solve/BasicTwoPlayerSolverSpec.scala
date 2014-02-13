@@ -24,8 +24,8 @@ class BasicTwoPlayerSolverSpec
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
 //      new ChanceSampledCfrMinimizer[S, I, A]
-//      new OutcomeSamplingCfrMinimizer[S, I, A]
-      new ProbingCfrMinimizer[S, I, A]
+      new OutcomeSamplingCfrMinimizer[S, I, A]
+//      new ProbingCfrMinimizer[S, I, A]
 
     "Solve basic small games" in {
       def solveGame[S, I, A](game : ExtensiveGame[S, I, A], iterations : Int) : Seq[Seq[Double]] =

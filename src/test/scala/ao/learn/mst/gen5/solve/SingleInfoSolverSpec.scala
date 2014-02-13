@@ -27,8 +27,8 @@ class SingleInfoSolverSpec
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
 //      new ChanceSampledCfrMinimizer[S, I, A]
-//      new OutcomeSamplingCfrMinimizer[S, I, A]
-      new ProbingCfrMinimizer[S, I, A]
+      new OutcomeSamplingCfrMinimizer[S, I, A]
+//      new ProbingCfrMinimizer[S, I, A]
 
 
     "Solve singleton information-set games:" in {

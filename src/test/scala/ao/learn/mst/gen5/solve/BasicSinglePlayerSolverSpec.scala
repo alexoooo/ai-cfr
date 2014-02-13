@@ -20,8 +20,8 @@ class BasicSinglePlayerSolverSpec
   "Counterfactual Regret Minimization algorithm" should
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-      new ChanceSampledCfrMinimizer[S, I, A]
-//      new OutcomeSamplingCfrMinimizer[S, I, A]
+//      new ChanceSampledCfrMinimizer[S, I, A]
+      new OutcomeSamplingCfrMinimizer[S, I, A]
 //      new ProbingCfrMinimizer[S, I, A]
 
 
@@ -43,7 +43,7 @@ class BasicSinglePlayerSolverSpec
       "Monty Hall problem" in {
         val solution : Seq[Seq[Double]] = solveGame(
           MontyHallGame,
-          2 * 1000)
+          1000)
 
         val initialDoorChoice : Seq[Double] =
           solution(0)

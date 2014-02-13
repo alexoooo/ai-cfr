@@ -196,8 +196,6 @@ object BestResponseFinder
           })
           .toMap
 
-        knownActionValues ++ learnedActionValues
-
       val learnedInfoValues : Map[I, Double] =
         learnableInfos
           .map(info => (info, nextKnownActionValues(info).values.max))

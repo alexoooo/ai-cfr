@@ -7,6 +7,7 @@ import ao.learn.mst.gen5.strategy.impl.{MapCfrOutcomeRegretBuffer, ArrayCfrAvera
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
+import ao.learn.mst.lib.CommonUtils
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -80,6 +81,8 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
             new ProbRef(1.0))
         }
 
+        //println(s"buffer: ${buffer}")
+        //println(s"strategyProfile: $strategyProfile")
         buffer.commit(strategyProfile)
       }
 
@@ -134,18 +137,49 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
             val infoIndex: Int =
               abstraction.informationSetIndex(infoSet)
 
-            val curMoveProbs: Seq[Double] =
-              strategyProfile.positiveRegretMatchingStrategy(
-                infoIndex, actionsHere)
+
+            def candidates(abstractAction: Int): Traversable[Action] = {
+              def indexOf(choice: Action): Int =
+                abstraction.actionSubIndex(infoSet, choice)
+
+              decision.node.choices
+                .filter(indexOf(_) == abstractAction)
+            }
+
+            val viableMoves: Set[Int] =
+              (0 until actionsHere)
+                .filterNot(a => candidates(a).isEmpty)
+                .toSet
+
+            val curMoveProbs: Seq[Double] = {
+              val abstractMoveProbs: Seq[Double] =
+                strategyProfile.positiveRegretMatchingStrategy(
+                  infoIndex, actionsHere)
+
+              assert(! viableMoves.isEmpty, stateNode)
+
+              val viableMoveProbs: Seq[Double] =
+                abstractMoveProbs
+                  .zipWithIndex
+                  .map(pi => if (viableMoves.contains(pi._2)) pi._1 else 0)
+
+              if (viableMoveProbs.max > 0) {
+                CommonUtils.normalizeToOne(viableMoveProbs)
+              } else {
+                CommonUtils.normalizeToOne(
+                  (0 until actionsHere).map(a =>
+                    if (viableMoves.contains(a)) math.random else 0))
+              }
+            }
 
             val sampleProb: ProbRef =
               new ProbRef(-1.0)
 
             val takeAction: Int =
               if (nextToAct == updatePlayer) {
-                sampleAction(curMoveProbs, sampleProb, explorationProbability)
+                sampleAction(curMoveProbs, sampleProb, explorationProbability, viableMoves)
               } else {
-                sampleAction(curMoveProbs, sampleProb, 0.0)
+                sampleAction(curMoveProbs, sampleProb, 0.0, viableMoves)
               }
 
             checkProbNotZero(sampleProb.probability)
@@ -158,15 +192,16 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
               curMoveProbs(takeAction)
 
             val realAction: Action = {
-              def indexOf(choice: Action): Int =
-                abstraction.actionSubIndex(infoSet, choice)
+              val realActionCandidates: Traversable[Action] =
+                candidates(takeAction)
 
-              val candidates: Seq[Action] =
-                decision.node.choices
-                  .filter(indexOf(_) == takeAction)
-                  .toSeq
+              if (realActionCandidates.isEmpty) {
+                println("wtf?")
+              }
 
-              candidates((candidates.length * math.random).toInt)
+              realActionCandidates
+                .map(a => (a, math.random))
+                .maxBy(_._2)._1
             }
 
             val newGameState: ExtensiveStateNode[State, InformationSet, Action] =
@@ -201,7 +236,11 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
               reachProbabilities(nextToAct)
 
             val opponentReachProbability: Double =
-              reachProbabilities.product / nextToActReachProbability
+              reachProbabilities
+                .zipWithIndex
+                .filterNot(_._2 == nextToAct)
+                .map(_._1)
+                .product
 
             if (nextToAct == updatePlayer)
             {
@@ -241,13 +280,29 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
       def checkProbNotZero(probability: Double): Unit =
         assert(0 < probability && probability <= 1.0)
 
-      def sampleAction(curMoveProbs: Seq[Double], sampleProb: ProbRef, epsilon: Double): Int = {
+
+      def sampleAction(
+          curMoveProbs: Seq[Double],
+          sampleProb: ProbRef,
+          epsilon: Double,
+          viableMoves: Set[Int])
+          : Int =
+      {
         val actionsHere: Int =
           curMoveProbs.length
 
         val dist: Seq[Double] =
-          curMoveProbs.map(p =>
-            epsilon * (1.0 / actionsHere) + (1.0 - epsilon) * p)
+          CommonUtils.normalizeToOne(
+            curMoveProbs
+              .zipWithIndex
+              .map(pi =>
+                if (viableMoves.contains(pi._2)) {
+                  epsilon * (1.0 / actionsHere) + (1.0 - epsilon) * pi._1
+                } else {
+                  0
+                }
+              )
+          )
 
         val roll: Double =
           math.random
