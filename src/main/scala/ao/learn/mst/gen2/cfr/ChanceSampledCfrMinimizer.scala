@@ -5,7 +5,8 @@ import ao.learn.mst.gen2.game._
 import scala._
 import ao.learn.mst.gen2.solve.ExtensiveGameSolver
 import collection.immutable.SortedMap
-import ao.learn.mst.gen2.player.model.{DeliberatePlayer, FiniteAction}
+import ao.learn.mst.gen2.player.model.{FiniteAction, DeliberatePlayer}
+import scala.util.Random
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -13,7 +14,9 @@ import ao.learn.mst.gen2.player.model.{DeliberatePlayer, FiniteAction}
  * Like CfrMinimizer but sampling chance outcomes.
  *
  */
-class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
+class ChanceSampledCfrMinimizer(
+    rand: Random = new Random())
+    extends ExtensiveGameSolver
 {
   //--------------------------------------------------------------------------------------------------------------------
   def reduceRegret(
@@ -33,39 +36,39 @@ class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
     strategyProfile.commitBuffers()
   }
 
-  private def getDecisionForInformationSet(
-      root           : ExtensiveGameNode,
-      informationSet : InformationSet
-      ): ExtensiveGameDecision =
-  {
-    root match {
-      case decision: ExtensiveGameDecision =>
-        if (decision.informationSet == informationSet) {
-          return decision
-        }
-    }
-
-    getChildDecisionForInformationSet(
-      root, informationSet)
-  }
-  private def getChildDecisionForInformationSet(
-      root           : ExtensiveGameNode,
-      informationSet : InformationSet
-      ): ExtensiveGameDecision =
-  {
-    root match {
-      case terminal: ExtensiveGameTerminal => null
-      case nonTerminal: ExtensiveGameNonTerminal =>
-        for (action <- root.actions) {
-          val childNode = nonTerminal.child(action)
-          val matchingNode = getDecisionForInformationSet(childNode, informationSet)
-          if (matchingNode != null) {
-            return matchingNode
-          }
-        }
-        null
-    }
-  }
+//  private def getDecisionForInformationSet(
+//      root           : ExtensiveGameNode,
+//      informationSet : InformationSet
+//      ): ExtensiveGameDecision =
+//  {
+//    root match {
+//      case decision: ExtensiveGameDecision =>
+//        if (decision.informationSet == informationSet) {
+//          return decision
+//        }
+//    }
+//
+//    getChildDecisionForInformationSet(
+//      root, informationSet)
+//  }
+//  private def getChildDecisionForInformationSet(
+//      root           : ExtensiveGameNode,
+//      informationSet : InformationSet
+//      ): ExtensiveGameDecision =
+//  {
+//    root match {
+//      case terminal: ExtensiveGameTerminal => null
+//      case nonTerminal: ExtensiveGameNonTerminal =>
+//        for (action <- root.actions) {
+//          val childNode = nonTerminal.child(action)
+//          val matchingNode = getDecisionForInformationSet(childNode, informationSet)
+//          if (matchingNode != null) {
+//            return matchingNode
+//          }
+//        }
+//        null
+//    }
+//  }
 
 
   private def cfrUpdate(
@@ -109,19 +112,16 @@ class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
       reachProbabilities : Seq[Double]
       ): Seq[Double] =
   {
-    val actionProbabilities:SortedMap[FiniteAction, Double] =
+    val actionProbabilities: SortedMap[FiniteAction, Double] =
       node.probabilityMass.actionProbabilities
 
-    val actionObservations:Traversable[(FiniteAction, Double)] =
-      actionProbabilities.map(e => (e._1, e._2 * math.random))
+    val sampledAction: FiniteAction =
+      sampleChance(actionProbabilities)
 
-    val sampledAction:FiniteAction =
-      actionObservations.maxBy(_._2)._1
-
-    val sampledProbability:Double =
+    val sampledProbability: Double =
       actionProbabilities(sampledAction)
 
-    val child:ExtensiveGameNode = node.child( sampledAction )
+    val child: ExtensiveGameNode = node.child( sampledAction )
 
     cfrUpdate(
       game,
@@ -129,6 +129,21 @@ class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
       strategyProfile,
       reachProbabilities.map(_ * sampledProbability)
     )
+  }
+
+  def sampleChance(actionProbabilities: SortedMap[FiniteAction, Double]): FiniteAction = {
+    var remainingProbability: Double =
+      rand.nextDouble()
+
+    for ((action, probability) <- actionProbabilities) {
+      if (remainingProbability < probability) {
+        return action
+      }
+
+      remainingProbability -= probability
+    }
+
+    throw new IllegalStateException(s"$remainingProbability | $actionProbabilities")
   }
 
 
@@ -210,7 +225,6 @@ class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
       val childReachProbabilities:Seq[Double] =
         updateReachProbability(
           reachProbabilities,
-          game.rationalPlayerCount,
           node.player.index,
           actionProbability)
 
@@ -224,13 +238,11 @@ class ChanceSampledCfrMinimizer extends ExtensiveGameSolver
 
   private def updateReachProbability(
       reachProbabilities  : Seq[Double],
-      rationalPlayerCount : Int,
       actingPlayerIndex   : Int,
       actionProbability   : Double
       ): Seq[Double] =
   {
-    // each player's contribution to the probability is in its own bucket.
-
+    // each player's contribution to the probability is in its own bucket
     reachProbabilities.zipWithIndex map Function.tupled {
       (reachProbability: Double, playerIndex: Int) =>
         if (playerIndex == actingPlayerIndex)

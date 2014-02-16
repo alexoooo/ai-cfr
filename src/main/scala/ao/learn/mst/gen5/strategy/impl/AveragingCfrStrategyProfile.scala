@@ -40,4 +40,9 @@ class AveragingCfrStrategyProfile(
 
   def update(informationSetIndex: Int, counterfactualRegret: Seq[Double]): Unit =
     ???
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  override def toString =
+    baseProfile.toString
 }

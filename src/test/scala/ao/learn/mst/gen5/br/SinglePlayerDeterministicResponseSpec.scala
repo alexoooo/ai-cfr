@@ -7,6 +7,7 @@ import ao.learn.mst.gen5.example.bandit.BinaryBanditState
 import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBranchState
 import scala.Some
 import ao.learn.mst.gen5.ExtensiveGame
+import ao.learn.mst.gen5.cfr.OutcomeSamplingCfrMinimizer
 
 /**
  * http://en.wikipedia.org/wiki/Best_response
@@ -23,7 +24,7 @@ class SinglePlayerDeterministicResponseSpec
 
       val solution : SimpleGameSolution[BinaryBanditState, Unit, Boolean] =
         SimpleGameSolution.forGame(
-          game, 0)
+          game, OutcomeSamplingCfrMinimizer(), 0)
 
       val bestResponses : BestResponseProfile[Unit, Boolean] =
         solution.response
@@ -50,7 +51,7 @@ class SinglePlayerDeterministicResponseSpec
 
       val solution : SimpleGameSolution[DeterministicBinaryBranchState, DeterministicBinaryBranchState, Boolean] =
         SimpleGameSolution.forGame(
-          game, 0)
+          game, OutcomeSamplingCfrMinimizer(), 0)
 
       val bestResponses : BestResponseProfile[DeterministicBinaryBranchState, Boolean] =
         solution.response
@@ -83,7 +84,7 @@ class SinglePlayerDeterministicResponseSpec
 
       val solution : SimpleGameSolution[DeterministicBinaryForkState, DeterministicBinaryForkState, Boolean] =
         SimpleGameSolution.forGame(
-          game, 0)
+          game, OutcomeSamplingCfrMinimizer(), 0)
 
       val bestResponses : BestResponseProfile[DeterministicBinaryForkState, Boolean] =
         solution.response

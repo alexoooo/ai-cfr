@@ -20,27 +20,37 @@ import ao.learn.mst.gen5.example.monty.{MontyHallGame, BasicMontyHallGame}
 import ao.learn.mst.lib.CommonUtils
 import ao.learn.mst.gen5.br.ResponseTreeTraverser
 import ao.learn.mst.gen5.example.stochastic.CoinFlipDeterministicGame
+import ao.learn.mst.gen5.example.ocp.KuhnGame
+import scala.xml.PrettyPrinter
+import ao.learn.mst.gen2.example.ExtensiveGameDisplay
 
 
 object SimpleGameDemo extends App
 {
   //--------------------------------------------------------------------------------------------------------------------
-  implicit val sourceOfRandomness : Random =
-    new Random()
+  val sourceOfRandomness : Random =
+    new Random(0)
+//    new Random(0) {
+//      override def nextDouble(): Double =
+//        0.0
+//    }
+
+  val formatter =
+    new PrettyPrinter(120, 4)
 
 
   //--------------------------------------------------------------------------------------------------------------------
   val solutionIterationCount : Int =
-    1000
+    100 * 1000 * 1000
 
   val averageStrategy : Boolean =
 //    false
     true
 
-//  def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
-////    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
-////    new ExternalSamplingCfrMinimizer[S, I, A](averageStrategy)
-////    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
+  def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
+//    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy, sourceOfRandomness)
+//    new ExternalSamplingCfrMinimizer[S, I, A](averageStrategy)
+    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
 //    new ProbingCfrMinimizer[S, I, A](averageStrategy)
 
 
@@ -69,15 +79,24 @@ object SimpleGameDemo extends App
 //    BasicMontyHallGame
 //    MontyHallGame
 //    BurningGame
-    CoinFlipDeterministicGame
+//    CoinFlipDeterministicGame
+
+    KuhnGame
   )
+
+
 
 
   //--------------------------------------------------------------------------------------------------------------------
   def play[S, I, A](game : ExtensiveGame[S, I, A]) : Unit =
   {
+//    val extensiveGameViewRoot =
+//      ExtensiveGameDisplay.displayExtensiveGameNode(
+//        game, game.initialState)
+//    println(formatter.format(extensiveGameViewRoot))
+
     val solution : SimpleGameSolution[S, I, A] =
-      SimpleGameSolution.forGame(game, solutionIterationCount, averageStrategy)
+      SimpleGameSolution.forGame(game, solver(), solutionIterationCount)
 
     val strategyPlayers : Seq[ExtensivePlayer[I, A]] =
       solution.strategyPlayers
@@ -136,7 +155,7 @@ object SimpleGameDemo extends App
   def playout[S, I, A](
     game    : ExtensiveGame[S, I, A],
     players : Seq[ExtensivePlayer[I, A]]
-    ) : Seq[Double] =
+    ): Seq[Double] =
   {
     val root =
       game.initialState
@@ -148,7 +167,7 @@ object SimpleGameDemo extends App
       state   : S,
       game    : ExtensiveGame[S, I, A],
       players : Seq[ExtensivePlayer[I, A]]
-      ) : Seq[Double] =
+      ): Seq[Double] =
   {
     val node = game.node(state)
 
@@ -156,7 +175,7 @@ object SimpleGameDemo extends App
       case Terminal(payoffs) =>
         payoffs
 
-      case Chance(outcomes) => {
+      case Chance(outcomes) =>
         val sampledOutcome =
           outcomes.maxBy(_.probability * math.random).action
 
@@ -164,11 +183,9 @@ object SimpleGameDemo extends App
           game.transition(state, sampledOutcome)
 
         playout(sampledState, game, players)
-      }
 
       case Decision(
           nextToAct, informationSet, choices) =>
-      {
         val player =
           players(nextToAct.index)
 
@@ -179,7 +196,6 @@ object SimpleGameDemo extends App
           game.transition(state, choice)
 
         playout(chosenState, game, players)
-      }
     }
   }
 }

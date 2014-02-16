@@ -25,17 +25,17 @@ object SimpleGameSolution
 
   //--------------------------------------------------------------------------------------------------------------------
   def forGame[S, I, A](
-    game            : ExtensiveGame[S, I, A],
-    iterations      : Int,
-    averageStrategy : Boolean = false)
+    game       : ExtensiveGame[S, I, A],
+    solver     : ExtensiveSolver[S, I, A],
+    iterations : Int)
     : SimpleGameSolution[S, I, A] =
   {
     val losslessAbstraction : ExtensiveAbstraction[I, A] =
-      //LosslessInfoLosslessDecisionAbstractionBuilder.generate(game)
-      new InfoPerDecisionSetAbstraction()
+      LosslessInfoLosslessDecisionAbstractionBuilder.generate(game)
+//      new InfoPerDecisionSetAbstraction()
 
     val strategy : ExtensiveStrategyProfile =
-      solve(game, averageStrategy, losslessAbstraction, iterations)
+      solve(game, losslessAbstraction, solver, iterations)
 
     val response : BestResponseProfile[I, A] =
       BestResponseFinder.bestResponseProfile(
@@ -47,7 +47,6 @@ object SimpleGameSolution
     SimpleGameSolution(
       game,
       iterations,
-      averageStrategy,
       losslessAbstraction,
       strategy,
       response)
@@ -57,14 +56,14 @@ object SimpleGameSolution
   //--------------------------------------------------------------------------------------------------------------------
   private def solve[S, I, A](
       game            : ExtensiveGame[S, I, A],
-      averageStrategy : Boolean,
-      abstraction     : ExtensiveAbstraction[I, A],
-      iterations      : Int)
-    : ExtensiveStrategyProfile =
+      abstraction : ExtensiveAbstraction[I, A],
+      solver      : ExtensiveSolver[S, I, A],
+      iterations  : Int)
+      : ExtensiveStrategyProfile =
   {
-    val solver : ExtensiveSolver[S, I, A] =
+//    val solver : ExtensiveSolver[S, I, A] =
 //      new ChanceSampledCfrMinimizer[S, I, A](averageStrategy)
-      new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
+//      new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
 //      new ProbingCfrMinimizer[S, I, A](averageStrategy)
 
     val solution : SolutionApproximation[I, A] =
@@ -79,13 +78,14 @@ object SimpleGameSolution
     def displayStrategy(round : Long) : Unit = {
 //      CommonUtils.displayDelimiter()
 //      println(s"round: ${countFormat.format(round)}")
-//
+
+      println()
       for (i <- infoDisplayOrder) {
         val infoIndex = abstraction.informationSetIndex(i)
         val probabilities = solution.strategy.actionProbabilityMass(infoIndex)
         println(s"$i\t${CommonUtils.displayProbabilities(probabilities)}")
       }
-//
+
 //      ResponseTreeTraverser.traverseResponseTreeLeaves(
 //        game, abstraction, solution.strategy, 0
 //      ).foreach(println)
@@ -108,6 +108,8 @@ object SimpleGameSolution
       }
     }
 
+    displayStrategy(iterations)
+
     val strategy : ExtensiveStrategyProfile =
       solution.strategy
 
@@ -118,12 +120,11 @@ object SimpleGameSolution
 
 
 case class SimpleGameSolution[S, I, A](
-  game            : ExtensiveGame[S, I, A],
-  iterations      : Int,
-  averageStrategy : Boolean,
-  abstraction     : ExtensiveAbstraction[I, A],
-  strategy        : ExtensiveStrategyProfile,
-  response        : BestResponseProfile[I, A])
+  game        : ExtensiveGame[S, I, A],
+  iterations  : Int,
+  abstraction : ExtensiveAbstraction[I, A],
+  strategy    : ExtensiveStrategyProfile,
+  response    : BestResponseProfile[I, A])
 {
   def strategyPlayers : Seq[ExtensivePlayer[I, A]] = {
     val playerPlayers : ExtensivePlayer[I, A] =

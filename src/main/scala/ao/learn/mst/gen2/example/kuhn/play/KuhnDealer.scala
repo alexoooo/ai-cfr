@@ -23,7 +23,7 @@ class KuhnDealer
       state       : KuhnState) : KuhnOutcome =
   {
     state.winner match {
-      case None => {
+      case None =>
         val nextToAct = state.nextToAct.get match {
           case KuhnPosition.FirstToAct => firstPlayer
           case KuhnPosition.LastToAct  => lastPlayer
@@ -31,11 +31,9 @@ class KuhnDealer
 
         playHand(firstPlayer, lastPlayer,
                  state.act( nextToAct.act(state) ))
-      }
 
-      case Some(winner) => {
+      case Some(winner) =>
         state.stake.toOutcome(winner)
-      }
     }
   }
 }

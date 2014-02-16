@@ -1,4 +1,4 @@
-package ao.learn.mst.gen5.example
+package ao.learn.mst.gen5.example.ocp
 
 import ao.learn.mst.gen2.example.kuhn.action.{KuhnDecision, KuhnActionSequence, KuhnGenAction, KuhnCardSequence}
 import ao.learn.mst.gen5.ExtensiveGame
@@ -13,19 +13,19 @@ import ao.learn.mst.gen2.example.kuhn.state.KuhnState
 
 //----------------------------------------------------------------------------------------------------------------------
 case object KuhnGame
-  extends ExtensiveGame[KuhnState, KuhnObservation, KuhnGenAction]
+  extends ExtensiveGame[Option[KuhnState], KuhnObservation, KuhnGenAction]
 {
   //--------------------------------------------------------------------------------------------------------------------
   def playerCount = 2
 
-  def initialState = null
+  def initialState = None
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  private def identify(state: KuhnState): StatePartition =
-    if (state == initialState) {
+  private def identify(state: Option[KuhnState]): StatePartition =
+    if (state.isEmpty) {
       ChancePartition
-    } else if (state.winner.isDefined) {
+    } else if (state.get.winner.isDefined) {
       TerminalPartition
     } else {
       DecisionPartition
@@ -33,23 +33,21 @@ case object KuhnGame
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def node(state: KuhnState): ExtensiveNode[KuhnObservation, KuhnGenAction] =
+  def node(state: Option[KuhnState]): ExtensiveNode[KuhnObservation, KuhnGenAction] =
     identify(state) match {
       case TerminalPartition =>
-        Terminal(terminalPayoffs(state))
+        Terminal(terminalPayoffs(state.get))
 
-      case ChancePartition => {
+      case ChancePartition =>
         val outcomes : Traversable[Outcome[KuhnGenAction]] =
           Outcome.equalProbability(KuhnDeck.permutations)
         Chance(outcomes)
-      }
 
-      case DecisionPartition => {
-        val nextToAct = Rational(state.nextToAct.get.id)
+      case DecisionPartition =>
+        val nextToAct = Rational(state.get.nextToAct.get.id)
         val choices : Traversable[KuhnGenAction] = KuhnDecision.values
-        val infoSet = state.playerView
+        val infoSet = state.get.playerView
         Decision(nextToAct, infoSet, choices)
-      }
     }
 
 
@@ -63,15 +61,15 @@ case object KuhnGame
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def transition(state: KuhnState, action: KuhnGenAction): KuhnState =
-    (identify(state), action) match {
+  def transition(state: Option[KuhnState], action: KuhnGenAction): Option[KuhnState] =
+    Some((identify(state), action) match {
       case (ChancePartition, chance : KuhnCardSequence) =>
-        KuhnState(chance, KuhnActionSequence.Empty, new KuhnStake())
+        new KuhnState(chance)
 
       case (DecisionPartition, decision : KuhnDecision) =>
-        state.act(decision)
+        state.get.act(decision)
 
       case _ => throw new IllegalArgumentException(
         "Unexpected state or action type: " + state + " | " + action)
-    }
+    })
 }

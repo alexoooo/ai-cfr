@@ -1,10 +1,12 @@
 package ao.learn.mst.gen2.example
 
 import xml.PrettyPrinter
-import ao.learn.mst.gen2.info.{InformationSetIndex, SingleInformationSetIndexer}
+import ao.learn.mst.gen2.info.{TraversingInformationSetIndexer, InformationSetIndex, SingleInformationSetIndexer}
 import ao.learn.mst.gen2.cfr._
 import ao.learn.mst.gen2.game._
 import ao.learn.mst.gen2.example.kuhn.adapt.KuhnGame
+import scala.util.Random
+
 //import org.joda.time.{Duration, LocalTime, DateTime}
 
 
@@ -79,7 +81,9 @@ object ExtensiveGameSolver
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  val equilibriumApproximationIterations = 1000 * 1000
+  val equilibriumApproximationIterations =
+    1000 * 1000
+
   println("\n\n\nCalculating Equilibrium " +
     equilibriumApproximationIterations)
 
@@ -104,8 +108,8 @@ object ExtensiveGameSolver
       iterations:Int):StrategyProfile =
   {
     val informationSetIndex =
-//      TraversingInformationSetIndexer.preciseIndex( game )
-          SingleInformationSetIndexer.single( game )
+      TraversingInformationSetIndexer.preciseIndex( game )
+//          SingleInformationSetIndexer.single( game )
 
     computeStrategy(game, iterations, informationSetIndex)
   }
@@ -114,7 +118,7 @@ object ExtensiveGameSolver
       game:ExtensiveGame,
       iterations:Int,
       informationSetIndex:InformationSetIndex)
-      :StrategyProfile =
+      : StrategyProfile =
   {
     val strategyProfile =
       new StrategyProfile( informationSetIndex )
@@ -123,18 +127,23 @@ object ExtensiveGameSolver
 
     val minimizer =
     //    new CfrMinimizer()
-      new ChanceSampledCfrMinimizer()
+      new ChanceSampledCfrMinimizer(
+        new Random(0)
+//        new Random(0) {
+//          override def nextDouble(): Double =
+//            0.0
+//        }
+      )
 
-    val startTime = System.currentTimeMillis()
     for (i <- 1 to iterations) {
-      if (i % (100 * 1000) == 0) {
-        println(i + " " + (startTime - System.currentTimeMillis()))
-        println(strategyProfile)
-      }
-
       minimizer.reduceRegret(
         game, informationSetIndex, strategyProfile)
       //    println( strategyProfile )
+
+      if (i % math.max(1, equilibriumApproximationIterations / 1000) == 0) {
+        println(i)
+        println(strategyProfile)
+      }
     }
 
     strategyProfile

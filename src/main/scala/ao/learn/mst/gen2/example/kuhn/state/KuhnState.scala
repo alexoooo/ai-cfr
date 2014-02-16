@@ -45,12 +45,11 @@ case class KuhnState(
 
   def winner : Option[KuhnPosition] = terminalStatus.flatMap(status => {
     Some(status.preShowdownWinner match {
-      case Some(preShutdownWinner) => {
+      case Some(preShutdownWinner) =>
         preShutdownWinner
-      }
-      case None => {
+
+      case None =>
         cards.winner
-      }
     })
   })
 
@@ -65,7 +64,7 @@ case class KuhnState(
 
   //--------------------------------------------------------------------------------------------------------------------
   def act(action : KuhnDecision):KuhnState = {
-    val (nextActionSequence, nextState) = actions match {
+    val (nextActionSequence, nextStake) = actions match {
       case Empty => action match {
         case CheckFold =>
           (KuhnActionSequence.Check, stake)
@@ -74,7 +73,7 @@ case class KuhnState(
           (KuhnActionSequence.Raise, stake.incrementFirstPlayer)
       }
 
-      case Check => {
+      case Check =>
         action match {
           case CheckFold =>
             (KuhnActionSequence.CheckCheck, stake)
@@ -82,9 +81,8 @@ case class KuhnState(
           case CallRaise =>
             (KuhnActionSequence.CheckRaise, stake.incrementLastPlayer)
         }
-      }
 
-      case CheckRaise => {
+      case CheckRaise =>
         action match {
           case CheckFold =>
             (KuhnActionSequence.CheckRaiseFold, stake)
@@ -92,7 +90,6 @@ case class KuhnState(
           case CallRaise =>
             (KuhnActionSequence.CheckRaiseCall, stake.incrementFirstPlayer)
         }
-      }
 
       case Raise => action match {
         case CheckFold =>
@@ -103,7 +100,7 @@ case class KuhnState(
       }
     }
 
-    new KuhnState(cards, nextActionSequence, nextState)
+    new KuhnState(cards, nextActionSequence, nextStake)
   }
 
 

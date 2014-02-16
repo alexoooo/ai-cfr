@@ -7,7 +7,6 @@ import ao.learn.mst.gen5.strategy.impl.{MapCfrOutcomeRegretBuffer, ArrayCfrAvera
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
-import ao.learn.mst.lib.CommonUtils
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -79,11 +78,13 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
             Seq.fill(game.playerCount)(1.0),
             new ProbRef(1.0),
             new ProbRef(1.0))
+
+          buffer.commit(strategyProfile)
         }
 
         //println(s"buffer: ${buffer}")
         //println(s"strategyProfile: $strategyProfile")
-        buffer.commit(strategyProfile)
+//        buffer.commit(strategyProfile)
       }
 
 
@@ -138,48 +139,18 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
               abstraction.informationSetIndex(infoSet)
 
 
-            def candidates(abstractAction: Int): Traversable[Action] = {
-              def indexOf(choice: Action): Int =
-                abstraction.actionSubIndex(infoSet, choice)
-
-              decision.node.choices
-                .filter(indexOf(_) == abstractAction)
-            }
-
-            val viableMoves: Set[Int] =
-              (0 until actionsHere)
-                .filterNot(a => candidates(a).isEmpty)
-                .toSet
-
-            val curMoveProbs: Seq[Double] = {
-              val abstractMoveProbs: Seq[Double] =
-                strategyProfile.positiveRegretMatchingStrategy(
-                  infoIndex, actionsHere)
-
-              assert(! viableMoves.isEmpty, stateNode)
-
-              val viableMoveProbs: Seq[Double] =
-                abstractMoveProbs
-                  .zipWithIndex
-                  .map(pi => if (viableMoves.contains(pi._2)) pi._1 else 0)
-
-              if (viableMoveProbs.max > 0) {
-                CommonUtils.normalizeToOne(viableMoveProbs)
-              } else {
-                CommonUtils.normalizeToOne(
-                  (0 until actionsHere).map(a =>
-                    if (viableMoves.contains(a)) math.random else 0))
-              }
-            }
+            val curMoveProbs: Seq[Double] =
+              strategyProfile.positiveRegretMatchingStrategy(
+                infoIndex, actionsHere)
 
             val sampleProb: ProbRef =
               new ProbRef(-1.0)
 
             val takeAction: Int =
               if (nextToAct == updatePlayer) {
-                sampleAction(curMoveProbs, sampleProb, explorationProbability, viableMoves)
+                sampleAction(curMoveProbs, sampleProb, explorationProbability)
               } else {
-                sampleAction(curMoveProbs, sampleProb, 0.0, viableMoves)
+                sampleAction(curMoveProbs, sampleProb, 0.0)
               }
 
             checkProbNotZero(sampleProb.probability)
@@ -192,12 +163,12 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
               curMoveProbs(takeAction)
 
             val realAction: Action = {
-              val realActionCandidates: Traversable[Action] =
-                candidates(takeAction)
+              def indexOf(choice: Action): Int =
+                abstraction.actionSubIndex(infoSet, choice)
 
-              if (realActionCandidates.isEmpty) {
-                println("wtf?")
-              }
+              val realActionCandidates: Traversable[Action] =
+                decision.node.choices
+                  .filter(indexOf(_) == takeAction)
 
               realActionCandidates
                 .map(a => (a, math.random))
@@ -259,7 +230,7 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
                 infoIndex, counterfactualRegret)
             }
 
-            if (averageStrategyBuilder.isDefined) {
+            if (averageStrategy) {
               if (nextToAct != updatePlayer)
               {
                 val stochasticWeight: Double =
@@ -284,25 +255,15 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
       def sampleAction(
           curMoveProbs: Seq[Double],
           sampleProb: ProbRef,
-          epsilon: Double,
-          viableMoves: Set[Int])
+          epsilon: Double)
           : Int =
       {
         val actionsHere: Int =
           curMoveProbs.length
 
         val dist: Seq[Double] =
-          CommonUtils.normalizeToOne(
             curMoveProbs
-              .zipWithIndex
-              .map(pi =>
-                if (viableMoves.contains(pi._2)) {
-                  epsilon * (1.0 / actionsHere) + (1.0 - epsilon) * pi._1
-                } else {
-                  0
-                }
-              )
-          )
+              .map(p => epsilon * (1.0 / actionsHere) + (1.0 - epsilon) * p)
 
         val roll: Double =
           math.random

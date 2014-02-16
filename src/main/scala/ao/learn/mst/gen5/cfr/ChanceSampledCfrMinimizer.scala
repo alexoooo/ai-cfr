@@ -9,11 +9,14 @@ import ao.learn.mst.gen5.ExtensiveGame
 import scala._
 import scala.Function
 import scala.collection.immutable.SortedMap
+import scala.util.Random
+import com.google.common.collect.Iterables
 
 
 //----------------------------------------------------------------------------------------------------------------------
 case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
-    averageStrategy : Boolean = false)
+    averageStrategy : Boolean = false,
+    rand            : Random = new Random())
   extends ExtensiveSolver[State, InformationSet, Action]
 {
   //--------------------------------------------------------------------------------------------------------------------
@@ -46,7 +49,7 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
     }
 
 
-    //------------------------------------------------------------------------------------------------------------------Z
+    //------------------------------------------------------------------------------------------------------------------
     private class Optimization(
       abstraction: ExtensiveAbstraction[InformationSet, Action])
     {
@@ -60,7 +63,9 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
           game.initialStateNode,
           Seq.fill( game.playerCount )( 1.0 ))
 
+//        println(s"buffer: $buffer")
         buffer.commit(strategyProfile)
+//        println(s"strategyProfile: $strategyProfile")
       }
 
 
@@ -90,24 +95,37 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
           reachProbabilities : Seq[Double]
           ): Seq[Double] =
       {
-        val sampledOutcome : Outcome[Action] =
-          stateNode.node.outcomes
-            .map(outcome => (outcome, outcome.probability * math.random))
-            .maxBy(_._2)._1
+        val sampledOutcome: Outcome[Action] =
+          sampleChance(stateNode.node.outcomes)
 
-        val sampledAction : Action =
+        val sampledAction: Action =
           sampledOutcome.action
 
-        val sampledProbability : Double =
+        val sampledProbability: Double =
           sampledOutcome.probability
 
-        val sampledStateNode : ExtensiveStateNode[State, InformationSet, Action] =
+        val sampledStateNode: ExtensiveStateNode[State, InformationSet, Action] =
           game.transitionStateNode(stateNode, sampledAction)
 
-        val nextReachProbabilities : Seq[Double] =
+        val nextReachProbabilities: Seq[Double] =
           reachProbabilities.map(_ * sampledProbability)
 
         cfrUpdate(sampledStateNode, nextReachProbabilities)
+      }
+
+      def sampleChance(outcomes: Traversable[Outcome[Action]]): Outcome[Action] = {
+        var remainingProbability: Double =
+          rand.nextDouble()
+
+        for (outcome <- outcomes) {
+          if (remainingProbability < outcome.probability) {
+            return outcome
+          }
+
+          remainingProbability -= outcome.probability
+        }
+
+        throw new IllegalStateException(s"$remainingProbability | $outcomes")
       }
 
 
@@ -115,15 +133,15 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
       private def walkDecision(
           stateNode          : StateDecision[State, InformationSet, Action],
           reachProbabilities : Seq[Double]
-          ) : Seq[Double] =
+          ): Seq[Double] =
       {
-        val infoSet : InformationSet =
+        val infoSet: InformationSet =
           stateNode.node.informationSet
 
-        val informationSetIndex : Int =
+        val informationSetIndex: Int =
           abstraction.informationSetIndex(infoSet)
 
-        val actionCount : Int =
+        val actionCount: Int =
           abstraction.actionCount(infoSet)
 
         // Compute σ1(I(r1)) according to Equation 8.
@@ -196,11 +214,16 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
         val indexToAction : Map[Int, Traversable[Action]] =
           actionToIndex.keys.groupBy(actionToIndex)
 
-        def sampleAction(choices : Traversable[Action]) : Action = {
-          val sampledIndex : Int =
-            (choices.size * math.random).toInt
-          
-          choices.toSeq(sampledIndex)
+        def sampleAction(choices: Traversable[Action]) : Action = {
+          if (choices.size == 1) {
+            Iterables.getOnlyElement(
+              scala.collection.JavaConversions.asJavaIterable(choices.toIterable))
+          } else {
+            val sampledIndex : Int =
+              (choices.size * rand.nextDouble()).toInt
+
+            choices.toSeq(sampledIndex)
+          }
         }
           
 
@@ -225,7 +248,7 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
           val childReachProbabilities : Seq[Double] =
             updateReachProbability(
               reachProbabilities,
-              game.playerCount,
+//              game.playerCount,
               stateNode.node.nextToAct.index,
               actionProbability)
 
@@ -235,7 +258,7 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
 
       private def updateReachProbability(
           reachProbabilities  : Seq[Double],
-          rationalPlayerCount : Int,
+//          rationalPlayerCount : Int,
           actingPlayerIndex   : Int,
           actionProbability   : Double
           ): Seq[Double] =

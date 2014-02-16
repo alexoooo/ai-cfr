@@ -49,7 +49,8 @@ class ArrayCfrStrategyProfile
     val counterfactualRegret: Seq[Double] =
       actionRegret.map(_ * reachProbability)
 
-    update(informationSetIndex, counterfactualRegret)
+    //update(informationSetIndex, counterfactualRegret) // todo: is this correct?
+    update(informationSetIndex, actionRegret)
   }
 
 
@@ -83,7 +84,6 @@ class ArrayCfrStrategyProfile
         Seq.empty
     }
 
-
     positiveRegretStrategy
   }
 
@@ -99,8 +99,9 @@ class ArrayCfrStrategyProfile
       positiveRegretMatchingStrategy(informationSetIndex)
 
     if (strategy.isEmpty) {
-      CommonUtils.normalizeToOne(
-        Seq.fill(actionCount)(math.random))
+//      CommonUtils.normalizeToOne(
+//        Seq.fill(actionCount)(math.random))
+      Seq.fill(actionCount)(1.0 / actionCount)
     } else if (strategy.length == actionCount) {
       strategy
     } else {
@@ -124,7 +125,7 @@ class ArrayCfrStrategyProfile
     regretSums.length
 //    visitCount.length
 
-  private def actionCount(informationSetIndex: Int) : Int = {
+  private def actionCount(informationSetIndex: Int): Int = {
     val actions : Array[Double] =
       regretSums(informationSetIndex)
 
@@ -137,7 +138,7 @@ class ArrayCfrStrategyProfile
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  private def initializeInformationSetIfRequired(informationSetIndex: Int, requiredActionCount : Int)
+  private def initializeInformationSetIfRequired(informationSetIndex: Int, requiredActionCount: Int): Unit =
   {
     if (! informationSetInitialized(informationSetIndex)) {
       initializeInformationSet(informationSetIndex)
@@ -156,7 +157,7 @@ class ArrayCfrStrategyProfile
   def informationSetInitialized(informationSetIndex: Int) =
     informationSetIndex < informationSetCount
 
-  def initializeInformationSet(informationSetIndex: Int) {
+  def initializeInformationSet(informationSetIndex: Int): Unit = {
     val count = informationSetIndex + 1
 
 //    visitCount = visitCount.padTo(count, 0.toLong)
@@ -164,20 +165,20 @@ class ArrayCfrStrategyProfile
   }
 
 
-  private def actionsInitialized(informationSetIndex: Int) : Boolean =
+  private def actionsInitialized(informationSetIndex: Int): Boolean =
     regretSums.length > informationSetIndex &&
       regretSums( informationSetIndex ) != null
 
-  private def initializeActions(informationSetIndex: Int)
+  private def initializeActions(informationSetIndex: Int): Unit =
   {
     regretSums(informationSetIndex) = new Array[Double](0)
   }
 
 
-  def actionCountInitialized(informationSetIndex: Int, requiredActionCount : Int) =
+  def actionCountInitialized(informationSetIndex: Int, requiredActionCount: Int) =
     requiredActionCount <= actionCount(informationSetIndex)
 
-  private def initializeActionCount(informationSetIndex: Int, requiredActionCount : Int)
+  private def initializeActionCount(informationSetIndex: Int, requiredActionCount: Int): Unit =
   {
     regretSums(informationSetIndex) =
       regretSums(informationSetIndex)
@@ -186,8 +187,8 @@ class ArrayCfrStrategyProfile
 
 
   //--------------------------------------------------------------------------------------------------------------------
-//  override def toString : String = {
-//    "\n\n" +
-//      util.Arrays.toString(visitCount)
-//  }
+  override def toString: String =
+    (0 until regretSums.length)
+      .map(i => i + " - " + util.Arrays.toString(regretSums(i)))
+      .mkString(" | ")
 }

@@ -63,7 +63,7 @@ trait ExtensiveGame[State, InformationSet, Action]
   def transition(
     nonTerminal : State,
     action      : Action
-    ) : State
+    ): State
 
   def transitionStateNode(
     nonTerminal : ExtensiveStateNode[State, InformationSet, Action],

@@ -4,6 +4,7 @@ import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.SimpleGameSolution
 import ao.learn.mst.gen5.example.matrix._
 import ao.learn.mst.gen5.example.matrix.MatrixGame
+import ao.learn.mst.gen5.cfr.OutcomeSamplingCfrMinimizer
 
 /**
  * 20/01/14 9:37 PM
@@ -21,7 +22,9 @@ class BasicMatrixResponseSpec
     {
       val solution : SimpleGameSolution[MatrixState, MatrixPlayer, MatrixAction] =
         SimpleGameSolution.forGame(
-          game, iterations)
+          game,
+          OutcomeSamplingCfrMinimizer(),
+          iterations)
 
       val bestResponses : BestResponseProfile[MatrixPlayer, MatrixAction] =
         solution.response

@@ -43,17 +43,8 @@ case class SeqExtensiveStrategyProfile(
       return defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)
     }
 
-    val actionProbabilities: Seq[Double] = {
-      val allProbabilities: Seq[Double] =
-        probabilities(informationSetIndex)
-
-      if (allProbabilities.length >= actionCount) {
-        allProbabilities
-      } else {
-        CommonUtils.normalizeToOne(
-          allProbabilities.take(actionCount))
-      }
-    }
+    val actionProbabilities: Seq[Double] =
+      probabilities(informationSetIndex)
 
     if (actionProbabilities.isEmpty) {
       defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)

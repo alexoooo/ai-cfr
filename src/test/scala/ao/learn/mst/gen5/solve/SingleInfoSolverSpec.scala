@@ -93,7 +93,7 @@ class SingleInfoSolverSpec
       "Rock-paper-scissors" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsGame,
-          100 * 1000)
+          200 * 1000)
 
         // (roughly) equal distribution
         optimalStrategy.min must be greaterThan(
@@ -103,7 +103,7 @@ class SingleInfoSolverSpec
       "Rock-paper-scissors-well" in {
         val optimalStrategy = solveSingletonInformationSetGame(
           RockPaperScissorsWellGame,
-          150 * 1000)
+          250 * 1000)
 
         // rock is dominated
         optimalStrategy(0) must be lessThan epsilonProbability

@@ -3,7 +3,7 @@ package ao.learn.mst.gen2.example.kuhn.adapt
 import ao.learn.mst.gen2.player.model.FiniteAction
 import ao.learn.mst.gen2.example.kuhn.card.KuhnCard._
 import ao.learn.mst.gen2.prob.ActionProbabilityMass
-import ao.learn.mst.gen2.example.kuhn.card.{KuhnCard}
+import ao.learn.mst.gen2.example.kuhn.card.{KuhnDeck, KuhnCard}
 import ao.learn.mst.gen2.game.ExtensiveGameChance
 import collection.immutable.{SortedSet, SortedMap}
 import ao.learn.mst.gen2.example.kuhn.state.KuhnState
@@ -20,12 +20,9 @@ object KuhnGameChance
 {
   //--------------------------------------------------------------------------------------------------------------------
   def actions : SortedSet[FiniteAction] = {
-    val cardPermutations : Set[(KuhnCard, KuhnCard)] =
-      for {
-        firstCard  <- KuhnCard.values
-        secondCard <- KuhnCard.values
-        if secondCard != firstCard
-      } yield (firstCard, secondCard)
+    val cardPermutations : Seq[(KuhnCard, KuhnCard)] =
+      KuhnDeck.permutations
+        .map(cs => (cs.first, cs.last))
 
     var possibilities = SortedSet[FiniteAction]()
     for (
