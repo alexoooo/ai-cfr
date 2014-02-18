@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.cfr.{ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.uniform.UniformBinaryBanditGame
@@ -25,7 +25,8 @@ class SingleInfoSolverSpec
   "Counterfactual Regret Minimization algorithm" should
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-      new OutcomeSamplingCfrMinimizer[S, I, A]
+//      new OutcomeSamplingCfrMinimizer[S, I, A]
+      new OutcomeSampling2CfrMinimizer[S, I, A]
 
 
     "Solve singleton information-set games" in {

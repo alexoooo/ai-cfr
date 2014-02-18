@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.cfr.OutcomeSamplingCfrMinimizer
+import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, OutcomeSamplingCfrMinimizer}
 import ao.learn.mst.gen5.ExtensiveGame
 import ao.learn.mst.gen5.example.bandit.rps.RockPaperScissorsGame
 import ao.learn.mst.gen5.example.bandit.rpsw.RockPaperScissorsWellGame
@@ -21,7 +21,8 @@ class RpsSolverSpec
   "Counterfactual Regret Minimization algorithm" should
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-      new OutcomeSamplingCfrMinimizer[S, I, A]
+//      new OutcomeSamplingCfrMinimizer[S, I, A]
+      new OutcomeSampling2CfrMinimizer[S, I, A]
 
 
     "Solve single-info non-zero-sum rock-paper-scissors style games" in {
@@ -33,7 +34,7 @@ class RpsSolverSpec
       "Rock-paper-scissors" in {
         val optimalStrategy = solveRpsGame(
           RockPaperScissorsGame,
-          200 * 1000)
+          400 * 1000)
 
         // (roughly) equal distribution
         optimalStrategy.min must be greaterThan(
@@ -43,7 +44,7 @@ class RpsSolverSpec
       "Rock-paper-scissors-well" in {
         val optimalStrategy = solveRpsGame(
           RockPaperScissorsWellGame,
-          300 * 1000)
+          400 * 1000)
 
         // rock is dominated
         optimalStrategy(0) must be lessThan epsilonProbability

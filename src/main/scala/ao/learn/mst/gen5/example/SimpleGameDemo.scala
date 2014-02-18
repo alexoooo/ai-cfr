@@ -1,28 +1,13 @@
 package ao.learn.mst.gen5.example
 
-import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensivePlayer, ExtensiveGame}
+import ao.learn.mst.gen5.{ExtensivePlayer, ExtensiveGame}
 import ao.learn.mst.gen5.node.{Chance, Terminal, Decision}
 import scala.util.Random
 import ao.learn.mst.gen5.solve.ExtensiveSolver
-import ao.learn.mst.gen5.cfr.{ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer, ExternalSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
-import ao.learn.mst.gen5.example.abstraction.{AbstractionUtils, SingleInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
-import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
-import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
-import ao.learn.mst.gen5.example.bandit.bernoulli.BernoulliBinaryBanditGame
-import ao.learn.mst.gen5.example.bandit.uniform.UniformBinaryBanditGame
-import ao.learn.mst.gen5.example.bandit.gaussian.GaussianBinaryBanditGame
-import ao.learn.mst.gen5.example.bandit.rpsw.RockPaperScissorsWellGame
-import ao.learn.mst.gen5.example.matrix.MatrixGames
-import java.text.DecimalFormat
-import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
-import ao.learn.mst.gen5.example.imperfect.ImperfectGame
-import ao.learn.mst.gen5.example.monty.{MontyHallGame, BasicMontyHallGame}
+import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, OutcomeSamplingCfrMinimizer}
 import ao.learn.mst.lib.CommonUtils
-import ao.learn.mst.gen5.br.ResponseTreeTraverser
-import ao.learn.mst.gen5.example.stochastic.CoinFlipDeterministicGame
 import ao.learn.mst.gen5.example.ocp.KuhnGame
 import scala.xml.PrettyPrinter
-import ao.learn.mst.gen2.example.ExtensiveGameDisplay
 
 
 object SimpleGameDemo extends App
@@ -50,7 +35,8 @@ object SimpleGameDemo extends App
   def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
 //    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy, sourceOfRandomness)
 //    new ExternalSamplingCfrMinimizer[S, I, A](averageStrategy)
-    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
+//    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
+    new OutcomeSampling2CfrMinimizer[S, I, A](averageStrategy)
 //    new ProbingCfrMinimizer[S, I, A](averageStrategy)
 
 

@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.cfr.{ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer}
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.matrix.MatrixGames
 import scala._
@@ -31,8 +31,8 @@ class BasicMatrixSolverSpec
       {
         val solver : ExtensiveSolver[S, I, A] =
 //          new ChanceSampledCfrMinimizer[S, I, A](zeroSum)
-          new OutcomeSamplingCfrMinimizer[S, I, A](zeroSum)
-//          new ProbingCfrMinimizer[S, I, A](zeroSum)
+//          new OutcomeSamplingCfrMinimizer[S, I, A](zeroSum)
+          new OutcomeSampling2CfrMinimizer[S, I, A](zeroSum)
 
         val strategy : ExtensiveStrategyProfile =
           SolverSpecUtils.solve(game, solver, iterations)
