@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.example
 
 import ao.learn.mst.gen5.{ExtensivePlayer, ExtensiveAbstraction, ExtensiveGame}
-import ao.learn.mst.gen5.example.abstraction.{SingleInfoLosslessDecisionAbstractionBuilder, AbstractionUtils, LosslessInfoLosslessDecisionAbstractionBuilder}
+import ao.learn.mst.gen5.example.abstraction.{AbstractionUtils, LosslessInfoLosslessDecisionAbstractionBuilder}
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.solve.{ExtensiveSolver, SolutionApproximation}
 import ao.learn.mst.lib.CommonUtils
@@ -12,7 +12,6 @@ import ao.learn.mst.gen5.br._
 import ao.learn.mst.gen5.cfr.{OutcomeSamplingCfrMinimizer, ProbingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.br.BestResponseProfile
 import ao.learn.mst.gen5.br.BestResponsePlayer
-import ao.learn.mst.gen5.abstraction.InfoPerDecisionSetAbstraction
 
 /**
  *
@@ -25,19 +24,19 @@ object SimpleGameSolution
 
   //--------------------------------------------------------------------------------------------------------------------
   def forGame[S, I, A](
-    game       : ExtensiveGame[S, I, A],
-    solver     : ExtensiveSolver[S, I, A],
-    iterations : Int)
-    : SimpleGameSolution[S, I, A] =
+      game       : ExtensiveGame[S, I, A],
+      solver     : ExtensiveSolver[S, I, A],
+      iterations : Int,
+      display    : Boolean = true
+      ): SimpleGameSolution[S, I, A] =
   {
-    val losslessAbstraction : ExtensiveAbstraction[I, A] =
+    val losslessAbstraction: ExtensiveAbstraction[I, A] =
       LosslessInfoLosslessDecisionAbstractionBuilder.generate(game)
-//      new InfoPerDecisionSetAbstraction()
 
-    val strategy : ExtensiveStrategyProfile =
-      solve(game, losslessAbstraction, solver, iterations)
+    val strategy: ExtensiveStrategyProfile =
+      solve(game, losslessAbstraction, solver, iterations, display)
 
-    val response : BestResponseProfile[I, A] =
+    val response: BestResponseProfile[I, A] =
       BestResponseFinder.bestResponseProfile(
         game, losslessAbstraction, strategy)
 
@@ -55,10 +54,11 @@ object SimpleGameSolution
 
   //--------------------------------------------------------------------------------------------------------------------
   private def solve[S, I, A](
-      game            : ExtensiveGame[S, I, A],
+      game        : ExtensiveGame[S, I, A],
       abstraction : ExtensiveAbstraction[I, A],
       solver      : ExtensiveSolver[S, I, A],
-      iterations  : Int)
+      iterations  : Int,
+      display     : Boolean)
       : ExtensiveStrategyProfile =
   {
 //    val solver : ExtensiveSolver[S, I, A] =
@@ -103,12 +103,14 @@ object SimpleGameSolution
 
     for (i <- 1 to iterations) {
       solution.optimize(abstraction)
-      if (i % displayFrequency == 0) {
+      if (i % displayFrequency == 0 && display) {
         displayStrategy(i)
       }
     }
 
-    displayStrategy(iterations)
+    if (display) {
+      displayStrategy(iterations)
+    }
 
     val strategy : ExtensiveStrategyProfile =
       solution.strategy

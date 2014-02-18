@@ -1,9 +1,9 @@
 package ao.learn.mst.gen2.example.kuhn.adapt
 
 import ao.learn.mst.gen2.info.InformationSet
-import ao.learn.mst.gen2.example.kuhn.card.KuhnCard._
-import ao.learn.mst.gen2.example.kuhn.action.KuhnActionSequence._
-import ao.learn.mst.gen2.example.kuhn.state.KuhnStake
+import ao.learn.mst.gen5.example.kuhn.card.KuhnCard._
+import ao.learn.mst.gen5.example.kuhn.action.KuhnActionSequence._
+import ao.learn.mst.gen5.example.kuhn.state.KuhnStake
 
 
 case class KuhnGameInfo(

@@ -18,45 +18,28 @@ class SingleInfoSolverSpec
 {
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
-//    0.01
-    0.03
+    0.01
 
 
   //--------------------------------------------------------------------------------------------------------------------
   "Counterfactual Regret Minimization algorithm" should
   {
     def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-//      new ChanceSampledCfrMinimizer[S, I, A]
       new OutcomeSamplingCfrMinimizer[S, I, A]
-//      new ProbingCfrMinimizer[S, I, A]
 
 
-    "Solve singleton information-set games:" in {
-      def solveSingletonInformationSetGame[S, I, A](
-          game            : ExtensiveGame[S, I, A],
-          iterations      : Int,
-          expectedActions : Option[Int] = None): Seq[Double] =
-      {
-        val solver : ExtensiveSolver[S, I, A] =
-          cfrAlgorithm()
+    "Solve singleton information-set games" in {
+      def solveSingleInfoSetGame[S, I, A](game: ExtensiveGame[S, I, A], iterations: Int): Seq[Double] =
+        SolverSpecUtils
+          .solve(game, cfrAlgorithm(), iterations)
+          .actionProbabilityMass(0)
 
-        val strategy : ExtensiveStrategyProfile =
-          SolverSpecUtils.solve(game, solver, iterations)
-
-        val actionProbabilities : Seq[Double] =
-          expectedActions match {
-            case None    => strategy.actionProbabilityMass(0)
-            case Some(c) => strategy.actionProbabilityMass(0, c)
-          }
-
-        actionProbabilities
-      }
 
       "Classical bandit setting" in {
         "Deterministic binary bandit" in {
-          val optimalStrategy = solveSingletonInformationSetGame(
+          val optimalStrategy = solveSingleInfoSetGame(
             DeterministicBinaryBanditGame.plusMinusOne,
-            64)
+            1)
 
           optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
         }
@@ -65,52 +48,29 @@ class SingleInfoSolverSpec
           implicit val sourceOfRandomness = new Random
 
           "Uniform" in {
-            val optimalStrategy = solveSingletonInformationSetGame(
+            val optimalStrategy = solveSingleInfoSetGame(
               UniformBinaryBanditGame.withAdvantageForTrue(0.05),
-              15 * 1000)
+              5 * 1000)
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
 
           "Bernoulli" in {
-            val optimalStrategy = solveSingletonInformationSetGame(
+            val optimalStrategy = solveSingleInfoSetGame(
               BernoulliBinaryBanditGame.withAdvantageForTrue(0.05),
-              43 * 1000)
+              6 * 1000)
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
 
           "Gaussian" in {
-            val optimalStrategy = solveSingletonInformationSetGame(
-                GaussianBinaryBanditGame.withAdvantageForTrue(0.05),
-                250 * 1000)
+            val optimalStrategy = solveSingleInfoSetGame(
+              GaussianBinaryBanditGame.withAdvantageForTrue(0.05),
+              15 * 1000)
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
         }
-      }
-
-      "Rock-paper-scissors" in {
-        val optimalStrategy = solveSingletonInformationSetGame(
-          RockPaperScissorsGame,
-          200 * 1000)
-
-        // (roughly) equal distribution
-        optimalStrategy.min must be greaterThan(
-          1.0/3 - epsilonProbability)
-      }
-
-      "Rock-paper-scissors-well" in {
-        val optimalStrategy = solveSingletonInformationSetGame(
-          RockPaperScissorsWellGame,
-          250 * 1000)
-
-        // rock is dominated
-        optimalStrategy(0) must be lessThan epsilonProbability
-
-        // mixing evenly between paper, scissors, and well is an equilibrium.
-        optimalStrategy.max must be lessThan(
-          1.0/3 + epsilonProbability)
       }
     }
   }

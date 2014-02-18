@@ -11,8 +11,8 @@ case object LosslessInfoLosslessDecisionAbstractionBuilder
 {
   //--------------------------------------------------------------------------------------------------------------------
   def generate[State, InformationSet, Action](
-      game: ExtensiveGame[State, InformationSet, Action])
-      : ExtensiveAbstraction[InformationSet, Action] =
+      game: ExtensiveGame[State, InformationSet, Action]
+      ): ExtensiveAbstraction[InformationSet, Action] =
   {
     val actionToIndex : Map[Action, Int] = {
       val nonTrivialChoices : Set[Action] =

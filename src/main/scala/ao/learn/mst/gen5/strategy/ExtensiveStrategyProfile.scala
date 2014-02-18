@@ -12,11 +12,11 @@ trait ExtensiveStrategyProfile
   def knownInformationSetCount: Int
 
   def actionProbabilityMass(
-    informationSetIndex:Int) : Seq[Double]
+    informationSetIndex: Int): Seq[Double]
 
   def actionProbabilityMass(
-    informationSetIndex:Int,
-    actionCount:Int
+    informationSetIndex: Int,
+    actionCount: Int
     ): Seq[Double]
 
 

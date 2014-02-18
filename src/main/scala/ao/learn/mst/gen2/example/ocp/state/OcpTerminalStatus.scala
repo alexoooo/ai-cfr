@@ -1,7 +1,7 @@
 package ao.learn.mst.gen2.example.ocp.state
 
 import ao.learn.mst.gen2.example.ocp.state.OcpPosition._
-import ao.learn.mst.gen2.example.kuhn.state.terminal.{NamedWinnerIndicator, EnumWithWinner}
+import ao.learn.mst.gen5.example.kuhn.state.terminal.{NamedWinnerIndicator, EnumWithWinner}
 
 
 //----------------------------------------------------------------------------------------------------------------------

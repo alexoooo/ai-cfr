@@ -11,10 +11,10 @@ object SolverSpecUtils
   def flatSolve[S, I, A](
       game       : ExtensiveGame[S, I, A],
       solver     : ExtensiveSolver[S, I, A],
-      iterations : Int)
-    : Seq[Seq[Double]] =
+      iterations : Int
+      ): Seq[Seq[Double]] =
   {
-    val strategy : ExtensiveStrategyProfile =
+    val strategy: ExtensiveStrategyProfile =
       SolverSpecUtils.solve(game, solver, iterations)
 
     (0 until strategy.knownInformationSetCount)
@@ -24,16 +24,16 @@ object SolverSpecUtils
   def solve[S, I, A](
       game       : ExtensiveGame[S, I, A],
       solver     : ExtensiveSolver[S, I, A],
-      iterations : Int)
-    : ExtensiveStrategyProfile =
+      iterations : Int
+      ): ExtensiveStrategyProfile =
   {
-    val solution : SolutionApproximation[I, A] =
+    val solution: SolutionApproximation[I, A] =
       solver.initialSolution(game)
 
-    val abstractionBuilder : OpaqueAbstractionBuilder =
+    val abstractionBuilder: OpaqueAbstractionBuilder =
       LosslessInfoLosslessDecisionAbstractionBuilder
 
-    val abstraction : ExtensiveAbstraction[I, A] =
+    val abstraction: ExtensiveAbstraction[I, A] =
       abstractionBuilder.generate(game)
 
     for (i <- 1 to iterations) {
@@ -47,7 +47,7 @@ object SolverSpecUtils
   }
 
   def getDecisionInformationSet[I, A](
-    decisionNode : ExtensiveNode[I, A]) : I =
+      decisionNode: ExtensiveNode[I, A]): I =
   {
     decisionNode match {
       case Decision(_, infoSet, _) =>

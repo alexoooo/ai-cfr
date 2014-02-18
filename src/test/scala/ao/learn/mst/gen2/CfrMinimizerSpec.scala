@@ -13,11 +13,11 @@ import ao.learn.mst.gen2.example.imperfect.complete.decision.{ImperfectCompleteD
 import ao.learn.mst.gen2.example.zerosum.ZeroSumGame
 import ao.learn.mst.gen2.example.zerosum.info.{ZeroSumInfoBlue, ZeroSumInfoRed}
 import ao.learn.mst.gen2.example.kuhn.adapt.{KuhnGameInfo, KuhnGame}
-import ao.learn.mst.gen2.example.kuhn.card.KuhnCard
-import ao.learn.mst.gen2.example.kuhn.card.KuhnCard.KuhnCard
-import ao.learn.mst.gen2.example.kuhn.action.{KuhnPlayerAction, KuhnActionSequence}
-import ao.learn.mst.gen2.example.kuhn.action.KuhnActionSequence.KuhnActionSequence
-import ao.learn.mst.gen2.example.kuhn.action.KuhnPlayerAction.KuhnPlayerAction
+import ao.learn.mst.gen5.example.kuhn.card.KuhnCard
+import ao.learn.mst.gen5.example.kuhn.card.KuhnCard.KuhnCard
+import ao.learn.mst.gen5.example.kuhn.action.{KuhnPlayerAction, KuhnActionSequence}
+import ao.learn.mst.gen5.example.kuhn.action.KuhnActionSequence.KuhnActionSequence
+import ao.learn.mst.gen5.example.kuhn.action.KuhnPlayerAction.KuhnPlayerAction
 import ao.learn.mst.gen2.example.slot.specific.bin.deterministic.DeterministicBinaryBanditGame
 
 

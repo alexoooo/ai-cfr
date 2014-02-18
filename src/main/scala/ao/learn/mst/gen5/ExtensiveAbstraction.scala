@@ -12,16 +12,16 @@ trait ExtensiveAbstraction[InformationSet, Action]
    * @param informationSet decision state
    * @return abstract index of visible information observed in a decision state
    */
-  def informationSetIndex(informationSet : InformationSet) : Int
+  def informationSetIndex(informationSet: InformationSet) : Int
 
-  def actionIndex(action : Action) : Int
+  def actionIndex(action: Action): Int
 
   /**
    * @param informationSet decision state
    * @param action action taken in decision state
    * @return abstract index of action in informationSet
    */
-  def actionSubIndex(informationSet : InformationSet, action : Action) : Int
+  def actionSubIndex(informationSet: InformationSet, action: Action): Int
 
-  def actionCount(informationSet : InformationSet) : Int
+  def actionCount(informationSet: InformationSet): Int
 }
