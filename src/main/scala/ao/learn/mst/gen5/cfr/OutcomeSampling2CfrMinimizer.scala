@@ -75,8 +75,7 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
             playerIndex,
             game.initialStateNode,
             Seq.fill(game.playerCount)(1.0),
-            Seq.fill(game.playerCount)(1.0),
-            new ProbRef(1.0))
+            Seq.fill(game.playerCount)(1.0))
 
           buffer.commit(strategyProfile)
         }
@@ -92,19 +91,17 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
           updatePlayer        : Int,
           stateNode           : ExtensiveStateNode[State, InformationSet, Action],
           reachProbabilities  : Seq[Double],
-          sampleProbabilities : Seq[Double],
-          suffixReach         : ProbRef
+          sampleProbabilities : Seq[Double]
           ): SampleOutcome =
       {
         reachProbabilities.foreach(checkProb)
 
         stateNode match {
           case StateTerminal(_, Terminal(payoffs)) =>
-            suffixReach.probability = 1.0
-
             SampleOutcome(
               payoffs(updatePlayer),
-              sampleProbabilities.product)
+              sampleProbabilities.product,
+              1.0)
 
 
           case StateChance(_, Chance(outcomes)) =>
@@ -120,8 +117,7 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
               updatePlayer,
               nextState,
               reachProbabilities,
-              sampleProbabilities,
-              suffixReach)
+              sampleProbabilities)
 
 
           case decision: StateDecision[State, InformationSet, Action] =>
@@ -182,27 +178,21 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
               reachProbabilities
                 .updated(nextToAct, moveProb * reachProbabilities(nextToAct))
 
-            val newSuffixReach: ProbRef =
-              new ProbRef(1.0)
-
             val outcome: SampleOutcome =
               walkTree(
                 updatePlayer,
                 newGameState,
                 nextReachProbabilities,
-                nextSampleProbabilities,
-                newSuffixReach)
+                nextSampleProbabilities)
 
             val updatePlayerPayoff: Double =
               outcome.payoff
 
             val ctlReach: Double =
-              newSuffixReach.probability
+              outcome.suffixReachProbability
 
             val itlReach: Double =
-              newSuffixReach.probability * moveProb
-
-            suffixReach.probability = itlReach
+              outcome.suffixReachProbability * moveProb
 
             val nextToActReachProbability: Double =
               reachProbabilities(nextToAct)
@@ -243,8 +233,10 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
             }
 
             outcome
+              .scakeSuffixReach(moveProb)
         }
       }
+
 
       def checkProb(probability: Double): Unit =
         assert(0 <= probability && probability <= 1.0)
@@ -301,5 +293,11 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
   private class ProbRef(var probability: Double)
 
   private case class SampleOutcome(
-    payoff: Double, sampleProbability: Double)
+    payoff: Double,
+    sampleProbability: Double,
+    suffixReachProbability: Double)
+  {
+    def scakeSuffixReach(moveProb: Double): SampleOutcome =
+      copy(suffixReachProbability = suffixReachProbability * moveProb)
+  }
 }

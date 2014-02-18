@@ -33,7 +33,7 @@ class BasicSinglePlayerSolverSpec
       "Basic Monty Hall problem" in {
         val solution = solveGame(
           BasicMontyHallGame,
-          100)
+          200)
 
         val switchDecision =
           solution(1)

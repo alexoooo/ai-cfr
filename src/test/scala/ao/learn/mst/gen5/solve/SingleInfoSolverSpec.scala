@@ -59,7 +59,7 @@ class SingleInfoSolverSpec
           "Bernoulli" in {
             val optimalStrategy = solveSingleInfoSetGame(
               BernoulliBinaryBanditGame.withAdvantageForTrue(0.05),
-              6 * 1000)
+              7 * 1000)
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }

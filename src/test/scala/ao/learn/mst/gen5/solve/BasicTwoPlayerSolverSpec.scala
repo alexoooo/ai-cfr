@@ -1,6 +1,6 @@
 package ao.learn.mst.gen5.solve
 
-import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, OutcomeSamplingCfrMinimizer}
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame
@@ -35,7 +35,7 @@ class BasicTwoPlayerSolverSpec
       "Perfect and complete information" in {
         val solution = solveGame(
           PerfectCompleteGame,
-          1000)
+          2 * 1000)
 
         val playerOne     = solution(0)
         val playerTwoDown = solution(1)
