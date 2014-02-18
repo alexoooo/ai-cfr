@@ -105,172 +105,220 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
 
 
           case StateChance(_, Chance(outcomes)) =>
-            val sampledAction: Action =
-              outcomes
-                .map(o => (o.action, o.probability * math.random))
-                .maxBy(_._2)._1
-
-            val nextState =
-              game.transitionStateNode(stateNode, sampledAction)
-
             walkTree(
               updatePlayer,
-              nextState,
+              sampleChance(stateNode, outcomes),
               reachProbabilities,
               sampleProbabilities)
 
 
           case decision: StateDecision[State, InformationSet, Action] =>
-            val nextToAct: Int =
-              decision.node.nextToAct.index
-
-            val infoSet: InformationSet =
-              decision.node.informationSet
-
-            val actionsHere: Int =
-              abstraction.actionCount(infoSet)
-
-            val infoIndex: Int =
-              abstraction.informationSetIndex(infoSet)
-
-
-            val curMoveProbs: Seq[Double] =
-              strategyProfile.positiveRegretMatchingStrategy(
-                infoIndex, actionsHere)
-
-            val sampleProb: ProbRef =
-              new ProbRef(-1.0)
-
-            val takeAction: Int =
-              if (nextToAct == updatePlayer) {
-                sampleAction(curMoveProbs, sampleProb, explorationProbability)
-              } else {
-                sampleAction(curMoveProbs, sampleProb, 0.0)
-              }
-
-            checkProbNotZero(sampleProb.probability)
-
-            val nextSampleProbabilities: Seq[Double] =
-              sampleProbabilities
-                .updated(nextToAct, sampleProb.probability * sampleProbabilities(nextToAct))
-
-            val moveProb: Double =
-              curMoveProbs(takeAction)
-
-            val realAction: Action = {
-              def indexOf(choice: Action): Int =
-                abstraction.actionSubIndex(infoSet, choice)
-
-              val realActionCandidates: Traversable[Action] =
-                decision.node.choices
-                  .filter(indexOf(_) == takeAction)
-
-              realActionCandidates
-                .map(a => (a, math.random))
-                .maxBy(_._2)._1
-            }
-
-            val newGameState: ExtensiveStateNode[State, InformationSet, Action] =
-              game.transitionStateNode(stateNode, realAction)
-
-            checkProb(moveProb)
-            val nextReachProbabilities: Seq[Double] =
-              reachProbabilities
-                .updated(nextToAct, moveProb * reachProbabilities(nextToAct))
-
-            val outcome: SampleOutcome =
-              walkTree(
-                updatePlayer,
-                newGameState,
-                nextReachProbabilities,
-                nextSampleProbabilities)
-
-            val updatePlayerPayoff: Double =
-              outcome.payoff
-
-            val ctlReach: Double =
-              outcome.suffixReachProbability
-
-            val itlReach: Double =
-              outcome.suffixReachProbability * moveProb
-
-            val nextToActReachProbability: Double =
-              reachProbabilities(nextToAct)
-
-            val opponentReachProbability: Double =
-              reachProbabilities
-                .zipWithIndex
-                .filterNot(_._2 == nextToAct)
-                .map(_._1)
-                .product
-
-            if (nextToAct == updatePlayer)
-            {
-              val U = updatePlayerPayoff * opponentReachProbability / outcome.sampleProbability
-
-              val counterfactualRegret: Seq[Double] =
-                for (a <- 0 until actionsHere)
-                yield
-                    if (a == takeAction) {
-                      U * (ctlReach - itlReach)
-                    } else {
-                      -U * itlReach
-                    }
-
-              buffer.bufferRegret(
-                infoIndex, counterfactualRegret)
-            }
-
-            if (averageStrategy) {
-              if (nextToAct != updatePlayer)
-              {
-                val stochasticWeight: Double =
-                  (1.0 / sampleProbabilities.product) * nextToActReachProbability
-
-                averageStrategyBuilder.get.update(
-                  infoIndex, curMoveProbs, stochasticWeight)
-              }
-            }
-
-            outcome
-              .scakeSuffixReach(moveProb)
+            walkDecision(
+              updatePlayer,
+              decision,
+              reachProbabilities,
+              sampleProbabilities)
         }
       }
 
 
-      def checkProb(probability: Double): Unit =
-        assert(0 <= probability && probability <= 1.0)
-
-      def checkProbNotZero(probability: Double): Unit =
-        assert(0 < probability && probability <= 1.0)
-
-
-      def sampleAction(
-          curMoveProbs: Seq[Double],
-          sampleProb: ProbRef,
-          epsilon: Double)
-          : Int =
+      //----------------------------------------------------------------------------------------------------------------
+      def sampleChance(
+          stateNode : ExtensiveStateNode[State, InformationSet, Action],
+          outcomes  : Traversable[Outcome[Action]]
+          ): ExtensiveStateNode[State, InformationSet, Action] =
       {
-        val actionsHere: Int =
-          curMoveProbs.length
+        val sampledOutcome: Action =
+          outcomes
+            .map(o => (o.action, o.probability * math.random))
+            .maxBy(_._2)._1
 
-        val dist: Seq[Double] =
-            curMoveProbs
-              .map(p => epsilon * (1.0 / actionsHere) + (1.0 - epsilon) * p)
+        val sampledChance: ExtensiveStateNode[State, InformationSet, Action] =
+          game.transitionStateNode(stateNode, sampledOutcome)
 
+        sampledChance
+      }
+
+
+      //----------------------------------------------------------------------------------------------------------------
+      def walkDecision(
+          updatePlayer        : Int,
+          decision            : StateDecision[State, InformationSet, Action],
+          reachProbabilities  : Seq[Double],
+          sampleProbabilities : Seq[Double]
+          ): SampleOutcome =
+      {
+        val nextToAct: Int =
+          decision.node.nextToAct.index
+
+        val nextToActIsUpdatePlayer: Boolean =
+          nextToAct == updatePlayer
+        
+        val infoSet: InformationSet =
+          decision.node.informationSet
+
+        val abstractActionCount: Int =
+          abstraction.actionCount(infoSet)
+
+        val infoIndex: Int =
+          abstraction.informationSetIndex(infoSet)
+
+        val strategy: Seq[Double] =
+          strategyProfile.positiveRegretMatchingStrategy(
+            infoIndex, abstractActionCount)
+
+        val sampledAction: ActionSample =
+          sampleAction(strategy, nextToActIsUpdatePlayer)
+
+        val nextSampleProbabilities: Seq[Double] =
+          sampleProbabilities
+            .updated(nextToAct, sampledAction.probability * sampleProbabilities(nextToAct))
+
+        val sampledActionStrategyProbability: Double =
+          strategy(sampledAction.index)
+
+        val realAction: Action =
+          translateFromAbstraction(
+            infoSet, decision.node.choices, sampledAction.index)
+
+        val newGameState: ExtensiveStateNode[State, InformationSet, Action] =
+          game.transitionStateNode(decision, realAction)
+
+        val nextReachProbabilities: Seq[Double] =
+          reachProbabilities
+            .updated(nextToAct, sampledActionStrategyProbability * reachProbabilities(nextToAct))
+
+        val outcome: SampleOutcome =
+          walkTree(
+            updatePlayer,
+            newGameState,
+            nextReachProbabilities,
+            nextSampleProbabilities)
+
+        if (nextToActIsUpdatePlayer) {
+          buffer.bufferRegret(
+            infoIndex,
+            counterfactualRegret(
+              nextToAct, abstractActionCount, sampledAction.index, sampledActionStrategyProbability, reachProbabilities, outcome))
+        }
+
+        if (averageStrategy && ! nextToActIsUpdatePlayer) {
+          averageStrategyBuilder.get.update(
+            infoIndex, strategy,
+            stochasticWeight(nextToAct, reachProbabilities, sampleProbabilities))
+        }
+
+        outcome
+          .scakeSuffixReach(sampledActionStrategyProbability)
+      }
+
+
+      //----------------------------------------------------------------------------------------------------------------
+      def translateFromAbstraction(
+        infoSet: InformationSet, choices: Traversable[Action], abstractAction: Int): Action =
+      {
+        def indexOf(choice: Action): Int =
+          abstraction.actionSubIndex(infoSet, choice)
+
+        val realActionCandidates: Traversable[Action] =
+          choices.filter(indexOf(_) == abstractAction)
+
+        realActionCandidates
+          .map(a => (a, math.random))
+          .maxBy(_._2)._1
+      }
+
+
+
+      //----------------------------------------------------------------------------------------------------------------
+      def stochasticWeight(nextToAct: Int, reachProbabilities: Seq[Double], sampleProbabilities: Seq[Double]): Double = {
+        val nextToActReachProbability: Double =
+          reachProbabilities(nextToAct)
+
+        (1.0 / sampleProbabilities.product) * nextToActReachProbability
+      }
+
+
+      private def counterfactualRegret(
+          nextToAct: Int,
+          actionCount: Int,
+          sampledActionIndex: Int,
+          moveProb: Double,
+          reachProbabilities: Seq[Double],
+          outcome: SampleOutcome
+          ): Seq[Double] =
+      {
+        val updatePlayerPayoff: Double =
+          outcome.payoff
+
+        val ctlReach: Double =
+          outcome.suffixReachProbability
+
+        val itlReach: Double =
+          outcome.suffixReachProbability * moveProb
+
+        val opponentReachProbability: Double =
+          reachProbabilities
+            .zipWithIndex
+            .filterNot(_._2 == nextToAct)
+            .map(_._1)
+            .product
+
+        val U = updatePlayerPayoff * opponentReachProbability / outcome.sampleProbability
+
+        val counterfactualRegret: Seq[Double] =
+          for (a <- 0 until actionCount)
+          yield
+            if (a == sampledActionIndex) {
+              U * (ctlReach - itlReach)
+            } else {
+              -U * itlReach
+            }
+
+        counterfactualRegret
+      }
+
+      
+      //----------------------------------------------------------------------------------------------------------------
+      private def sampleAction(
+          strategy       : Seq[Double],
+          updatingPlayer : Boolean
+          ): ActionSample =
+      {
+        if (updatingPlayer) {
+          sampleAction(exploratoryActionProbabilities(strategy))
+        } else {
+          sampleAction(strategy)
+        }
+      }
+
+      def exploratoryActionProbabilities(strategy: Seq[Double]): Seq[Double] = {
+        val minProbability: Double =
+          explorationProbability * (1.0 / strategy.length)
+
+        val strategyFactor: Double =
+          1.0 - explorationProbability
+
+        strategy
+          .map(p => minProbability + strategyFactor * p)
+      }
+
+      private def sampleAction(
+          actionProbabilities: Seq[Double]
+          ): ActionSample =
+      {
         val roll: Double =
           math.random
 
         var sum: Double =
           0.0
 
-        for (a <- 0 until actionsHere) {
-          if (roll >= sum && roll < sum + dist(a)) {
-            sampleProb.probability = dist(a)
-            return a
+        for (a <- 0 until actionProbabilities.length) {
+          if (roll >= sum && roll < sum + actionProbabilities(a)) {
+            return ActionSample(a, actionProbabilities(a))
           }
 
-          sum += dist(a)
+          sum += actionProbabilities(a)
         }
 
         throw new IllegalStateException()
@@ -289,9 +337,22 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
   }
 
 
-  //------------------------------------------------------------------------------------------------------------------
-  private class ProbRef(var probability: Double)
+  //---------------------------------------------------------------------------------------------------------------------
+  private def checkProb(probability: Double): Unit =
+    assert(0 <= probability && probability <= 1.0)
 
+  private def checkProbNotZero(probability: Double): Unit =
+    assert(0 < probability && probability <= 1.0)
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  private case class ActionSample(
+      index: Int,
+      probability: Double)
+  {
+    checkProbNotZero(probability)
+  }
+  
   private case class SampleOutcome(
     payoff: Double,
     sampleProbability: Double,

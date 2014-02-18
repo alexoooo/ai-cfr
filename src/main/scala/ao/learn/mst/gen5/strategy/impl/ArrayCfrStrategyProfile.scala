@@ -77,7 +77,7 @@ class ArrayCfrStrategyProfile
       positiveCounterfactualRegret.sum
 
     // compute probability as the proportion of positive regret
-    val positiveRegretStrategy : Seq[Double] = {
+    val positiveRegretStrategy: Seq[Double] = {
       if (positiveRegretSum > epsilon)
         positiveCounterfactualRegret.map(_ / positiveRegretSum)
       else

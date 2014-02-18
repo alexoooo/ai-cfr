@@ -44,7 +44,7 @@ class RpsSolverSpec
       "Rock-paper-scissors-well" in {
         val optimalStrategy = solveRpsGame(
           RockPaperScissorsWellGame,
-          400 * 1000)
+          500 * 1000)
 
         // rock is dominated
         optimalStrategy(0) must be lessThan epsilonProbability
