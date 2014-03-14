@@ -7,8 +7,8 @@ import org.la4j.matrix.Matrix
 
 //----------------------------------------------------------------------------------------------------------------------
 case class MatrixGame(
-    rowPlayerPayoffs : Matrix,
-    columnPlayerPayoffs : Matrix
+    rowPlayerPayoffs: Matrix,
+    columnPlayerPayoffs: Matrix
   ) extends ExtensiveGame[MatrixState, MatrixPlayer, MatrixAction]
 {
   //--------------------------------------------------------------------------------------------------------------------

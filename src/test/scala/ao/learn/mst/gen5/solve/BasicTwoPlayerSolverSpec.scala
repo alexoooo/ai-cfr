@@ -7,6 +7,7 @@ import ao.learn.mst.gen5.example.imperfect.ImperfectGame
 import ao.learn.mst.gen5.example.sig.SignalingGame
 import ao.learn.mst.gen5.example.burning.BurningGame
 import ao.learn.mst.gen5.ExtensiveGame
+import ao.learn.mst.gen5.state.MixedStrategy
 
 /**
  *
@@ -29,23 +30,23 @@ class BasicTwoPlayerSolverSpec
 //      new ProbingCfrMinimizer[S, I, A]
 
     "Solve basic small games" in {
-      def solveGame[S, I, A](game : ExtensiveGame[S, I, A], iterations : Int) : Seq[Seq[Double]] =
-        SolverSpecUtils.flatSolve(game, cfrAlgorithm(), iterations)
+      def solveGame[S, I, A](game: ExtensiveGame[S, I, A], iterations: Int): MixedStrategy =
+        SolverSpecUtils.solve(game, cfrAlgorithm(), iterations)
 
       "Perfect and complete information" in {
         val solution = solveGame(
           PerfectCompleteGame,
           2 * 1000)
 
-        val playerOne     = solution(0)
-        val playerTwoDown = solution(1)
-        val playerTwoUp   = solution(2)
+        val playerOne     = solution.probabilities(0, 2)
+        val playerTwoDown = solution.probabilities(1, 2)
+        val playerTwoUp   = solution.probabilities(2, 2)
 
         playerOne(0) must be lessThan epsilonProbability
         playerTwoUp(1) must be lessThan epsilonProbability
 
         // there is no guarantee for actions that opponent will not allow to reach
-        playerTwoDown(0) must be lessThan 0.5
+        //playerTwoDown(0) must be lessThan 0.5
         //playerTwoDown(0) must be lessThan epsilonProbability
       }
 
@@ -54,8 +55,8 @@ class BasicTwoPlayerSolverSpec
           ImperfectGame,
           1000)
 
-        val playerOne = solution(0)
-        val playerTwo = solution(1)
+        val playerOne = solution.probabilities(0, 2)
+        val playerTwo = solution.probabilities(1, 2)
 
         playerOne(1) must be lessThan epsilonProbability
         playerTwo(0) must be lessThan epsilonProbability
@@ -66,10 +67,10 @@ class BasicTwoPlayerSolverSpec
           SignalingGame,
           1000)
 
-        val senderFalse   = solution(0)
-        val senderTrue    = solution(1)
-        val receiverFalse = solution(2)
-        val receiverTrue  = solution(3)
+        val senderFalse   = solution.probabilities(0, 2)
+        val senderTrue    = solution.probabilities(1, 2)
+        val receiverFalse = solution.probabilities(2, 2)
+        val receiverTrue  = solution.probabilities(3, 2)
 
         if (senderFalse(0) > senderFalse(1)) {
           senderFalse  (1) must be lessThan epsilonProbability
@@ -85,17 +86,17 @@ class BasicTwoPlayerSolverSpec
       }
 
       "Money-burning Battle of the Sexes" in {
-        val solution : Seq[Seq[Double]] = solveGame(
+        val solution = solveGame(
           BurningGame,
           10 * 1000)
 
-        val burningDecision = solution(0)
-        val noBurnRowPlay   = solution(1)
-        val noBurnColPlay   = solution(3)
+        val burningDecision = solution.probabilities(0, 2)
+        val noBurnRowPlay   = solution.probabilities(1, 2)
+        val noBurnColPlay   = solution.probabilities(3, 2)
 
-        burningDecision.lift(1).getOrElse(0.0) must be lessThan epsilonProbability
-        noBurnRowPlay  .lift(1).getOrElse(0.0) must be lessThan epsilonProbability
-        noBurnColPlay  .lift(1).getOrElse(0.0) must be lessThan epsilonProbability
+        burningDecision(0) must be greaterThan 1.0 - epsilonProbability
+        noBurnRowPlay(0) must be greaterThan 1.0 - epsilonProbability
+        noBurnColPlay(0) must be greaterThan 1.0 - epsilonProbability
       }
     }
   }

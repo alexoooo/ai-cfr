@@ -26,14 +26,14 @@ class RpsSolverSpec
 
 
     "Solve single-info non-zero-sum rock-paper-scissors style games" in {
-      def solveRpsGame[S, I, A](game: ExtensiveGame[S, I, A], iterations: Int): Seq[Double] =
+      def solveRpsGame[S, I, A](game: ExtensiveGame[S, I, A], actions: Int, iterations: Int): Seq[Double] =
         SolverSpecUtils
           .solve(game, cfrAlgorithm(), iterations)
-          .actionProbabilityMass(0)
+          .probabilities(0, actions)
 
       "Rock-paper-scissors" in {
         val optimalStrategy = solveRpsGame(
-          RockPaperScissorsGame,
+          RockPaperScissorsGame, 3,
           400 * 1000)
 
         // (roughly) equal distribution
@@ -43,8 +43,8 @@ class RpsSolverSpec
 
       "Rock-paper-scissors-well" in {
         val optimalStrategy = solveRpsGame(
-          RockPaperScissorsWellGame,
-          500 * 1000)
+          RockPaperScissorsWellGame, 4,
+          600 * 1000)
 
         // rock is dominated
         optimalStrategy(0) must be lessThan epsilonProbability

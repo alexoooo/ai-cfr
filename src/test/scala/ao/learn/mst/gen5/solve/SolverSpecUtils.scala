@@ -1,31 +1,42 @@
 package ao.learn.mst.gen5.solve
 
 import ao.learn.mst.gen5.node.{Decision, ExtensiveNode}
-import ao.learn.mst.gen5.example.abstraction.{LosslessInfoLosslessDecisionAbstractionBuilder, OpaqueAbstractionBuilder}
+import ao.learn.mst.gen5.example.abstraction.OpaqueAbstractionBuilder
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
+import ao.learn.mst.gen5.state.MixedStrategy
+import ao.learn.mst.gen5.abstraction.LosslessInfoLosslessDecisionAbstractionBuilder
 
 
 object SolverSpecUtils
 {
-  def flatSolve[S, I, A](
-      game       : ExtensiveGame[S, I, A],
-      solver     : ExtensiveSolver[S, I, A],
-      iterations : Int
-      ): Seq[Seq[Double]] =
-  {
-    val strategy: ExtensiveStrategyProfile =
-      SolverSpecUtils.solve(game, solver, iterations)
-
-    (0 until strategy.knownInformationSetCount)
-      .map(strategy.actionProbabilityMass)
-  }
+//  def flatSolve[S, I, A](
+//      game       : ExtensiveGame[S, I, A],
+//      solver     : ExtensiveSolver[S, I, A],
+//      iterations : Int
+//      ): Seq[Seq[Double]] =
+//  {
+//    val strategy: MixedStrategy =
+//      SolverSpecUtils.solve(game, solver, iterations)
+//
+//    (0 until strategy.size.toInt)
+//      .map(strategy.actionProbabilityMass)
+//  }
 
   def solve[S, I, A](
       game       : ExtensiveGame[S, I, A],
       solver     : ExtensiveSolver[S, I, A],
       iterations : Int
-      ): ExtensiveStrategyProfile =
+      ): MixedStrategy =
+  {
+    solveWithAbstraction(game, solver, iterations)._1
+  }
+
+  def solveWithAbstraction[S, I, A](
+      game       : ExtensiveGame[S, I, A],
+      solver     : ExtensiveSolver[S, I, A],
+      iterations : Int
+      ): (MixedStrategy, ExtensiveAbstraction[I, A]) =
   {
     val solution: SolutionApproximation[I, A] =
       solver.initialSolution(game)
@@ -40,11 +51,12 @@ object SolverSpecUtils
       solution.optimize(abstraction)
     }
 
-    val strategy : ExtensiveStrategyProfile =
-      solution.strategy
+    val strategy : MixedStrategy =
+      solution.strategyView
 
-    strategy
+    (strategy, abstraction)
   }
+
 
   def getDecisionInformationSet[I, A](
       decisionNode: ExtensiveNode[I, A]): I =

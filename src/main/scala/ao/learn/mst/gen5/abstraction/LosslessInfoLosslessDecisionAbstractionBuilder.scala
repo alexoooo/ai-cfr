@@ -1,8 +1,9 @@
-package ao.learn.mst.gen5.example.abstraction
+package ao.learn.mst.gen5.abstraction
 
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
 import ao.learn.mst.gen5.node.Decision
 import scala.collection.immutable.SortedSet
+import ao.learn.mst.gen5.example.abstraction.{AbstractionUtils, OpaqueAbstractionBuilder}
 
 
 //----------------------------------------------------------------------------------------------------------------------

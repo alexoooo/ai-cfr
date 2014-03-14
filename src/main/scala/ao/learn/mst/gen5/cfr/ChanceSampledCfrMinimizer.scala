@@ -11,6 +11,7 @@ import scala.Function
 import scala.collection.immutable.SortedMap
 import scala.util.Random
 import com.google.common.collect.Iterables
+import ao.learn.mst.gen5.state.MixedStrategy
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -276,8 +277,7 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
 
 
     //------------------------------------------------------------------------------------------------------------------
-    def strategy: ExtensiveStrategyProfile = {
+    override def strategyView: MixedStrategy =
       strategyProfile.toExtensiveStrategyProfile
-    }
-  } 
+  }
 }

@@ -3,7 +3,6 @@ package ao.learn.mst.lib
 /**
  * https://gist.github.com/1057513
  */
-
 trait Enum  { //DIY enum type
   import java.util.concurrent.atomic.AtomicReference //Concurrency paranoia
 

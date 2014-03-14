@@ -1,12 +1,11 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer}
-import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
-import ao.learn.mst.gen5.example.matrix.MatrixGames
+import ao.learn.mst.gen5.example.matrix._
 import scala._
 import org.specs2.matcher.{Expectable, Matcher, MatchResult}
-import ao.learn.mst.gen5.ExtensiveGame
+import ao.learn.mst.gen5.example.matrix.MatrixGame
+import ao.learn.mst.gen5.cfr.OutcomeSampling2CfrMinimizer
 
 /**
  * http://en.wikipedia.org/wiki/Normal_form_game
@@ -24,24 +23,24 @@ class BasicMatrixSolverSpec
   "Counterfactual Regret Minimization algorithm" should
   {
     "Solve normal-form matrix games" in {
-      def solveNormalFormGame[S, I, A](
-          game       : ExtensiveGame[S, I, A],
+      def solveNormalFormGame(
+          game       : MatrixGame,
           iterations : Int,
           zeroSum    : Boolean = false): (Seq[Double], Seq[Double]) =
       {
-        val solver : ExtensiveSolver[S, I, A] =
+        val solver: ExtensiveSolver[MatrixState, MatrixPlayer, MatrixAction] =
 //          new ChanceSampledCfrMinimizer[S, I, A](zeroSum)
 //          new OutcomeSamplingCfrMinimizer[S, I, A](zeroSum)
-          new OutcomeSampling2CfrMinimizer[S, I, A](zeroSum)
+          new OutcomeSampling2CfrMinimizer[MatrixState, MatrixPlayer, MatrixAction](zeroSum)
 
-        val strategy : ExtensiveStrategyProfile =
-          SolverSpecUtils.solve(game, solver, iterations)
+        val (strategy, abstraction) =
+          SolverSpecUtils.solveWithAbstraction(game, solver, iterations)
 
         val rowActionProbabilities : Seq[Double] =
-          strategy.actionProbabilityMass(0)
+          strategy.probabilities(0, abstraction.actionCount(RowPlayer))
 
         val columnActionProbabilities : Seq[Double] =
-          strategy.actionProbabilityMass(1)
+          strategy.probabilities(1, abstraction.actionCount(ColumnPlayer))
 
         (rowActionProbabilities, columnActionProbabilities)
       }

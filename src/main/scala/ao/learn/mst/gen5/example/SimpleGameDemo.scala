@@ -5,15 +5,17 @@ import ao.learn.mst.gen5.node.{Chance, Terminal, Decision}
 import scala.util.Random
 import ao.learn.mst.gen5.solve.ExtensiveSolver
 import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, OutcomeSamplingCfrMinimizer}
-import ao.learn.mst.lib.CommonUtils
+import ao.learn.mst.lib.DisplayUtils
 import ao.learn.mst.gen5.example.ocp.KuhnGame
 import scala.xml.PrettyPrinter
+import ao.learn.mst.gen5.example.stochastic.CoinFlipDeterministicGame
+import ao.learn.mst.gen5.example.matrix.MatrixGames
 
 
 object SimpleGameDemo extends App
 {
   //--------------------------------------------------------------------------------------------------------------------
-  val sourceOfRandomness : Random =
+  val sourceOfRandomness: Random =
     new Random(0)
 //    new Random(0) {
 //      override def nextDouble(): Double =
@@ -23,10 +25,14 @@ object SimpleGameDemo extends App
   val formatter =
     new PrettyPrinter(120, 4)
 
+  val display: Boolean =
+//      false
+    true
+
 
   //--------------------------------------------------------------------------------------------------------------------
   val solutionIterationCount : Int =
-    100 * 1000 * 1000
+    100 * 1000
 
   val averageStrategy : Boolean =
 //    false
@@ -57,7 +63,7 @@ object SimpleGameDemo extends App
 //    MatrixGames.stagHunt
 //    MatrixGames.choosingSides
 //    MatrixGames.pureCoordination
-//    MatrixGames.chicken
+    MatrixGames.chicken
 
 //    PerfectCompleteGame
 //    ImperfectGame
@@ -67,32 +73,31 @@ object SimpleGameDemo extends App
 //    BurningGame
 //    CoinFlipDeterministicGame
 
-    KuhnGame
+//    KuhnGame
   )
 
 
-
-
   //--------------------------------------------------------------------------------------------------------------------
-  def play[S, I, A](game : ExtensiveGame[S, I, A]) : Unit =
+  def play[S, I, A](game: ExtensiveGame[S, I, A]): Unit =
   {
 //    val extensiveGameViewRoot =
 //      ExtensiveGameDisplay.displayExtensiveGameNode(
 //        game, game.initialState)
 //    println(formatter.format(extensiveGameViewRoot))
 
-    val solution : SimpleGameSolution[S, I, A] =
-      SimpleGameSolution.forGame(game, solver(), solutionIterationCount)
+    val solution: SimpleGameSolution[S, I, A] =
+      SimpleGameSolution.forGame(
+        game, solver(), solutionIterationCount, display)
 
-    val strategyPlayers : Seq[ExtensivePlayer[I, A]] =
+    val strategyPlayers: Seq[ExtensivePlayer[I, A]] =
       solution.strategyPlayers
 
     displayGameValue("\n\nSolution", game, strategyPlayers)
 
-    val responseValues : Seq[Double] =
+    val responseValues: Seq[Double] =
       solution.response.bestResponses.map(_.value)
 
-    println(s"\nResponse values: ${CommonUtils.formatGameValue(responseValues)}")
+    println(s"\nResponse values: ${DisplayUtils.formatGameValue(responseValues)}")
 
     for (player <- 0 until game.playerCount) {
       val respondedStrategyPlayers : Seq[ExtensivePlayer[I, A]] =
@@ -105,7 +110,7 @@ object SimpleGameDemo extends App
   def displayGameValue[S, I, A](
       prefix: String, game : ExtensiveGame[S, I, A], players : Seq[ExtensivePlayer[I, A]]): Unit = {
     val gameValues = computeGameValues(game, players)
-    println(s"$prefix: ${CommonUtils.formatGameValue(gameValues)}")
+    println(s"$prefix: ${DisplayUtils.formatGameValue(gameValues)}")
   }
 
 
@@ -118,7 +123,7 @@ object SimpleGameDemo extends App
     val outcomeSums =
       new Array[Double](game.playerCount)
 
-    val outcomeCount : Int =
+    val outcomeCount: Int =
       10 * 1000
 
     for (i <- 1 to outcomeCount) {

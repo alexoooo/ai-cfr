@@ -4,6 +4,7 @@ import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.node.Chance
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.state.MixedStrategy
 
 
 object ResponseTreeTraverser
@@ -12,7 +13,7 @@ object ResponseTreeTraverser
   def traverseResponseTreeLeaves[S, I, A](
       game          : ExtensiveGame[S, I, A],
       abstraction   : ExtensiveAbstraction[I, A],
-      mixedStrategy : ExtensiveStrategyProfile,
+      mixedStrategy : MixedStrategy,
       player        : Int)
     : Traversable[ResponseTreeLeaf[S, I, A]] =
   {
@@ -63,7 +64,7 @@ object ResponseTreeTraverser
       case Decision(Rational(opponent), info, choices) =>
         choices.foreach((choice: A) => {
           val probability : Double =
-            context.mixedStrategy.actionProbability(
+            context.mixedStrategy.probability(
               context.abstraction, info, choice)
 
           traverse(
@@ -91,7 +92,7 @@ object ResponseTreeTraverser
   private case class Context[S, I, A, U](
     game          : ExtensiveGame[S, I, A],
     abstraction   : ExtensiveAbstraction[I, A],
-    mixedStrategy : ExtensiveStrategyProfile,
+    mixedStrategy : MixedStrategy,
     player        : Int,
     visitor       : (ResponseTreeLeaf[S, I, A]) => U)
 }

@@ -1,7 +1,7 @@
 package ao.learn.mst.gen5.strategy.impl
 
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
-import ao.learn.mst.lib.CommonUtils
+import ao.learn.mst.lib.DisplayUtils
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -11,44 +11,44 @@ import ao.learn.mst.lib.CommonUtils
  * @param probabilities information set index -> action index -> probability
  */
 case class SeqExtensiveStrategyProfile(
-  probabilities : Seq[Seq[Double]],
-  defaultStrategy : ExtensiveStrategyProfile = ObliviousExtensiveStrategyProfile)
-  extends ExtensiveStrategyProfile
+    probabilities : Seq[Seq[Double]],
+    defaultStrategy : ExtensiveStrategyProfile = ObliviousExtensiveStrategyProfile)
+    extends ExtensiveStrategyProfile
 {
   //--------------------------------------------------------------------------------------------------------------------
-  def knownInformationSetCount: Int =
+  def size: Long =
     probabilities.length
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def actionProbabilityMass(informationSetIndex: Int): Seq[Double] = {
-    if (informationSetIndex >= knownInformationSetCount) {
+  override def actionProbabilityMass(informationSetIndex: Long): Seq[Double] = {
+    if (informationSetIndex >= size) {
       return defaultStrategy.actionProbabilityMass(informationSetIndex)
     }
 
     val actionProbabilities : Seq[Double] =
-      probabilities(informationSetIndex)
+      probabilities(informationSetIndex.toInt)
 
     actionProbabilities
   }
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def actionProbabilityMass(
-      informationSetIndex:Int, actionCount:Int): Seq[Double] =
+  override def actionProbabilityMass(
+      informationSetIndex: Long, actionCount: Int): Seq[Double] =
   {
     assert(actionCount >= 1)
 
-    if (informationSetIndex >= knownInformationSetCount) {
+    if (informationSetIndex >= size) {
       return defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)
     }
 
     val actionProbabilities: Seq[Double] =
-      probabilities(informationSetIndex)
+      probabilities(informationSetIndex.toInt)
 
     if (actionProbabilities.isEmpty) {
       defaultStrategy.actionProbabilityMass(informationSetIndex, actionCount)
-    } else if (actionProbabilities.length != actionCount) {
+    } else if (actionProbabilities.length < actionCount) {
       actionProbabilities.padTo(actionCount, 0.0)
     } else {
       actionProbabilities
@@ -79,7 +79,7 @@ case class SeqExtensiveStrategyProfile(
   override def toString : String = {
     val infoSets : Seq[String] =
       for (infoSet <- probabilities) yield {
-        CommonUtils.displayProbabilities(infoSet)
+        DisplayUtils.displayProbabilities(infoSet)
       }
 
     infoSets.mkString(" || ")

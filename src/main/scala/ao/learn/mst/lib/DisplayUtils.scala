@@ -3,21 +3,10 @@ package ao.learn.mst.lib
 import java.text.DecimalFormat
 
 /**
- * Common generic utilities for use within project.
+ * Common display utilities for use within project.
  */
-object CommonUtils
+object DisplayUtils
 {
-  //--------------------------------------------------------------------------------------------------------------------
-  def normalizeToOne(weights: Seq[Double]) : Seq[Double] = {
-    assert(weights.min >= 0)
-    assert(weights.max > 0)
-
-    val sum = weights.sum
-
-    weights.map(_ / sum)
-  }
-
-
   //--------------------------------------------------------------------------------------------------------------------
   def displayDelimiter() : Unit =
     println(s"\n${"-" * 80}")

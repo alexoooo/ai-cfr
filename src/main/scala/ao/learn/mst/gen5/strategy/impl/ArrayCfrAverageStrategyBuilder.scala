@@ -68,7 +68,7 @@ class ArrayCfrAverageStrategyBuilder
     ): Seq[Double] =
   {
     if (! actionsInitialized(informationSetIndex)) {
-      return Seq.empty
+      return Nil
     }
 
     // In train.cpp, see the following relevant (lines 504 .. 509):

@@ -7,6 +7,7 @@ import ao.learn.mst.gen5.strategy.impl.{MapCfrOutcomeRegretBuffer, ArrayCfrAvera
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
+import ao.learn.mst.gen5.state.MixedStrategy
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -286,13 +287,12 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
 
 
     //------------------------------------------------------------------------------------------------------------------
-    def strategy: ExtensiveStrategyProfile = {
+    override def strategyView: MixedStrategy =
       if (averageStrategy) {
         averageStrategyBuilder.get.toExtensiveStrategyProfile
       } else {
         strategyProfile.toExtensiveStrategyProfile
       }
-    }
   }
 
   class ProbRef(var probability: Double)

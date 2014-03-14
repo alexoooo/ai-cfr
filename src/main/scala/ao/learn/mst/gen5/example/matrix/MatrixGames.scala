@@ -111,10 +111,10 @@ object MatrixGames
   //--------------------------------------------------------------------------------------------------------------------
   // http://en.wikipedia.org/wiki/Prisoner%27s_dilemma
 
-  val prisonersDilemma : MatrixGame =
+  val prisonersDilemma: MatrixGame =
     prisonersDilemma(0, -1, -2, -3)
 
-  def prisonersDilemma(t : Double, r : Double, p : Double, s : Double) : MatrixGame = {
+  def prisonersDilemma(t: Double, r: Double, p: Double, s: Double): MatrixGame = {
     assert(t > r && r > p && p > s)
 
     fromMatrix(
@@ -125,7 +125,7 @@ object MatrixGames
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def fromMatrix(row : Seq[(Double, Double)]*) : MatrixGame =
+  def fromMatrix(row: Seq[(Double, Double)]*): MatrixGame =
     new MatrixGame(
       PayoffMatrixSource(
         row.toSeq

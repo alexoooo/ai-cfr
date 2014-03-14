@@ -17,9 +17,9 @@ import ao.learn.mst.gen5.node.Chance
  *     |
  *     +-- 0 -> 0
  *     |
- *     +-- 1 -> 1
+ *     +-- 1 -> 0
  *     |
- *     +-- 2 -> 2
+ *     +-- 2 -> 1
  *
  */
 object CoinFlipDeterministicGame
@@ -39,8 +39,13 @@ object CoinFlipDeterministicGame
   {
     state.actions match {
       case Seq() =>
-        Chance(Outcome.equalProbability(
-          Seq(false, true).map(CoinFlipDeterministicChance)))
+        val falseProb = 0.5
+
+        Chance(
+          Seq(
+            Outcome(CoinFlipDeterministicChance(value = false), falseProb),
+            Outcome(CoinFlipDeterministicChance(value = true), 1.0 - falseProb)
+          ))
 
       case Seq(CoinFlipDeterministicChance(value)) =>
         val choices: Seq[CoinFlipDeterministicDecision] =
@@ -52,8 +57,21 @@ object CoinFlipDeterministicGame
 
         Decision(0, state, choices)
 
-      case Seq(_, CoinFlipDeterministicDecision(value)) =>
-        Terminal(Seq(value.toDouble))
+      case Seq(CoinFlipDeterministicChance(outcome), CoinFlipDeterministicDecision(choice)) =>
+        Terminal(Seq(
+          if (outcome) {
+            if (choice == 2) {
+              1
+            } else {
+              0
+            }
+          } else {
+            if (choice == 1) {
+              1
+            } else {
+              0
+            }
+          }))
     }
   }
 

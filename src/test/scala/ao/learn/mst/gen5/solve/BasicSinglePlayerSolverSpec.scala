@@ -4,6 +4,7 @@ import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, ProbingCfrMinimizer,
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
 import ao.learn.mst.gen5.ExtensiveGame
+import ao.learn.mst.gen5.state.MixedStrategy
 
 /**
  *
@@ -27,8 +28,8 @@ class BasicSinglePlayerSolverSpec
 
 
     "Solve basic small games" in {
-      def solveGame[S, I, A](game : ExtensiveGame[S, I, A], iterations : Int) : Seq[Seq[Double]] =
-        SolverSpecUtils.flatSolve(game, cfrAlgorithm(), iterations)
+      def solveGame[S, I, A](game: ExtensiveGame[S, I, A], iterations: Int): MixedStrategy =
+        SolverSpecUtils.solve(game, cfrAlgorithm(), iterations)
 
       "Basic Monty Hall problem" in {
         val solution = solveGame(
@@ -36,21 +37,21 @@ class BasicSinglePlayerSolverSpec
           200)
 
         val switchDecision =
-          solution(1)
+          solution.probabilities(1, 2)
 
         switchDecision(0) must be lessThan epsilonProbability
       }
 
       "Monty Hall problem" in {
-        val solution : Seq[Seq[Double]] = solveGame(
+        val solution: MixedStrategy = solveGame(
           MontyHallGame,
           1000)
 
-        val initialDoorChoice : Seq[Double] =
-          solution(0)
+        val initialDoorChoice: Seq[Double] =
+          solution.probabilities(0, 3)
 
-        val switchChoices : Seq[Seq[Double]] =
-          solution.drop(1)
+        val switchChoices: Seq[Seq[Double]] =
+          (1 to 6).map(solution.probabilities(_, 2))
 
         foreach (0 until initialDoorChoice.length) {c =>
           if (initialDoorChoice(c) > epsilonProbability) {

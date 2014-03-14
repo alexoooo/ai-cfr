@@ -1,9 +1,9 @@
 package ao.learn.mst.gen5.br
 
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
-import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
 import ao.learn.mst.gen5.example.abstraction.AbstractionUtils
 import scala._
+import ao.learn.mst.gen5.state.MixedStrategy
 
 /**
  *
@@ -14,7 +14,7 @@ object BestResponseFinder
   def bestResponseProfile[S, I, A](
     game          : ExtensiveGame[S, I, A],
     abstraction   : ExtensiveAbstraction[I, A],
-    mixedStrategy : ExtensiveStrategyProfile)
+    mixedStrategy : MixedStrategy)
     : BestResponseProfile[I, A] =
   {
     val infoTree : BestResponseInfoTree[S, I, A] =
@@ -39,7 +39,7 @@ object BestResponseFinder
   private def bestResponse[S, I, A](
     context       : Context[S, I, A],
     abstraction   : ExtensiveAbstraction[I, A],
-    mixedStrategy : ExtensiveStrategyProfile)
+    mixedStrategy : MixedStrategy)
     : BestResponse[I, A] =
   {
 //    val allInfoActions : Map[I, Map[A, I]] =
@@ -304,7 +304,7 @@ object BestResponseFinder
   private def leafInfoActionValues[S, I, A](
     context       : Context[S, I, A],
     abstraction   : ExtensiveAbstraction[I, A],
-    mixedStrategy : ExtensiveStrategyProfile)
+    mixedStrategy : MixedStrategy)
     : Map[I, Map[A, Double]] =
   {
     val responseTreeLeaves : Traversable[ResponseTreeLeaf[S, I, A]] =

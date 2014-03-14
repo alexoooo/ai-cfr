@@ -27,15 +27,15 @@ class SingleInfoSolverSpec
 
 
     "Solve singleton information-set games" in {
-      def solveSingleInfoSetGame[S, I, A](game: ExtensiveGame[S, I, A], iterations: Int): Seq[Double] =
+      def solveSingleInfoBinaryGame[S, I, A](game: ExtensiveGame[S, I, A], iterations: Int): Seq[Double] =
         SolverSpecUtils
           .solve(game, cfrAlgorithm(), iterations)
-          .actionProbabilityMass(0)
+          .probabilities(0, 2)
 
 
       "Classical bandit setting" in {
         "Deterministic binary bandit" in {
-          val optimalStrategy = solveSingleInfoSetGame(
+          val optimalStrategy = solveSingleInfoBinaryGame(
             DeterministicBinaryBanditGame.plusMinusOne,
             1)
 
@@ -46,7 +46,7 @@ class SingleInfoSolverSpec
           implicit val sourceOfRandomness = new Random
 
           "Uniform" in {
-            val optimalStrategy = solveSingleInfoSetGame(
+            val optimalStrategy = solveSingleInfoBinaryGame(
               UniformBinaryBanditGame.withAdvantageForTrue(0.05),
               5 * 1000)
 
@@ -54,15 +54,15 @@ class SingleInfoSolverSpec
           }
 
           "Bernoulli" in {
-            val optimalStrategy = solveSingleInfoSetGame(
+            val optimalStrategy = solveSingleInfoBinaryGame(
               BernoulliBinaryBanditGame.withAdvantageForTrue(0.05),
-              7 * 1000)
+              8 * 1000)
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
 
           "Gaussian" in {
-            val optimalStrategy = solveSingleInfoSetGame(
+            val optimalStrategy = solveSingleInfoBinaryGame(
               GaussianBinaryBanditGame.withAdvantageForTrue(0.05),
               20 * 1000)
 

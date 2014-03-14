@@ -1,41 +1,28 @@
 package ao.learn.mst.gen5.strategy
 
 import ao.learn.mst.gen5.ExtensiveAbstraction
+import ao.learn.mst.gen5.state.MixedStrategy
 
 
 /**
  * Mixed strategy with probabilities of performing each action for every information set.
  */
 trait ExtensiveStrategyProfile
+    extends MixedStrategy
 {
   //--------------------------------------------------------------------------------------------------------------------
-  def knownInformationSetCount: Int
+  def size: Long
 
   def actionProbabilityMass(
-    informationSetIndex: Int): Seq[Double]
+    informationSetIndex: Long): Seq[Double]
 
   def actionProbabilityMass(
-    informationSetIndex: Int,
+    informationSetIndex: Long,
     actionCount: Int
     ): Seq[Double]
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def actionProbability[I, A](
-    abstraction    : ExtensiveAbstraction[I, A],
-    informationSet : I,
-    action         : A)
-    : Double =
-  {
-    val infoIndex : Int =
-      abstraction.informationSetIndex(informationSet)
-
-    val actionCount : Int =
-      abstraction.actionCount(informationSet)
-
-    val actionIndex : Int =
-      abstraction.actionSubIndex(informationSet, action)
-
-    actionProbabilityMass(infoIndex, actionCount)(actionIndex)
-  }
+  override def probabilities(informationSetIndex: Long, actionCount: Int): IndexedSeq[Double] =
+    actionProbabilityMass(informationSetIndex, actionCount).toIndexedSeq
 }

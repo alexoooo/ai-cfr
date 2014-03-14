@@ -39,7 +39,8 @@ case object Decision
 
 //----------------------------------------------------------------------------------------------------------------------
 case class Chance[InformationSet, Action](
-  outcomes : Traversable[Outcome[Action]]
+  // todo: Map[Action, Double]?
+  outcomes: Traversable[Outcome[Action]]
 ) extends ExtensiveNode[InformationSet, Action]
   with NonTerminal[InformationSet, Action] {
   val statePartition = ChancePartition

@@ -20,16 +20,16 @@ trait ExtensiveGame[State, InformationSet, Action]
   /**
    * @return number of deliberate (aka rational, non-chance) players in the game
    */
-  def playerCount : Int
+  def playerCount: Int
 
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
    * @return root of the game state tree
    */
-  def initialState : State
+  def initialState: State
 
-  def initialStateNode : ExtensiveStateNode[State, InformationSet, Action] =
+  def initialStateNode: ExtensiveStateNode[State, InformationSet, Action] =
     stateNode(initialState)
 
 
@@ -39,9 +39,9 @@ trait ExtensiveGame[State, InformationSet, Action]
    * @param state of node of the game tree
    * @return game tree node
    */
-  def node(state : State) : ExtensiveNode[InformationSet, Action]
+  def node(state: State): ExtensiveNode[InformationSet, Action]
 
-  def stateNode(state : State) : ExtensiveStateNode[State, InformationSet, Action] =
+  def stateNode(state: State): ExtensiveStateNode[State, InformationSet, Action] =
     node(state) match {
       case decision: Decision[InformationSet, Action] =>
         StateDecision(state, decision)

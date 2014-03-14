@@ -23,5 +23,8 @@ trait ExtensiveAbstraction[InformationSet, Action]
    */
   def actionSubIndex(informationSet: InformationSet, action: Action): Int
 
-  def actionCount(informationSet: InformationSet): Int
+//  def indexActionCount(informationSetIndex: Long): Int
+
+  def actionCount(informationSet: InformationSet): Int/* =
+    indexActionCount(informationSetIndex(informationSet))*/
 }

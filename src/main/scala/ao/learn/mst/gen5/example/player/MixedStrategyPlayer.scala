@@ -3,10 +3,11 @@ package ao.learn.mst.gen5.example.player
 import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensivePlayer}
 import scala.util.Random
 import ao.learn.mst.gen5.strategy.ExtensiveStrategyProfile
+import ao.learn.mst.gen5.state.MixedStrategy
 
 
 class MixedStrategyPlayer[InformationSet, Action](
-  mixedStrategy : ExtensiveStrategyProfile,
+  mixedStrategy : MixedStrategy,
   gameAbstraction : ExtensiveAbstraction[InformationSet, Action],
   sourceOfRandomness : Random)
   extends ExtensivePlayer[InformationSet, Action]
@@ -30,7 +31,7 @@ class MixedStrategyPlayer[InformationSet, Action](
         actionIndexes.max + 1
 
       val indexToProbability: Seq[Double] =
-        mixedStrategy.actionProbabilityMass(informationSetIndex, actionCount)
+        mixedStrategy.probabilities(informationSetIndex, actionCount)
 
       def randomizedWeight(index : Int) : Double =
         indexToProbability(index) * sourceOfRandomness.nextDouble()

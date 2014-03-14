@@ -25,7 +25,7 @@ class KuhnSolverSpec
 
   "Counterfactual Regret Minimization algorithm with strategy averaging" should
   {
-    def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
+    def cfrAlgorithm[S, I, A](): ExtensiveSolver[S, I, A] =
 //      new OutcomeSamplingCfrMinimizer[S, I, A](true)
       new OutcomeSampling2CfrMinimizer[S, I, A](true)
 
@@ -41,7 +41,7 @@ class KuhnSolverSpec
         AbstractionUtils.informationSets(KuhnGame)
 
       def kuhnStrategy(holeCard: KuhnCard, actionSequence: KuhnActionSequence, choice: KuhnDecision): Double = {
-        solution.strategy.actionProbability(solution.abstraction, kuhnInfo(holeCard, actionSequence), choice)
+        solution.strategy.probability(solution.abstraction, kuhnInfo(holeCard, actionSequence), choice)
       }
 
       def kuhnInfo(holeCard: KuhnCard, actionSequence: KuhnActionSequence): KuhnObservation =

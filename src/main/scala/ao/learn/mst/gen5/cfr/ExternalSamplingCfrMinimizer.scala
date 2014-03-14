@@ -9,6 +9,7 @@ import ao.learn.mst.gen5.ExtensiveGame
 import scala._
 import scala.Function
 import scala.collection.immutable.SortedMap
+import ao.learn.mst.gen5.state.MixedStrategy
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -350,8 +351,7 @@ case class ExternalSamplingCfrMinimizer[State, InformationSet, Action](
 
 
     //------------------------------------------------------------------------------------------------------------------
-    def strategy: ExtensiveStrategyProfile = {
+    override def strategyView: MixedStrategy =
       strategyProfile.toExtensiveStrategyProfile
-    }
   }
 }

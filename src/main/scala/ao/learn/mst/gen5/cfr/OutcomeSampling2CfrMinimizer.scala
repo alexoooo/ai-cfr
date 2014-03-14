@@ -2,34 +2,43 @@ package ao.learn.mst.gen5.cfr
 
 import ao.learn.mst.gen5.solve.{SolutionApproximation, ExtensiveSolver}
 import ao.learn.mst.gen5.ExtensiveAbstraction
-import ao.learn.mst.gen5.strategy._
-import ao.learn.mst.gen5.strategy.impl.{MapCfrOutcomeRegretBuffer, ArrayCfrAverageStrategyBuilder, ArrayCfrStrategyProfile}
 import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
+import ao.learn.mst.lib.NumUtils
+import ao.learn.mst.gen5.state._
+import ao.learn.mst.gen5.state.impl._
+import ao.learn.mst.gen5.node.StateTerminal
+import ao.learn.mst.gen5.node.StateChance
+import ao.learn.mst.gen5.node.StateDecision
+import ao.learn.mst.gen5.node.Chance
+import scalaz._
+import Scalaz._
+import ao.learn.mst.gen5.state.regret.{RegretMatcher, RegretStore, RegretBuffer}
+import ao.learn.mst.gen5.state.strategy.{StrategyStore, StrategyBuffer}
+import ao.learn.mst.gen5.state.regret.impl.{MapRegretBuffer, UniformDefaultRegretMatcher, ArrayRegretStore}
+import ao.learn.mst.gen5.state.strategy.impl.{MapStrategyBuffer, ArrayStrategyStore}
 
 
 //----------------------------------------------------------------------------------------------------------------------
 /**
- * itl = internal?
- *
  * http://mlanctot.info/files/papers/generalized-mccfr-tr.pdf
  *
- * Port of cfros.cpp from Bluff at http://mlanctot.info/downloads.php
- *
  * @param averageStrategy true if strategy should be averaged (e.g. for two-player zero-sum)
+ * @param explorationProbability probability of action being explored (as opposed to exploited) must be in (0, 1)
  * @tparam State extensive game state
  * @tparam InformationSet player view
  * @tparam Action finite action
  */
 case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
-    averageStrategy : Boolean = false)
+    averageStrategy: Boolean = false,
+    explorationProbability: Double = 0.6)
   extends ExtensiveSolver[State, InformationSet, Action]
 {
   //--------------------------------------------------------------------------------------------------------------------
   def initialSolution(
-    game: ExtensiveGame[State, InformationSet, Action]
-    ): SolutionApproximation[InformationSet, Action] =
+      game: ExtensiveGame[State, InformationSet, Action])
+      : SolutionApproximation[InformationSet, Action] =
   {
     new Solution(game)
   }
@@ -40,34 +49,36 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
       game: ExtensiveGame[State, InformationSet, Action])
       extends SolutionApproximation[InformationSet, Action]
   {
-    val explorationProbability: Double =
-      0.6
+    private val regretStore: RegretStore =
+      new ArrayRegretStore
 
-    val strategyProfile: CfrStrategyProfile =
-      new ArrayCfrStrategyProfile
+    private val strategyStore: Option[StrategyStore] =
+      averageStrategy.option(new ArrayStrategyStore)
 
-    val averageStrategyBuilder: Option[CfrAverageStrategyBuilder] =
-      if (averageStrategy)
-        Some(new ArrayCfrAverageStrategyBuilder)
-      else
-        None
+
+    private val regretBuffer: RegretBuffer =
+      new MapRegretBuffer
+
+    private val regretMatcher: RegretMatcher =
+      UniformDefaultRegretMatcher
+
+    private val strategyBuffer: Option[StrategyBuffer] =
+      averageStrategy.option(new MapStrategyBuffer)
+
+    private val mixedStrategyView: MixedStrategyView =
+      new MixedStrategyView(regretMatcher, regretStore, strategyStore)
 
 
     //------------------------------------------------------------------------------------------------------------------
-    def optimize(extensiveAbstraction: ExtensiveAbstraction[InformationSet, Action]) : Unit = {
+    def optimize(extensiveAbstraction: ExtensiveAbstraction[InformationSet, Action]): Unit = {
       new Optimization(extensiveAbstraction).walkTreeFromRoot()
     }
 
 
     //------------------------------------------------------------------------------------------------------------------
     private class Optimization(
-      abstraction: ExtensiveAbstraction[InformationSet, Action])
+        abstraction: ExtensiveAbstraction[InformationSet, Action])
     {
-      //----------------------------------------------------------------------------------------------------------------
-      private val buffer: CfrOutcomeRegretBuffer =
-        new MapCfrOutcomeRegretBuffer
-
-
       //----------------------------------------------------------------------------------------------------------------
       def walkTreeFromRoot(): Unit = {
         for (playerIndex <- 0 until game.playerCount) {
@@ -77,12 +88,17 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
             Seq.fill(game.playerCount)(1.0),
             Seq.fill(game.playerCount)(1.0))
 
-          buffer.commit(strategyProfile)
+          regretBuffer.flush(regretStore)
+        }
+
+//        regretBuffer.flush(regretStore)
+
+        for (sb <- strategyBuffer; ss <- strategyStore) {
+          sb.flush(ss)
         }
 
         //println(s"buffer: ${buffer}")
         //println(s"strategyProfile: $strategyProfile")
-//        buffer.commit(strategyProfile)
       }
 
 
@@ -94,8 +110,6 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
           sampleProbabilities : Seq[Double]
           ): SampleOutcome =
       {
-        reachProbabilities.foreach(checkProb)
-
         stateNode match {
           case StateTerminal(_, Terminal(payoffs)) =>
             SampleOutcome(
@@ -128,6 +142,7 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
           outcomes  : Traversable[Outcome[Action]]
           ): ExtensiveStateNode[State, InformationSet, Action] =
       {
+        // todo: generate single random number and select max action in single pass
         val sampledOutcome: Action =
           outcomes
             .map(o => (o.action, o.probability * math.random))
@@ -163,12 +178,23 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
         val infoIndex: Int =
           abstraction.informationSetIndex(infoSet)
 
+        val availableActions: Set[Int] =
+          decision.node.choices
+            .map(c => abstraction.actionSubIndex(infoSet, c))
+            .toSet
+
+        val missingActions: Set[Int] =
+          (0 until abstractActionCount).filterNot(availableActions.contains).toSet
+
         val strategy: Seq[Double] =
-          strategyProfile.positiveRegretMatchingStrategy(
-            infoIndex, abstractActionCount)
+          omitMissingProbabilities(
+            regretMatcher.positiveRegretStrategy(
+              regretStore.cumulativeRegret(infoIndex),
+              abstractActionCount),
+            missingActions)
 
         val sampledAction: ActionSample =
-          sampleAction(strategy, nextToActIsUpdatePlayer)
+          sampleAction(strategy, nextToActIsUpdatePlayer, missingActions)
 
         val nextSampleProbabilities: Seq[Double] =
           sampleProbabilities
@@ -177,12 +203,13 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
         val sampledActionStrategyProbability: Double =
           strategy(sampledAction.index)
 
-        val realAction: Action =
-          translateFromAbstraction(
-            infoSet, decision.node.choices, sampledAction.index)
-
-        val newGameState: ExtensiveStateNode[State, InformationSet, Action] =
-          game.transitionStateNode(decision, realAction)
+        val newGameState: ExtensiveStateNode[State, InformationSet, Action] = {
+          val concreteSampledAction: Action =
+            translateFromAbstraction(
+              infoSet, decision.node.choices, sampledAction.index)
+          
+          game.transitionStateNode(decision, concreteSampledAction)
+        }
 
         val nextReachProbabilities: Seq[Double] =
           reachProbabilities
@@ -196,20 +223,29 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
             nextSampleProbabilities)
 
         if (nextToActIsUpdatePlayer) {
-          buffer.bufferRegret(
-            infoIndex,
+          val regret: Seq[Double] =
             counterfactualRegret(
-              nextToAct, abstractActionCount, sampledAction.index, sampledActionStrategyProbability, reachProbabilities, outcome))
+              nextToAct,
+              abstractActionCount,
+              sampledAction.index,
+              sampledActionStrategyProbability,
+              reachProbabilities,
+              outcome,
+              missingActions)
+
+          regretBuffer.add(infoIndex, regret)
         }
 
-        if (averageStrategy && ! nextToActIsUpdatePlayer) {
-          averageStrategyBuilder.get.update(
-            infoIndex, strategy,
-            stochasticWeight(nextToAct, reachProbabilities, sampleProbabilities))
+        if (! nextToActIsUpdatePlayer) {
+          val externalReachProbability: Double =
+            stochasticWeight(nextToAct, reachProbabilities, sampleProbabilities)
+
+          strategyBuffer.foreach(_.add(
+            infoIndex, strategy, externalReachProbability))
         }
 
         outcome
-          .scakeSuffixReach(sampledActionStrategyProbability)
+          .scaleSuffixReach(sampledActionStrategyProbability)
       }
 
 
@@ -231,7 +267,12 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
 
 
       //----------------------------------------------------------------------------------------------------------------
-      def stochasticWeight(nextToAct: Int, reachProbabilities: Seq[Double], sampleProbabilities: Seq[Double]): Double = {
+      def stochasticWeight(
+          nextToAct           : Int,
+          reachProbabilities  : Seq[Double],
+          sampleProbabilities : Seq[Double]
+          ): Double =
+      {
         val nextToActReachProbability: Double =
           reachProbabilities(nextToAct)
 
@@ -240,12 +281,13 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
 
 
       private def counterfactualRegret(
-          nextToAct: Int,
-          actionCount: Int,
-          sampledActionIndex: Int,
-          moveProb: Double,
-          reachProbabilities: Seq[Double],
-          outcome: SampleOutcome
+          nextToAct                        : Int,
+          actionCount                      : Int,
+          sampledActionIndex               : Int,
+          sampledActionStrategyProbability : Double,
+          reachProbabilities               : Seq[Double],
+          outcome                          : SampleOutcome,
+          missingActions                   : Set[Int]
           ): Seq[Double] =
       {
         val updatePlayerPayoff: Double =
@@ -255,7 +297,7 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
           outcome.suffixReachProbability
 
         val itlReach: Double =
-          outcome.suffixReachProbability * moveProb
+          outcome.suffixReachProbability * sampledActionStrategyProbability
 
         val opponentReachProbability: Double =
           reachProbabilities
@@ -264,15 +306,18 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
             .map(_._1)
             .product
 
-        val U = updatePlayerPayoff * opponentReachProbability / outcome.sampleProbability
+        val sampledCounterfactualUtility =
+          updatePlayerPayoff * opponentReachProbability / outcome.sampleProbability
 
         val counterfactualRegret: Seq[Double] =
           for (a <- 0 until actionCount)
           yield
             if (a == sampledActionIndex) {
-              U * (ctlReach - itlReach)
+              sampledCounterfactualUtility * (ctlReach - itlReach)
+            } else if (missingActions.contains(a)) {
+              0
             } else {
-              -U * itlReach
+              -sampledCounterfactualUtility * itlReach
             }
 
         counterfactualRegret
@@ -282,29 +327,36 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
       //----------------------------------------------------------------------------------------------------------------
       private def sampleAction(
           strategy       : Seq[Double],
-          updatingPlayer : Boolean
+          updatingPlayer : Boolean,
+          missingActions : Set[Int]
           ): ActionSample =
       {
         if (updatingPlayer) {
-          sampleAction(exploratoryActionProbabilities(strategy))
+          sampleAction(exploratoryActionProbabilities(strategy, missingActions))
         } else {
           sampleAction(strategy)
         }
       }
 
-      def exploratoryActionProbabilities(strategy: Seq[Double]): Seq[Double] = {
+      def exploratoryActionProbabilities(
+          strategy       : Seq[Double],
+          missingActions : Set[Int]
+          ): Seq[Double] =
+      {
         val minProbability: Double =
           explorationProbability * (1.0 / strategy.length)
 
         val strategyFactor: Double =
           1.0 - explorationProbability
 
-        strategy
-          .map(p => minProbability + strategyFactor * p)
+        omitMissingProbabilities(
+          strategy
+            .map(p => minProbability + strategyFactor * p),
+          missingActions)
       }
 
       private def sampleAction(
-          actionProbabilities: Seq[Double]
+          actionProbabilities : Seq[Double]
           ): ActionSample =
       {
         val roll: Double =
@@ -327,22 +379,37 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
 
 
     //------------------------------------------------------------------------------------------------------------------
-    def strategy: ExtensiveStrategyProfile = {
-      if (averageStrategy) {
-        averageStrategyBuilder.get.toExtensiveStrategyProfile
-      } else {
-        strategyProfile.toExtensiveStrategyProfile
-      }
-    }
+    override def strategyView: MixedStrategy =
+      mixedStrategyView
   }
 
 
   //---------------------------------------------------------------------------------------------------------------------
-  private def checkProb(probability: Double): Unit =
-    assert(0 <= probability && probability <= 1.0)
-
   private def checkProbNotZero(probability: Double): Unit =
     assert(0 < probability && probability <= 1.0)
+
+  private def omitMissingProbabilities(
+      probabilities        : Seq[Double],
+      missingProbabilities : Set[Int]): Seq[Double] =
+  {
+    if (missingProbabilities.isEmpty) {
+      probabilities
+    } else {
+      val denormalized: Seq[Double] =
+        probabilities.zipWithIndex
+          .map(si => if (missingProbabilities.contains(si._2)) 0 else si._1)
+
+      if (denormalized.exists(_ > 0)) {
+        NumUtils.normalizeToOne(denormalized)
+      } else {
+        val equalProbability: Double =
+          1.0 / (probabilities.size - missingProbabilities.size)
+
+        (0 until probabilities.size)
+          .map(i => if (missingProbabilities.contains(i)) 0 else equalProbability)
+      }
+    }
+  }
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -358,7 +425,7 @@ case class OutcomeSampling2CfrMinimizer[State, InformationSet, Action](
     sampleProbability: Double,
     suffixReachProbability: Double)
   {
-    def scakeSuffixReach(moveProb: Double): SampleOutcome =
+    def scaleSuffixReach(moveProb: Double): SampleOutcome =
       copy(suffixReachProbability = suffixReachProbability * moveProb)
   }
 }

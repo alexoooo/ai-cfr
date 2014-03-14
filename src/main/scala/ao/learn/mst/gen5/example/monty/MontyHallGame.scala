@@ -15,51 +15,54 @@ object MontyHallGame
   def playerCount: Int =
     1
 
+
   def initialState: MontyHallState =
     MontyHallState(Seq.empty)
 
+
   def transition(nonTerminal: MontyHallState, action: MontyHallAction): MontyHallState =
     MontyHallState(nonTerminal.actions :+ action)
+
 
   def node(state: MontyHallState): ExtensiveNode[MontyHallInfo, MontyHallAction] = {
     val doors : Seq[Int] =
       0 until  3
 
     state.actions.toList match {
-      case Nil => {
+      case Nil =>
         val possibilities : Seq[MontyPlacePrize] =
           doors.map(
             MontyPlacePrize)
 
         Chance(Outcome.equalProbability(possibilities))
-      }
 
-      case List(MontyPlacePrize(p)) => {
+
+      case List(MontyPlacePrize(p)) =>
         val choices : Seq[MontyPickDoor] =
           doors.map(
             MontyPickDoor)
 
         Decision(0, MontyPickDoorInfo, choices)
-      }
 
-      case List(MontyPlacePrize(p), MontyPickDoor(d)) => {
+
+      case List(MontyPlacePrize(p), MontyPickDoor(d)) =>
         val possibilities : Seq[MontyRevealNoPrize] =
           doors.filter(
             ! Set(p, d).contains(_)
           ).map(MontyRevealNoPrize)
 
         Chance(Outcome.equalProbability(possibilities))
-      }
 
-      case List(MontyPlacePrize(p), MontyPickDoor(d), MontyRevealNoPrize(n)) => {
+
+      case List(MontyPlacePrize(p), MontyPickDoor(d), MontyRevealNoPrize(n)) =>
         val choices : Seq[MontySwitch] =
           Seq(false, true).map(
             MontySwitch)
 
         Decision(0, MontySwitchDoorInfo(d, n), choices)
-      }
 
-      case List(MontyPlacePrize(p), MontyPickDoor(d), MontyRevealNoPrize(n), MontySwitch(s)) => {
+
+      case List(MontyPlacePrize(p), MontyPickDoor(d), MontyRevealNoPrize(n), MontySwitch(s)) =>
         val selectedDoor : Int =
           if (! s) {
             d
@@ -73,7 +76,6 @@ object MontyHallGame
 
         Terminal(
           Seq(if (victory) 1 else 0))
-      }
     }
   }
 }
