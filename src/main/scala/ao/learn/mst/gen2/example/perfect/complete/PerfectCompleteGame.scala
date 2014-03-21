@@ -15,7 +15,7 @@ import decision.PerfectCompleteDecisionFirst
  *  If Player 1 plays D (sub-optimal), then
  *    player 2 plays U.
  */
-object PerfectCompleteGame
+case object PerfectCompleteGame
   extends ExtensiveGame
 {
   //--------------------------------------------------------------------------------------------------------------------

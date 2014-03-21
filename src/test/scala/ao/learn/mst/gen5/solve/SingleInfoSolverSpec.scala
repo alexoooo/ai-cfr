@@ -8,6 +8,8 @@ import scala.util.Random
 import ao.learn.mst.gen5.example.bandit.gaussian.GaussianBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.bernoulli.BernoulliBinaryBanditGame
 import ao.learn.mst.gen5.ExtensiveGame
+import ao.learn.mst.gen5.solve2.RegretSampler
+import ao.learn.mst.gen5.cfr2.OutcomeRegretSampler
 
 
 class SingleInfoSolverSpec
@@ -21,23 +23,21 @@ class SingleInfoSolverSpec
   //--------------------------------------------------------------------------------------------------------------------
   "Counterfactual Regret Minimization algorithm" should
   {
-    def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
-//      new OutcomeSamplingCfrMinimizer[S, I, A]
-      new OutcomeSampling2CfrMinimizer[S, I, A]
+    def cfrAlgorithm[S, I, A](): RegretSampler[S, I, A] =
+      new OutcomeRegretSampler[S, I, A]()
 
 
     "Solve singleton information-set games" in {
-      def solveSingleInfoBinaryGame[S, I, A](game: ExtensiveGame[S, I, A], iterations: Int): Seq[Double] =
+      def solveSingleInfoBinaryGame[S, I, A](game: ExtensiveGame[S, I, A]): Seq[Double] =
         SolverSpecUtils
-          .solve(game, cfrAlgorithm(), iterations)
+          .solveWithSummary(game, cfrAlgorithm())
           .probabilities(0, 2)
 
 
       "Classical bandit setting" in {
         "Deterministic binary bandit" in {
           val optimalStrategy = solveSingleInfoBinaryGame(
-            DeterministicBinaryBanditGame.plusMinusOne,
-            1)
+            DeterministicBinaryBanditGame.plusMinusOne)
 
           optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
         }
@@ -47,24 +47,21 @@ class SingleInfoSolverSpec
 
           "Uniform" in {
             val optimalStrategy = solveSingleInfoBinaryGame(
-              UniformBinaryBanditGame.withAdvantageForTrue(0.05),
-              5 * 1000)
+              UniformBinaryBanditGame.withAdvantageForTrue(0.05))
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
 
           "Bernoulli" in {
             val optimalStrategy = solveSingleInfoBinaryGame(
-              BernoulliBinaryBanditGame.withAdvantageForTrue(0.05),
-              8 * 1000)
+              BernoulliBinaryBanditGame.withAdvantageForTrue(0.05))
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }
 
           "Gaussian" in {
             val optimalStrategy = solveSingleInfoBinaryGame(
-              GaussianBinaryBanditGame.withAdvantageForTrue(0.05),
-              20 * 1000)
+              GaussianBinaryBanditGame.withAdvantageForTrue(0.05))
 
             optimalStrategy.last must be greaterThan(1.0 - epsilonProbability)
           }

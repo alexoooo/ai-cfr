@@ -8,6 +8,9 @@ import ao.learn.mst.gen5.example.sig.SignalingGame
 import ao.learn.mst.gen5.example.burning.BurningGame
 import ao.learn.mst.gen5.ExtensiveGame
 import ao.learn.mst.gen5.state.MixedStrategy
+import ao.learn.mst.gen5.solve2.RegretSampler
+import ao.learn.mst.gen5.cfr2.OutcomeRegretSampler
+import scala.util.Random
 
 /**
  *
@@ -19,19 +22,28 @@ class BasicTwoPlayerSolverSpec
   val epsilonProbability:Double =
     0.01
 
+  def randomness: Random = {
+    val seed: Long =
+      (Long.MaxValue * math.random).toLong
+    println(s">> Seed: $seed")
+    new Random(seed)
+//    new Random(6476021004647212032L)
+  }
+
 
   //--------------------------------------------------------------------------------------------------------------------
   "Counterfactual Regret Minimization algorithm" should
   {
-    def cfrAlgorithm[S, I, A]() : ExtensiveSolver[S, I, A] =
+    def cfrAlgorithm[S, I, A](): RegretSampler[S, I, A] =
 //      new ChanceSampledCfrMinimizer[S, I, A]
 //      new OutcomeSamplingCfrMinimizer[S, I, A]
-      new OutcomeSampling2CfrMinimizer[S, I, A]
+//      new OutcomeSampling2CfrMinimizer[S, I, A]
 //      new ProbingCfrMinimizer[S, I, A]
+      new OutcomeRegretSampler[S, I, A](randomness = randomness)
 
     "Solve basic small games" in {
       def solveGame[S, I, A](game: ExtensiveGame[S, I, A], iterations: Int): MixedStrategy =
-        SolverSpecUtils.solve(game, cfrAlgorithm(), iterations)
+        SolverSpecUtils.solveWithSummary(game, cfrAlgorithm())
 
       "Perfect and complete information" in {
         val solution = solveGame(

@@ -17,7 +17,7 @@ import ao.learn.mst.gen5.node.{Terminal, Decision, ExtensiveNode}
  *
  * In this implementation, false => "Down" and true => "Up".
  */
-object PerfectCompleteGame
+case object PerfectCompleteGame
   extends
     ExtensiveGame[
       PerfectCompleteState,

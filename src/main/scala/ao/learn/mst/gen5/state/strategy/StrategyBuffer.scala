@@ -11,6 +11,17 @@ trait StrategyBuffer
     currentPositiveRegretStrategy: Seq[Double],
     externalReachProbability: Double): Unit
 
+  def accumulated: Map[Long, IndexedSeq[Double]]
 
-  def flush(regretStore: StrategyStore): Unit
+  def clear(): Unit
+
+
+  override def cumulativeStrategy(informationSetIndex: Long): IndexedSeq[Double] =
+    accumulated.get(informationSetIndex).getOrElse(IndexedSeq.empty)
+
+
+  def flush(regretStore: StrategyStore): Unit = {
+    regretStore.commit(accumulated)
+    clear()
+  }
 }

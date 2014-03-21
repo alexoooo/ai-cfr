@@ -13,13 +13,27 @@ class AverageStrategy(strategyAccumulator: StrategyAccumulator)
     val probabilitySums: IndexedSeq[Double] =
       strategyAccumulator.cumulativeStrategy(informationSetIndex)
 
-    val strategyTotal: Double =
-      probabilitySums.sum
+    if (probabilitySums.isEmpty)
+    {
+      // default; todo: can this be eliminated?
+      IndexedSeq.fill(actionCount)(1.0 / actionCount)
+    }
+    else
+    {
+      val strategyTotal: Double =
+        probabilitySums.sum
 
-    val averageStrategy : IndexedSeq[Double] =
-      probabilitySums
-        .map(_ / strategyTotal)
+      val averageStrategy: IndexedSeq[Double] =
+        probabilitySums
+          .map(_ / strategyTotal)
 
-    averageStrategy
+      require(averageStrategy.length <= actionCount)
+
+      if (averageStrategy.length == actionCount) {
+        averageStrategy
+      } else {
+        averageStrategy.padTo(actionCount, 0.0)
+      }
+    }
   }
 }

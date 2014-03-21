@@ -12,6 +12,8 @@ import ao.learn.mst.gen5.example.kuhn.view.KuhnObservation
 import ao.learn.mst.gen5.example.kuhn.action.KuhnActionSequence
 import ao.learn.mst.gen5.example.kuhn.action.KuhnActionSequence.KuhnActionSequence
 import ao.learn.mst.gen5.example.kuhn.state.KuhnState
+import ao.learn.mst.gen5.solve2.RegretSampler
+import ao.learn.mst.gen5.cfr2.OutcomeRegretSampler
 
 /**
  * 17/02/14 3:06 PM
@@ -25,15 +27,17 @@ class KuhnSolverSpec
 
   "Counterfactual Regret Minimization algorithm with strategy averaging" should
   {
-    def cfrAlgorithm[S, I, A](): ExtensiveSolver[S, I, A] =
+    def cfrAlgorithm[S, I, A](): RegretSampler[S, I, A] =
 //      new OutcomeSamplingCfrMinimizer[S, I, A](true)
-      new OutcomeSampling2CfrMinimizer[S, I, A](true)
+//      new OutcomeSampling2CfrMinimizer[S, I, A](true)
+      new OutcomeRegretSampler[S, I, A]()
 
     "Solve Kuhn Poker" in {
       val solution: SimpleGameSolution[Option[KuhnState], KuhnObservation, KuhnGenAction] =
         SimpleGameSolution.forGame(
           KuhnGame,
           cfrAlgorithm(),
+          averageStrategy = true,
           500 * 1000,
           display = false)
 

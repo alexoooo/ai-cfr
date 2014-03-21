@@ -5,7 +5,7 @@ import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.node.Chance
 
 
-object MontyHallGame
+case object MontyHallGame
   extends
     ExtensiveGame[
       MontyHallState,

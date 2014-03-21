@@ -10,17 +10,19 @@ import ao.learn.mst.gen5.example.ocp.KuhnGame
 import scala.xml.PrettyPrinter
 import ao.learn.mst.gen5.example.stochastic.CoinFlipDeterministicGame
 import ao.learn.mst.gen5.example.matrix.MatrixGames
+import ao.learn.mst.gen5.solve2.RegretSampler
+import ao.learn.mst.gen5.cfr2.OutcomeRegretSampler
+import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
+import ao.learn.mst.gen5.example.monty.MontyHallGame
+import ao.learn.mst.gen5.example.burning.BurningGame
 
 
 object SimpleGameDemo extends App
 {
   //--------------------------------------------------------------------------------------------------------------------
   val sourceOfRandomness: Random =
-    new Random(0)
-//    new Random(0) {
-//      override def nextDouble(): Double =
-//        0.0
-//    }
+    new Random(4661605842251661312L)
+//    new Random()
 
   val formatter =
     new PrettyPrinter(120, 4)
@@ -35,15 +37,16 @@ object SimpleGameDemo extends App
     100 * 1000
 
   val averageStrategy : Boolean =
-//    false
-    true
+    false
+//    true
 
-  def solver[S, I, A]() : ExtensiveSolver[S, I, A] =
+  def solver[S, I, A](): RegretSampler[S, I, A] =
 //    new ChanceSampledCfrMinimizer[S, I, A](averageStrategy, sourceOfRandomness)
 //    new ExternalSamplingCfrMinimizer[S, I, A](averageStrategy)
 //    new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
-    new OutcomeSampling2CfrMinimizer[S, I, A](averageStrategy)
+//    new OutcomeSampling2CfrMinimizer[S, I, A](averageStrategy)
 //    new ProbingCfrMinimizer[S, I, A](averageStrategy)
+    new OutcomeRegretSampler[S, I, A](randomness = sourceOfRandomness)
 
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -63,9 +66,9 @@ object SimpleGameDemo extends App
 //    MatrixGames.stagHunt
 //    MatrixGames.choosingSides
 //    MatrixGames.pureCoordination
-    MatrixGames.chicken
+//    MatrixGames.chicken
 
-//    PerfectCompleteGame
+    PerfectCompleteGame
 //    ImperfectGame
 //    SignalingGame
 //    BasicMontyHallGame
@@ -87,24 +90,24 @@ object SimpleGameDemo extends App
 
     val solution: SimpleGameSolution[S, I, A] =
       SimpleGameSolution.forGame(
-        game, solver(), solutionIterationCount, display)
+        game, solver(), averageStrategy, solutionIterationCount, display)
 
     val strategyPlayers: Seq[ExtensivePlayer[I, A]] =
       solution.strategyPlayers
 
     displayGameValue("\n\nSolution", game, strategyPlayers)
 
-    val responseValues: Seq[Double] =
-      solution.response.bestResponses.map(_.value)
-
-    println(s"\nResponse values: ${DisplayUtils.formatGameValue(responseValues)}")
-
-    for (player <- 0 until game.playerCount) {
-      val respondedStrategyPlayers : Seq[ExtensivePlayer[I, A]] =
-        strategyPlayers.updated(player, solution.responsePlayer(player))
-
-      displayGameValue("Solution", game, respondedStrategyPlayers)
-    }
+//    val responseValues: Seq[Double] =
+//      solution.response.bestResponses.map(_.value)
+//
+//    println(s"\nResponse values: ${DisplayUtils.formatGameValue(responseValues)}")
+//
+//    for (player <- 0 until game.playerCount) {
+//      val respondedStrategyPlayers : Seq[ExtensivePlayer[I, A]] =
+//        strategyPlayers.updated(player, solution.responsePlayer(player))
+//
+//      displayGameValue("Solution", game, respondedStrategyPlayers)
+//    }
   }
 
   def displayGameValue[S, I, A](

@@ -23,13 +23,9 @@ class MapStrategyBuffer
     tallyBuffer.add(informationSetIndex, strategy)
   }
 
+  override def accumulated: Map[Long, IndexedSeq[Double]] =
+    tallyBuffer.accumulated
 
-  override def cumulativeStrategy(informationSetIndex: Long): IndexedSeq[Double] =
-    tallyBuffer.get(informationSetIndex).getOrElse(IndexedSeq.empty)
-
-
-  override def flush(regretStore: StrategyStore): Unit = {
-    regretStore.commit(tallyBuffer.getAll)
+  override def clear(): Unit =
     tallyBuffer.clear()
-  }
 }

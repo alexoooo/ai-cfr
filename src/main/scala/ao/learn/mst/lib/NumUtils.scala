@@ -6,7 +6,7 @@ package ao.learn.mst.lib
 object NumUtils
 {
   //--------------------------------------------------------------------------------------------------------------------
-  def normalizeToOne(weights: Seq[Double]) : Seq[Double] = {
+  def normalizeToOne(weights: Seq[Double]): Seq[Double] = {
     assert(weights.min >= 0)
     assert(weights.max > 0)
 

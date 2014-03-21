@@ -5,6 +5,8 @@ import ao.learn.mst.gen5.example.SimpleGameSolution
 import ao.learn.mst.gen5.example.matrix._
 import ao.learn.mst.gen5.example.matrix.MatrixGame
 import ao.learn.mst.gen5.cfr.{ChanceSampledCfrMinimizer, OutcomeSamplingCfrMinimizer}
+import ao.learn.mst.gen5.cfr2.OutcomeRegretSampler
+import ao.learn.mst.gen5.solve2.RegretSampler
 
 /**
  * 20/01/14 9:37 PM
@@ -17,17 +19,19 @@ class BasicMatrixResponseSpec
   {
     def matrixGameResponses(
         game: MatrixGame,
-        iterations: Int
-        ): (BestResponse[MatrixPlayer, MatrixAction], BestResponse[MatrixPlayer, MatrixAction]) =
+        iterations: Int)
+        : (BestResponse[MatrixPlayer, MatrixAction], BestResponse[MatrixPlayer, MatrixAction]) =
     {
-      val solution : SimpleGameSolution[MatrixState, MatrixPlayer, MatrixAction] =
-        SimpleGameSolution.forGame(
-          game,
-          ChanceSampledCfrMinimizer(),
-          iterations)
+      val solver: RegretSampler[MatrixState, MatrixPlayer, MatrixAction] =
+        new OutcomeRegretSampler[MatrixState, MatrixPlayer, MatrixAction]()
 
-      val bestResponses : BestResponseProfile[MatrixPlayer, MatrixAction] =
-        solution.response
+      val solution: SimpleGameSolution[MatrixState, MatrixPlayer, MatrixAction] =
+        SimpleGameSolution.forGame(
+          game, solver, false, iterations)
+
+      val bestResponses: BestResponseProfile[MatrixPlayer, MatrixAction] =
+        BestResponseFinder.bestResponseProfile(
+          game, solution.abstraction, solution.strategy)
 
       assert(bestResponses.bestResponses.length == 2)
 
@@ -37,7 +41,7 @@ class BasicMatrixResponseSpec
 
     "Exist for deadlock game" in {
       val (rowResponse, columnResponse) =
-        matrixGameResponses(MatrixGames.deadlock, 1)
+        matrixGameResponses(MatrixGames.deadlock, 100)
 
       "With a game values of 2.0" in {
         rowResponse.value must be equalTo 2.0

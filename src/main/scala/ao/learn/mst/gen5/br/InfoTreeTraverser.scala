@@ -17,7 +17,7 @@ object InfoTreeTraverser
     player : Int)
     : I =
   {
-    var traversedRoot : Option[I] = None
+    var traversedRoot: Option[I] = None
 
     Breaks.breakable {
       traverse(
@@ -109,8 +109,8 @@ object InfoTreeTraverser
 
 
   private case class Path[I, A](
-    previousInfo     : Option[I],
-    previousAction   : Option[A])
+    previousInfo   : Option[I],
+    previousAction : Option[A])
   {
     def choose(info: I, choice : A) : Path[I, A] =
       Path(Some(info), Some(choice))

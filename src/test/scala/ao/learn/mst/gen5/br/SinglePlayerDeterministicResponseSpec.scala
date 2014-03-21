@@ -8,6 +8,8 @@ import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBranchS
 import scala.Some
 import ao.learn.mst.gen5.ExtensiveGame
 import ao.learn.mst.gen5.cfr.OutcomeSamplingCfrMinimizer
+import ao.learn.mst.gen5.cfr2.OutcomeRegretSampler
+import ao.learn.mst.gen5.solve2.RegretSampler
 
 /**
  * http://en.wikipedia.org/wiki/Best_response
@@ -22,12 +24,16 @@ class SinglePlayerDeterministicResponseSpec
       val game : ExtensiveGame[BinaryBanditState, Unit, Boolean] =
         DeterministicBinaryBanditGame.plusMinusOne
 
-      val solution : SimpleGameSolution[BinaryBanditState, Unit, Boolean] =
+      val solver: RegretSampler[BinaryBanditState, Unit, Boolean] =
+        new OutcomeRegretSampler[BinaryBanditState, Unit, Boolean]()
+
+      val solution: SimpleGameSolution[BinaryBanditState, Unit, Boolean] =
         SimpleGameSolution.forGame(
-          game, OutcomeSamplingCfrMinimizer(), 0)
+          game, solver, false, 0)
 
       val bestResponses : BestResponseProfile[Unit, Boolean] =
-        solution.response
+        BestResponseFinder.bestResponseProfile(
+          game, solution.abstraction, solution.strategy)
 
       "With one response" in {
         bestResponses.bestResponses.size must be equalTo 1
@@ -49,12 +55,16 @@ class SinglePlayerDeterministicResponseSpec
       val game : ExtensiveGame[DeterministicBinaryBranchState, DeterministicBinaryBranchState, Boolean] =
         DeterministicBinaryBranchGame
 
-      val solution : SimpleGameSolution[DeterministicBinaryBranchState, DeterministicBinaryBranchState, Boolean] =
-        SimpleGameSolution.forGame(
-          game, OutcomeSamplingCfrMinimizer(), 0)
+      val solver:RegretSampler[DeterministicBinaryBranchState, DeterministicBinaryBranchState, Boolean] =
+        new OutcomeRegretSampler[DeterministicBinaryBranchState, DeterministicBinaryBranchState, Boolean]()
 
-      val bestResponses : BestResponseProfile[DeterministicBinaryBranchState, Boolean] =
-        solution.response
+      val solution: SimpleGameSolution[DeterministicBinaryBranchState, DeterministicBinaryBranchState, Boolean] =
+        SimpleGameSolution.forGame(
+          game, solver, false, 0)
+
+      val bestResponses: BestResponseProfile[DeterministicBinaryBranchState, Boolean] =
+        BestResponseFinder.bestResponseProfile(
+          game, solution.abstraction, solution.strategy)
 
       "With one response" in {
         bestResponses.bestResponses.size must be equalTo 1
@@ -79,15 +89,19 @@ class SinglePlayerDeterministicResponseSpec
     }
 
     "Exist for deterministic binary fork game" in {
-      val game : ExtensiveGame[DeterministicBinaryForkState, DeterministicBinaryForkState, Boolean] =
+      val game: ExtensiveGame[DeterministicBinaryForkState, DeterministicBinaryForkState, Boolean] =
         DeterministicBinaryForkGame
 
-      val solution : SimpleGameSolution[DeterministicBinaryForkState, DeterministicBinaryForkState, Boolean] =
+      val solver: RegretSampler[DeterministicBinaryForkState, DeterministicBinaryForkState, Boolean] =
+        new OutcomeRegretSampler[DeterministicBinaryForkState, DeterministicBinaryForkState, Boolean]()
+
+      val solution: SimpleGameSolution[DeterministicBinaryForkState, DeterministicBinaryForkState, Boolean] =
         SimpleGameSolution.forGame(
-          game, OutcomeSamplingCfrMinimizer(), 0)
+          game, solver, false, 0)
 
       val bestResponses : BestResponseProfile[DeterministicBinaryForkState, Boolean] =
-        solution.response
+        BestResponseFinder.bestResponseProfile(
+          game, solution.abstraction, solution.strategy)
 
       "With one response" in {
         bestResponses.bestResponses.size must be equalTo 1

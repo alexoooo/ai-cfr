@@ -6,7 +6,7 @@ import ao.learn.mst.gen5.node.{Terminal, Chance, Decision, ExtensiveNode}
 /**
  *
  */
-object BasicMontyHallGame
+case object BasicMontyHallGame
   extends
     ExtensiveGame[
       MontyHallState,

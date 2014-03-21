@@ -55,15 +55,11 @@ class MapTallyBuffer
 
 
   //--------------------------------------------------------------------------------------------------------------------
-  def getAll: Map[Long, IndexedSeq[Double]] =
+  def accumulated: Map[Long, IndexedSeq[Double]] =
     valueSums
-
-  def get(index: Long): Option[IndexedSeq[Double]] =
-    valueSums.get(index)
   
   
   //--------------------------------------------------------------------------------------------------------------------
-  def clear(): Unit = {
+  def clear(): Unit =
     valueSums = valueSums.empty
-  }
 }

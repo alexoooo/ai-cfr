@@ -14,6 +14,7 @@ import ao.learn.mst.gen5.br.BestResponsePlayer
 import com.google.common.base.Stopwatch
 import ao.learn.mst.gen5.state.MixedStrategy
 import ao.learn.mst.gen5.abstraction.LosslessInfoLosslessDecisionAbstractionBuilder
+import ao.learn.mst.gen5.solve2.{RegretMinimizer, RegretSampler}
 
 /**
  *
@@ -26,10 +27,11 @@ object SimpleGameSolution
 
   //--------------------------------------------------------------------------------------------------------------------
   def forGame[S, I, A](
-      game       : ExtensiveGame[S, I, A],
-      solver     : ExtensiveSolver[S, I, A],
-      iterations : Int,
-      display    : Boolean = true
+      game            : ExtensiveGame[S, I, A],
+      solver          : RegretSampler[S, I, A],
+      averageStrategy : Boolean,
+      iterations      : Int,
+      display         : Boolean = false
       ): SimpleGameSolution[S, I, A] =
   {
     val losslessAbstraction: ExtensiveAbstraction[I, A] =
@@ -38,32 +40,29 @@ object SimpleGameSolution
 
     val timer = Stopwatch.createStarted()
     val strategy: MixedStrategy =
-      solve(game, losslessAbstraction, solver, iterations, display)
+      solve(game, losslessAbstraction, solver, averageStrategy, iterations, display)
     println(s"Took: $timer")
 
-    val response: BestResponseProfile[I, A] =
-      BestResponseFinder.bestResponseProfile(
-        game, losslessAbstraction, strategy)
-
-//      GameValueFinder.bestResponseProfile(
-//        game, abstraction, strategy)
+//    val response: BestResponseProfile[I, A] =
+//      BestResponseFinder.bestResponseProfile(
+//        game, losslessAbstraction, strategy)
 
     SimpleGameSolution(
       game,
       iterations,
       losslessAbstraction,
-      strategy,
-      response)
+      strategy)
   }
 
 
   //--------------------------------------------------------------------------------------------------------------------
   private def solve[S, I, A](
-      game        : ExtensiveGame[S, I, A],
-      abstraction : ExtensiveAbstraction[I, A],
-      solver      : ExtensiveSolver[S, I, A],
-      iterations  : Int,
-      display     : Boolean)
+      game            : ExtensiveGame[S, I, A],
+      abstraction     : ExtensiveAbstraction[I, A],
+      solver          : RegretSampler[S, I, A],
+      averageStrategy : Boolean,
+      iterations      : Int,
+      display         : Boolean)
       : MixedStrategy =
   {
 //    val solver : ExtensiveSolver[S, I, A] =
@@ -71,44 +70,40 @@ object SimpleGameSolution
 //      new OutcomeSamplingCfrMinimizer[S, I, A](averageStrategy)
 //      new ProbingCfrMinimizer[S, I, A](averageStrategy)
 
-    val solution : SolutionApproximation[I, A] =
-      solver.initialSolution(game)
+    val minimizer =
+      new RegretMinimizer(game, abstraction, averageStrategy = averageStrategy)
 
-    val informationSets : Set[I] =
+    val informationSets: Set[I] =
       AbstractionUtils.informationSets(game)
 
-    val infoDisplayOrder : Seq[I] =
+    val infoDisplayOrder: Seq[I] =
       informationSets.toSeq//.sortBy(_.toString)
 
-    def displayStrategy(round : Long) : Unit = {
+    def displayStrategy(round: Long) : Unit = {
 //      CommonUtils.displayDelimiter()
-//      println(s"round: ${countFormat.format(round)}")
+      println(s"\nround: ${countFormat.format(round)}")
 
-      println()
+//      println()
       for (i <- infoDisplayOrder) {
         val infoIndex = abstraction.informationSetIndex(i)
         val actionCount = abstraction.actionCount(i)
-        val probabilities = solution.strategyView.probabilities(infoIndex, actionCount)
+        val probabilities = minimizer.strategyView.probabilities(infoIndex, actionCount)
         println(s"$i\t${DisplayUtils.displayProbabilities(probabilities)}")
       }
 
-//      ResponseTreeTraverser.traverseResponseTreeLeaves(
-//        game, abstraction, solution.strategy, 0
-//      ).foreach(println)
-
-      val gameValue : Seq[Double] =
-        BestResponseFinder.bestResponseProfile(
-          game, abstraction, solution.strategyView
-        ).bestResponses.map(_.value)
-
-      println(s"${countFormat.format(round)}\t${DisplayUtils.formatGameValue(gameValue)}")
+//      val gameValue: Seq[Double] =
+//        BestResponseFinder.bestResponseProfile(
+//          game, abstraction, minimizer.strategyView
+//        ).bestResponses.map(_.value)
+//
+//      println(s"${countFormat.format(round)}\t${DisplayUtils.formatGameValue(gameValue)}")
     }
 
-    val displayFrequency : Int =
+    val displayFrequency: Int =
       math.max(1, iterations / 1000)
 
     for (i <- 1 to iterations) {
-      solution.optimize(abstraction)
+      minimizer.iterate(solver)
       if (i % displayFrequency == 0 && display) {
         displayStrategy(i)
       }
@@ -118,8 +113,8 @@ object SimpleGameSolution
       displayStrategy(iterations)
     }
 
-    val strategy : MixedStrategy =
-      solution.strategyView
+    val strategy: MixedStrategy =
+      minimizer.strategyView
 
     strategy
   }
@@ -131,8 +126,8 @@ case class SimpleGameSolution[S, I, A](
   game        : ExtensiveGame[S, I, A],
   iterations  : Int,
   abstraction : ExtensiveAbstraction[I, A],
-  strategy    : MixedStrategy,
-  response    : BestResponseProfile[I, A])
+  strategy    : MixedStrategy/*,
+  response    : BestResponseProfile[I, A]*/)
 {
   def strategyPlayers : Seq[ExtensivePlayer[I, A]] = {
     val playerPlayers : ExtensivePlayer[I, A] =
@@ -142,6 +137,6 @@ case class SimpleGameSolution[S, I, A](
     Seq.fill(game.playerCount)(playerPlayers)
   }
 
-  def responsePlayer(index : Int) : ExtensivePlayer[I, A] =
-    BestResponsePlayer(response)
+//  def responsePlayer(index : Int) : ExtensivePlayer[I, A] =
+//    BestResponsePlayer(response)
 }

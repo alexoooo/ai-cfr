@@ -6,7 +6,7 @@ import scala._
 import ao.learn.mst.gen5.state.MixedStrategy
 
 /**
- *
+ * todo: doesn't work in general (see e.g. Kuhn Poker).
  */
 object BestResponseFinder
 {

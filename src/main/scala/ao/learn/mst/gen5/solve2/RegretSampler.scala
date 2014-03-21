@@ -1,6 +1,7 @@
 package ao.learn.mst.gen5.solve2
 
-import ao.learn.mst.gen5.state.regret.RegretMatcher
+import ao.learn.mst.gen5.state.regret.{RegretAccumulator, RegretMatcher}
+import ao.learn.mst.gen5.{ExtensiveAbstraction, ExtensiveGame}
 
 /**
  *
@@ -8,13 +9,17 @@ import ao.learn.mst.gen5.state.regret.RegretMatcher
 trait RegretSampler[State, InformationSet, Action]
 {
   def sampleRegret(
-    abstractGame : AbstractGame[State, InformationSet, Action],
-    player       : Int
-    ): Map[Long, Seq[Double]]
+    game              : ExtensiveGame[State, InformationSet, Action],
+    abstraction       : ExtensiveAbstraction[InformationSet, Action],
+    regretAccumulator : RegretAccumulator,
+    player            : Int)
+    : Map[Long, IndexedSeq[Double]]
 
 
-  def sampleStrategyAndRegret(
-    abstractGame : AbstractGame[State, InformationSet, Action],
-    player       : Int
-    ): StrategyRegretSample
+  def sampleRegretAndStrategy(
+    game              : ExtensiveGame[State, InformationSet, Action],
+    abstraction       : ExtensiveAbstraction[InformationSet, Action],
+    regretAccumulator : RegretAccumulator,
+    player            : Int)
+    : RegretStrategySample
 }

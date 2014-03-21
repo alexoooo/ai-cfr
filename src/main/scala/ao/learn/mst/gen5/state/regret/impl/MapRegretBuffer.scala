@@ -12,17 +12,14 @@ class MapRegretBuffer
   private val tallyBuffer = new MapTallyBuffer
 
 
-  override def add(informationSetIndex: Long, regret: Seq[Double]): Unit = {
+  override def add(informationSetIndex: Long, regret: Seq[Double]): Unit =
     tallyBuffer.add(informationSetIndex, regret)
-  }
 
 
-  override def flush(regretStore: RegretStore): Unit = {
-    regretStore.commit(tallyBuffer.getAll)
+  override def clear(): Unit =
     tallyBuffer.clear()
-  }
 
 
-  override def cumulativeRegret(informationSetIndex: Long): IndexedSeq[Double] =
-    tallyBuffer.get(informationSetIndex).getOrElse(IndexedSeq.empty)
+  override def accumulated: Map[Long, IndexedSeq[Double]] =
+    tallyBuffer.accumulated
 }

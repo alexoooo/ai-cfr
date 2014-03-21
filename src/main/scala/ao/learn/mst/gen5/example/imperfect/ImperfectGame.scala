@@ -5,7 +5,7 @@ import ao.learn.mst.gen5.node.{Terminal, Decision, ExtensiveNode}
 
 
 //----------------------------------------------------------------------------------------------------------------------
-object ImperfectGame
+case object ImperfectGame
     extends
       ExtensiveGame[
         ImperfectState,
