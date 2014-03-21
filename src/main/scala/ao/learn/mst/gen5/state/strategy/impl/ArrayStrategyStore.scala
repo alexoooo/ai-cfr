@@ -25,4 +25,13 @@ class ArrayStrategyStore
 
   def read(filePath: File): Unit =
     tally.read(filePath)
+
+
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: ArrayStrategyStore =>
+        tally == that.tally
+
+      case _ => false
+    }
 }

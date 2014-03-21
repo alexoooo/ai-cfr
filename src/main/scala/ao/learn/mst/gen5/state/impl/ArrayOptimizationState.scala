@@ -29,6 +29,16 @@ class ArrayOptimizationState
     strategyStore.write(new File(directoryPath, ArrayOptimizationState.strategyStoreFile))
     regretStore.write(new File(directoryPath, ArrayOptimizationState.regretStoreFile))
   }
+
+
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: ArrayOptimizationState =>
+        strategyStore == that.strategyStore &&
+        regretStore == that.regretStore
+
+      case _ => false
+    }
 }
 
 
@@ -36,4 +46,15 @@ object ArrayOptimizationState
 {
   private val strategyStoreFile = "strategy.bin"
   private val regretStoreFile = "regret.bin"
+
+
+  def readOrEmpty(directoryPath: String): ArrayOptimizationState = {
+    val instance = new ArrayOptimizationState
+
+    if (new File(directoryPath).exists()) {
+      instance.read(directoryPath)
+    }
+
+    instance
+  }
 }

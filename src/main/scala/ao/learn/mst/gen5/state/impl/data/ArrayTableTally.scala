@@ -126,5 +126,19 @@ class ArrayTableTally
       in.close()
     }
   }
+
+
+  //--------------------------------------------------------------------------------------------------------------------
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: ArrayTableTally =>
+        valueSums.deep == that.valueSums.deep
+
+      case _ => false
+    }
+
+  // does it make sense to have a hashCode for mutable objects?
+//  override def hashCode: Int =
+//    util.Arrays.hashCode(valueSums)
 }
 
