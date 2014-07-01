@@ -65,11 +65,11 @@ object InfoTreeTraverser
   {
     stateNode.node match {
       case Chance(outcomes) =>
-        outcomes.foreach((outcome: Outcome[A]) =>
+        outcomes.actions.foreach(action =>
           traverse(
             context,
             path,
-            context.game.transitionStateNode(stateNode, outcome.action))
+            context.game.transitionStateNode(stateNode, action))
         )
 
       case Decision(Rational(`context`.player), info, choices) =>

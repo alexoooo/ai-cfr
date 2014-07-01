@@ -9,6 +9,7 @@ import ao.learn.mst.gen5.ExtensiveGame
 import scala._
 import scala.annotation.tailrec
 import ao.learn.mst.gen5.state.MixedStrategy
+import scala.util.Random
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -103,9 +104,7 @@ case class ProbingCfrMinimizer[State, InformationSet, Action](
 
           case StateChance(_, Chance(outcomes)) =>
             val sampledAction: Action =
-              outcomes
-                .map(o => (o.action, o.probability * math.random))
-                .maxBy(_._2)._1
+              outcomes.sample(new Random)
 
             val nextState =
               game.transitionStateNode(stateNode, sampledAction)
@@ -285,9 +284,7 @@ case class ProbingCfrMinimizer[State, InformationSet, Action](
 
           case Chance(outcomes) =>
             val sampledOutcome: Action =
-              outcomes
-                .map(o => (o.action, o.probability * math.random))
-                .maxBy(_._2)._1
+              outcomes.sample(new Random)
 
             probe(game.transitionStateNode(stateNode, sampledOutcome))
 

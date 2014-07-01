@@ -30,11 +30,11 @@ object ExtensiveGameDisplay
       case chance: Chance[I, A] =>
         <chance>
           {
-            for (outcome <- chance.outcomes) yield
-            <outcome name={ outcome.action.toString } probability={ outcome.probability.toString }>
+            for (action <- chance.outcomes.actions) yield
+            <outcome name={ action.toString } probability={ chance.outcomes.probability(action).toString }>
               {
                 val nextState: S =
-                  game.transition(state, outcome.action)
+                  game.transition(state, action)
 
                 displayExtensiveGameNode(game, nextState)
               }

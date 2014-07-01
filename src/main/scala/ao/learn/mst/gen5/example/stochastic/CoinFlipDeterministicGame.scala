@@ -20,7 +20,6 @@ import ao.learn.mst.gen5.node.Chance
  *     +-- 1 -> 0
  *     |
  *     +-- 2 -> 1
- *
  */
 object CoinFlipDeterministicGame
     extends ExtensiveGame[CoinFlipDeterministicState, CoinFlipDeterministicState, CoinFlipDeterministicAction]
@@ -42,10 +41,10 @@ object CoinFlipDeterministicGame
         val falseProb = 0.5
 
         Chance(
-          Seq(
-            Outcome(CoinFlipDeterministicChance(value = false), falseProb),
-            Outcome(CoinFlipDeterministicChance(value = true), 1.0 - falseProb)
-          ))
+          MapOutcomeSet(Map(
+            CoinFlipDeterministicChance(value = false) -> falseProb,
+            CoinFlipDeterministicChance(value = true ) -> (1.0 - falseProb)
+          )))
 
       case Seq(CoinFlipDeterministicChance(value)) =>
         val choices: Seq[CoinFlipDeterministicDecision] =

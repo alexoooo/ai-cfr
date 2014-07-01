@@ -8,6 +8,7 @@ import ao.learn.mst.gen5.node._
 import ao.learn.mst.gen5.ExtensiveGame
 import scala._
 import ao.learn.mst.gen5.state.MixedStrategy
+import scala.util.Random
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -110,9 +111,7 @@ case class OutcomeSamplingCfrMinimizer[State, InformationSet, Action](
 
           case StateChance(_, Chance(outcomes)) =>
             val sampledAction: Action =
-              outcomes
-                .map(o => (o.action, o.probability * math.random))
-                .maxBy(_._2)._1
+              outcomes.sample(new Random)
 
             val nextState =
               game.transitionStateNode(stateNode, sampledAction)

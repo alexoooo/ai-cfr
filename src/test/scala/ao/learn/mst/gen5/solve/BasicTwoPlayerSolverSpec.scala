@@ -1,6 +1,5 @@
 package ao.learn.mst.gen5.solve
 
-import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, OutcomeSamplingCfrMinimizer}
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
 import ao.learn.mst.gen5.example.imperfect.ImperfectGame

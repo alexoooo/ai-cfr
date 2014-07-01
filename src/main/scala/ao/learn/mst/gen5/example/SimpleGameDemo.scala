@@ -3,18 +3,11 @@ package ao.learn.mst.gen5.example
 import ao.learn.mst.gen5.{ExtensivePlayer, ExtensiveGame}
 import ao.learn.mst.gen5.node.{Chance, Terminal, Decision}
 import scala.util.Random
-import ao.learn.mst.gen5.solve.ExtensiveSolver
-import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, OutcomeSamplingCfrMinimizer}
 import ao.learn.mst.lib.DisplayUtils
-import ao.learn.mst.gen5.example.ocp.KuhnGame
 import scala.xml.PrettyPrinter
-import ao.learn.mst.gen5.example.stochastic.CoinFlipDeterministicGame
-import ao.learn.mst.gen5.example.matrix.MatrixGames
 import ao.learn.mst.gen5.solve2.RegretSampler
 import ao.learn.mst.gen5.cfr2.OutcomeRegretSampler
 import ao.learn.mst.gen5.example.perfect.complete.PerfectCompleteGame
-import ao.learn.mst.gen5.example.monty.MontyHallGame
-import ao.learn.mst.gen5.example.burning.BurningGame
 
 
 object SimpleGameDemo extends App
@@ -170,8 +163,8 @@ object SimpleGameDemo extends App
         payoffs
 
       case Chance(outcomes) =>
-        val sampledOutcome =
-          outcomes.maxBy(_.probability * math.random).action
+        val sampledOutcome: A =
+          outcomes.sample(new Random)
 
         val sampledState =
           game.transition(state, sampledOutcome)

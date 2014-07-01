@@ -46,10 +46,10 @@ object ResponseTreeTraverser
           path.previousAction.get))
 
       case Chance(outcomes) =>
-        outcomes.foreach((outcome: Outcome[A]) =>
+        outcomes.actions.foreach(action =>
           traverse(
-            context.game.transitionStateNode(stateNode, outcome.action),
-            path.discountProbability(outcome.probability),
+            context.game.transitionStateNode(stateNode, action),
+            path.discountProbability(outcomes.probability(action)),
             context)
         )
 

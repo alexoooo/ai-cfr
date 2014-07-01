@@ -5,7 +5,6 @@ import ao.learn.mst.gen5.example.matrix._
 import scala._
 import org.specs2.matcher.{Expectable, Matcher, MatchResult}
 import ao.learn.mst.gen5.example.matrix.MatrixGame
-import ao.learn.mst.gen5.cfr.OutcomeSampling2CfrMinimizer
 import ao.learn.mst.gen5.solve2.{RegretSampler, RegretMinimizer}
 import ao.learn.mst.gen5.abstraction.LosslessInfoLosslessDecisionAbstractionBuilder
 import ao.learn.mst.gen5.cfr2.OutcomeRegretSampler

@@ -43,9 +43,9 @@ case object SignalingGame
   }
 
 
-  private val chanceOutcomes : Traversable[Outcome[SigAction]] = {
+  private val chanceOutcomes: OutcomeSet[SigAction] = {
     val possibilities = binaryPossibilities.map(SigIdentify)
-    Outcome.equalProbability(possibilities)
+    UniformOutcomeSet(possibilities)
   }
 
   private def payoffs(state: SigState) : Seq[Double] = {

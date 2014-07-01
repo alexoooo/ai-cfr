@@ -96,14 +96,11 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
           reachProbabilities : Seq[Double]
           ): Seq[Double] =
       {
-        val sampledOutcome: Outcome[Action] =
-          sampleChance(stateNode.node.outcomes)
-
         val sampledAction: Action =
-          sampledOutcome.action
+          stateNode.node.outcomes.sample(rand)
 
         val sampledProbability: Double =
-          sampledOutcome.probability
+          stateNode.node.outcomes.probability(sampledAction)
 
         val sampledStateNode: ExtensiveStateNode[State, InformationSet, Action] =
           game.transitionStateNode(stateNode, sampledAction)
@@ -112,21 +109,6 @@ case class ChanceSampledCfrMinimizer[State, InformationSet, Action](
           reachProbabilities.map(_ * sampledProbability)
 
         cfrUpdate(sampledStateNode, nextReachProbabilities)
-      }
-
-      def sampleChance(outcomes: Traversable[Outcome[Action]]): Outcome[Action] = {
-        var remainingProbability: Double =
-          rand.nextDouble()
-
-        for (outcome <- outcomes) {
-          if (remainingProbability < outcome.probability) {
-            return outcome
-          }
-
-          remainingProbability -= outcome.probability
-        }
-
-        throw new IllegalStateException(s"$remainingProbability | $outcomes")
       }
 
 

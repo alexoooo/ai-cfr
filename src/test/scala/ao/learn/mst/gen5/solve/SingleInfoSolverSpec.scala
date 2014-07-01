@@ -1,7 +1,6 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import ao.learn.mst.gen5.example.bandit.deterministic.DeterministicBinaryBanditGame
 import ao.learn.mst.gen5.example.bandit.uniform.UniformBinaryBanditGame
 import scala.util.Random

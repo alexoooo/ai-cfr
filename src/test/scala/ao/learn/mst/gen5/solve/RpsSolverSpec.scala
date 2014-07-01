@@ -1,7 +1,6 @@
 package ao.learn.mst.gen5.solve
 
 import org.specs2.mutable.SpecificationWithJUnit
-import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, OutcomeSamplingCfrMinimizer}
 import ao.learn.mst.gen5.ExtensiveGame
 import ao.learn.mst.gen5.example.bandit.rps.RockPaperScissorsGame
 import ao.learn.mst.gen5.example.bandit.rpsw.RockPaperScissorsWellGame

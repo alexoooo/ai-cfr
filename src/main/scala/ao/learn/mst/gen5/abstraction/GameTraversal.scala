@@ -62,7 +62,7 @@ object GameTraversal
         node match {
           case Terminal(_            ) => Traversable.empty
           case Decision(_, _, choices) => choices
-          case Chance  (outcomes     ) => outcomes.map(_.action)
+          case Chance  (outcomes     ) => outcomes.actions
         }
 
       def transitionTo(action : Action) =

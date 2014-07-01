@@ -114,14 +114,11 @@ class OutcomeRegretSampler[State, InformationSet, Action](
   def sampleChance(
       context   : Context,
       stateNode : ExtensiveStateNode[State, InformationSet, Action],
-      outcomes  : Traversable[Outcome[Action]])
+      outcomes  : OutcomeSet[Action])
       : ExtensiveStateNode[State, InformationSet, Action] =
   {
-    // todo: generate single random number and select max action in single pass
     val sampledOutcome: Action =
-      outcomes
-        .map(o => (o.action, o.probability * randomness.nextDouble()))
-        .maxBy(_._2)._1
+      outcomes.sample(randomness)
 
     val sampledChance: ExtensiveStateNode[State, InformationSet, Action] =
       context.game.transitionStateNode(stateNode, sampledOutcome)

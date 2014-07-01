@@ -34,7 +34,7 @@ case object MontyHallGame
           doors.map(
             MontyPlacePrize)
 
-        Chance(Outcome.equalProbability(possibilities))
+        Chance(UniformOutcomeSet(possibilities))
 
 
       case List(MontyPlacePrize(p)) =>
@@ -46,16 +46,16 @@ case object MontyHallGame
 
 
       case List(MontyPlacePrize(p), MontyPickDoor(d)) =>
-        val possibilities : Seq[MontyRevealNoPrize] =
+        val possibilities: Seq[MontyRevealNoPrize] =
           doors.filter(
             ! Set(p, d).contains(_)
           ).map(MontyRevealNoPrize)
 
-        Chance(Outcome.equalProbability(possibilities))
+        Chance(UniformOutcomeSet(possibilities))
 
 
       case List(MontyPlacePrize(p), MontyPickDoor(d), MontyRevealNoPrize(n)) =>
-        val choices : Seq[MontySwitch] =
+        val choices: Seq[MontySwitch] =
           Seq(false, true).map(
             MontySwitch)
 

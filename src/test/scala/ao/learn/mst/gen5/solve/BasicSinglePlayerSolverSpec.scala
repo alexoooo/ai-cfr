@@ -1,6 +1,6 @@
 package ao.learn.mst.gen5.solve
 
-import ao.learn.mst.gen5.cfr.{OutcomeSampling2CfrMinimizer, ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
+import ao.learn.mst.gen5.cfr.{ProbingCfrMinimizer, OutcomeSamplingCfrMinimizer, ChanceSampledCfrMinimizer}
 import org.specs2.mutable.SpecificationWithJUnit
 import ao.learn.mst.gen5.example.monty.{BasicMontyHallGame, MontyHallGame}
 import ao.learn.mst.gen5.ExtensiveGame

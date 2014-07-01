@@ -39,13 +39,13 @@ case object KuhnGame
         Terminal(terminalPayoffs(state.get))
 
       case ChancePartition =>
-        val outcomes : Traversable[Outcome[KuhnGenAction]] =
-          Outcome.equalProbability(KuhnDeck.permutations)
+        val outcomes: OutcomeSet[KuhnGenAction] =
+          UniformOutcomeSet(KuhnDeck.permutations)
         Chance(outcomes)
 
       case DecisionPartition =>
         val nextToAct = Rational(state.get.nextToAct.get.id)
-        val choices : Traversable[KuhnGenAction] = KuhnDecision.values
+        val choices: Traversable[KuhnGenAction] = KuhnDecision.values
         val infoSet = state.get.playerView
         Decision(nextToAct, infoSet, choices)
     }
