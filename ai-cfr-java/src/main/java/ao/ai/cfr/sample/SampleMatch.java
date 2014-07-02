@@ -4,7 +4,9 @@ package ao.ai.cfr.sample;
 import ao.ai.cfr.ExtensiveGame;
 import ao.ai.cfr.ExtensiveMatch;
 import ao.ai.cfr.ExtensivePlayer;
-import ao.ai.cfr.node.*;
+import ao.ai.cfr.node.Chance;
+import ao.ai.cfr.node.Decision;
+import ao.ai.cfr.node.NodeType;
 
 import java.util.ArrayList;
 import java.util.List;

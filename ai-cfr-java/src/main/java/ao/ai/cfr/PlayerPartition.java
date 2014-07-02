@@ -1,8 +1,6 @@
 package ao.ai.cfr;
 
 
-import com.google.common.base.Preconditions;
-
 public abstract class PlayerPartition
 {
     public static PlayerPartition nature() {
@@ -36,7 +34,10 @@ public abstract class PlayerPartition
         private final int index;
 
         private Rational(int index) {
-            Preconditions.checkArgument(index >= 0);
+            if (index < 0) {
+                throw new IllegalArgumentException();
+            }
+
             this.index = index;
         }
 

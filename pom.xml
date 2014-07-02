@@ -7,13 +7,21 @@
 
     <!--===================================================================-->
     <groupId>ao.ai.cfr</groupId>
-    <artifactId>ao-ai-cfr</artifactId>
+    <artifactId>ai-cfr</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
 
     <!--===================================================================-->
     <name>Generic CFR</name>
     <inceptionYear>2011</inceptionYear>
+
+
+    <!--===================================================================-->
+    <modules>
+        <module>ai-cfr-java</module>
+        <module>ai-cfr-scala</module>
+    </modules>
 
 
     <!--===================================================================-->
@@ -83,79 +91,9 @@
     <!--===================================================================-->
     <dependencies>
         <dependency>
-            <groupId>org.la4j</groupId>
-            <artifactId>la4j</artifactId>
-            <version>${la4j.version}</version>
-        </dependency>
-
-        <!--<dependency>
-            <groupId>org.scalaj</groupId>
-            <artifactId>scalaj-time_${scala-major.version}</artifactId>
-            <version>0.6</version>
-        </dependency>-->
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scalaz</groupId>
-            <artifactId>scalaz-core_${scala-major.version}</artifactId>
-            <version>${scalaz.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scalaz</groupId>
-            <artifactId>scalaz-concurrent_${scala-major.version}</artifactId>
-            <version>${scalaz.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.spire-math</groupId>
-            <artifactId>spire_${scala-major.version}</artifactId>
-            <version>${spire.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.specs2</groupId>
-            <artifactId>specs2_${scala-major.version}</artifactId>
-            <version>${specs2.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.scalaz</groupId>
-                    <artifactId>scalaz-core_${scala-major.version}</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.scalaz</groupId>
-                    <artifactId>scalaz-concurrent_${scala-major.version}</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scalacheck</groupId>
-            <artifactId>scalacheck_${scala-major.version}</artifactId>
-            <version>${scalacheck.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -186,23 +124,6 @@
         <testSourceDirectory>src/test/scala</testSourceDirectory>-->
 
         <plugins>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>${scala-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <scalaVersion>${scala.version}</scalaVersion>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
