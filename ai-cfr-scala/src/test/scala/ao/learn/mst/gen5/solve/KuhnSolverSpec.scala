@@ -21,8 +21,8 @@ class KuhnSolverSpec
   extends SpecificationWithJUnit
 {
   //--------------------------------------------------------------------------------------------------------------------
-  val epsilonProbability:Double =
-    0.02
+  val epsilonProbability: Double =
+    0.03
 
   "Counterfactual Regret Minimization algorithm with strategy averaging" should
   {
