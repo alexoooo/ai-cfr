@@ -1,6 +1,5 @@
 package ao.ai.cfr.abs.impl;
 
-import ao.ai.cfr.abs.AbstractionDomain;
 import ao.ai.cfr.abs.AbstractionDomainBuilder;
 
 import java.io.Serializable;
@@ -20,7 +19,7 @@ public class DigestDomainBuilder<T extends Serializable> implements AbstractionD
 
     public DigestDomainBuilder() {
         population = new HashSet<BitSet>();
-        digest = Digester.newMd5();
+        digest = Digester.newDigest();
     }
 
 
@@ -33,7 +32,7 @@ public class DigestDomainBuilder<T extends Serializable> implements AbstractionD
 
 
     @Override
-    public AbstractionDomain<T> build() {
+    public DigestDomain<T> build() {
         int bits = minimumBits();
         SortedSet<BitSet> sorted = sort(bits);
         BitSet flat = flatten(sorted, bits);

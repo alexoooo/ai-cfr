@@ -7,15 +7,18 @@ import java.security.MessageDigest;
 import java.util.BitSet;
 
 
-class DigestDomain<T extends Serializable> implements AbstractionDomain<T>
+public class DigestDomain<T extends Serializable> implements AbstractionDomain<T>
 {
-    private final BitSet domain;
-    private final int bits;
-    private final int size;
-    private final MessageDigest digest;
+    final BitSet domain;
+    final int bits;
+    final int size;
+    final MessageDigest digest;
 
 
-    public DigestDomain(BitSet domain, int bits, int size, MessageDigest digest) {
+    public DigestDomain(BitSet domain, int bits, int size) {
+        this(domain, bits, size, Digester.newDigest());
+    }
+    DigestDomain(BitSet domain, int bits, int size, MessageDigest digest) {
         this.domain = domain;
         this.bits = bits;
         this.size = size;

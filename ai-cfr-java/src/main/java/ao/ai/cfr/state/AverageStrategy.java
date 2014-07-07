@@ -20,15 +20,15 @@ public class AverageStrategy implements MixedStrategy
         double[] probabilitySums =
                 strategyAccumulator.cumulativeStrategy(informationSetIndex);
 
-        assert probabilitySums.length <= actionCount;
-
-        if (probabilitySums.length == 0)
+        if (probabilitySums == null || probabilitySums.length == 0)
         {
             // default; todo: can this be eliminated?
             double[] uniform = new double[actionCount];
             Arrays.fill(uniform, 1.0 / actionCount);
             return uniform;
         }
+
+        assert probabilitySums.length <= actionCount;
 
         double strategyTotal = 0;
         for (double probabilitySum : probabilitySums) {

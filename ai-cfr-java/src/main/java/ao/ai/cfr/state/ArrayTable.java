@@ -1,10 +1,7 @@
 package ao.ai.cfr.state;
 
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
 
 public class ArrayTable
 {
@@ -16,6 +13,14 @@ public class ArrayTable
     }
 
 
+
+    public void read(byte[] in) {
+        try {
+            read(new ByteArrayInputStream(in));
+        } catch (IOException e) {
+            throw new Error(e);
+        }
+    }
     public void read(InputStream in) throws IOException {
         ObjectInputStream objectIn = new ObjectInputStream(
                 new BufferedInputStream(in));

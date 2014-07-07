@@ -15,7 +15,7 @@ public enum Digester
     public static final int MD5_SIZE = 128;
 
 
-    public static MessageDigest newMd5() {
+    public static MessageDigest newDigest() {
         try {
             return MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {

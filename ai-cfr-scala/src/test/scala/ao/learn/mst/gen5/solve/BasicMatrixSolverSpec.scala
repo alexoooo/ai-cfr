@@ -18,7 +18,7 @@ class BasicMatrixSolverSpec
 {
   //--------------------------------------------------------------------------------------------------------------------
   val epsilonProbability:Double =
-    0.01
+    0.015
 
   def randomness: Random = {
     val seed: Long =
