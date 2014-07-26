@@ -25,6 +25,7 @@ class OutcomeRegretSampler[State, InformationSet, Action](
     regretMatcher: RegretMatcher = UniformDefaultRegretMatcher,
     explorationProbability: Double = 0.6,
     allowSupersetAbstraction: Boolean = false,
+    payoffFactor: Double = 1.0,
     randomness: Random = new Random)
   extends RegretSampler[State, InformationSet, Action]
 {
@@ -89,7 +90,7 @@ class OutcomeRegretSampler[State, InformationSet, Action](
     stateNode match {
       case StateTerminal(_, Terminal(payoffs)) =>
         SampleOutcome(
-          payoffs(context.player),
+          payoffs(context.player) * payoffFactor,
           sampleProbabilities.product,
           1.0)
 

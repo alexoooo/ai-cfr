@@ -7,9 +7,9 @@ import ao.ai.cfr.node.ExtensiveNode;
  * Designed for ease of use of AI writing.
  *
  *
-* @param <State> extensive game state
-* @param <InformationSet> what can be seen during decision points
-* @param <Action> possible actions (both deliberate and chance)
+ * @param <State> extensive game state
+ * @param <InformationSet> what can be seen during decision points
+ * @param <Action> possible actions (both deliberate and chance)
  */
 public interface ExtensiveGame<State, InformationSet, Action>
 {

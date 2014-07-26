@@ -21,4 +21,10 @@ public class CollectionChoiceSet<A> implements ChoiceSet<A> {
     public Iterator<A> iterator() {
         return actions.iterator();
     }
+
+
+    @Override
+    public String toString() {
+        return actions.toString();
+    }
 }

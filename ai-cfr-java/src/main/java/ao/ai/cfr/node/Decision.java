@@ -40,4 +40,15 @@ public final class Decision<InformationSet, Action> extends ExtensiveNode<Inform
     public NodeType type() {
         return NodeType.DECISION;
     }
+
+
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Decision(%s, %s, %s)",
+                player,
+                informationSet,
+                actions);
+    }
 }
