@@ -7,10 +7,12 @@ enum GamePhase
     STARTED,
 
     USER_TO_ACT,
-    USER_ACTING,
+    USER_THINKING,
+    SHOWING_USER_ACTION,
 
     BOT_TO_ACT,
-    BOT_ACTING,
+    BOT_THINKING,
+    SHOWING_BOT_ACTION,
 
     TERMINAL;
 

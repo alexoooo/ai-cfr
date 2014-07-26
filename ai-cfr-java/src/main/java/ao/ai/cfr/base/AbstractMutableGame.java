@@ -23,7 +23,8 @@ public abstract class AbstractMutableGame<I, A, S extends MutableStateTemplate<I
 
     @Override
     public ExtensiveMatch<S, I, A> newMatch() {
-        return new MutableStateMatch<I, A, S>(initialState());
+        S newInitialState = copy(initialState());
+        return new MutableStateMatch<I, A, S>(newInitialState);
     }
 
     protected abstract S copy(S state);

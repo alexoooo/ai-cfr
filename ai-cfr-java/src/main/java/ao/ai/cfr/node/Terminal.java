@@ -8,20 +8,24 @@ import java.util.Arrays;
 public final class Terminal<InformationSet, Action> extends ExtensiveNode<InformationSet, Action>
 {
     public static <I, A> Terminal<I, A> create(double... payoffs) {
-        return new Terminal<I, A>(payoffs);
+        return new Terminal<I, A>(payoffs.clone());
     }
 
 
     private final double[] payoffs;
 
 
-    Terminal(double... payoffs) {
+    Terminal(double[] payoffs) {
         this.payoffs = payoffs;
     }
 
 
     public double payoff(int player) {
         return payoffs[player];
+    }
+
+    public double[] payoffs() {
+        return payoffs.clone();
     }
 
 
