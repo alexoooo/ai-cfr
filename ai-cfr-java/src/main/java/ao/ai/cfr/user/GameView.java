@@ -1,9 +1,9 @@
 package ao.ai.cfr.user;
 
 
-public interface GameView
+public interface GameView<TournamentState, GameState, InformationSet, Action>
 {
-    void matchStarted();
+    void matchStarted(TournamentState tournamentState);
 
 
     void userToAct();

@@ -8,18 +8,18 @@ import java.util.Random;
  *
  * Not thread safe.
  */
-public class XorShift123PlusRandom extends Random
+public class XorShift128PlusRandom extends Random
 {
     private long seedA;
     private long seedB;
     private boolean initialized;
 
 
-    public XorShift123PlusRandom() {
+    public XorShift128PlusRandom() {
         this(System.nanoTime());
     }
 
-    public XorShift123PlusRandom(long seed) {
+    public XorShift128PlusRandom(long seed) {
         super(seed);
         initialized = true;
     }
@@ -49,7 +49,7 @@ public class XorShift123PlusRandom extends Random
         long s1 = seedA;
         long s0 = seedB;
         seedA = s0;
-        s1 ^= s1 << 23; // a
+        s1 ^= s1 << 23;
         seedB = (s1 ^ s0 ^ (s1 >>> 17) ^ ( s0 >>> 26 ));
         return seedB + s0;
     }

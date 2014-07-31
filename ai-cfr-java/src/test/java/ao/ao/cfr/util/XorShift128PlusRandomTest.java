@@ -1,7 +1,7 @@
 package ao.ao.cfr.util;
 
 
-import ao.ai.cfr.util.XorShift123PlusRandom;
+import ao.ai.cfr.util.XorShift128PlusRandom;
 import org.junit.Test;
 
 import java.util.Random;
@@ -9,12 +9,12 @@ import java.util.Random;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class XorShift123PlusRandomTest
+public class XorShift128PlusRandomTest
 {
     @Test
     public void consecutiveInstancesDiffer() {
-        Random a = new XorShift123PlusRandom();
-        Random b = new XorShift123PlusRandom();
+        Random a = new XorShift128PlusRandom();
+        Random b = new XorShift128PlusRandom();
 
         assertFalse(a.nextDouble() == b.nextDouble());
     }
@@ -22,7 +22,7 @@ public class XorShift123PlusRandomTest
 
     @Test
     public void equalDistribution() {
-        Random r = new XorShift123PlusRandom();
+        Random r = new XorShift128PlusRandom();
 
         int count = 10000;
         int[] hist = new int[5];

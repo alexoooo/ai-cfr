@@ -16,7 +16,7 @@ public class GameController<TournamentState, GameState, InformationSet, Action>
     private final UserTournament<TournamentState, GameState> tournament;
     private final ExtensiveGame<GameState, InformationSet, Action> game;
     private final ExtensivePlayer<InformationSet, Action> bot;
-    private final GameView view;
+    private final GameView<TournamentState, GameState, InformationSet, Action> view;
 
 
     private ExtensiveMatch<GameState, InformationSet, Action> match;
@@ -28,7 +28,7 @@ public class GameController<TournamentState, GameState, InformationSet, Action>
             UserTournament<TournamentState, GameState> tournament,
             ExtensiveGame<GameState, InformationSet, Action> game,
             ExtensivePlayer<InformationSet, Action> bot,
-            GameView view)
+            GameView<TournamentState, GameState, InformationSet, Action> view)
     {
         this.tournament = tournament;
         this.game = game;
@@ -47,7 +47,8 @@ public class GameController<TournamentState, GameState, InformationSet, Action>
         match = game.newMatch();
         phase = GamePhase.STARTED;
 
-        view.matchStarted();
+        TournamentState tournamentState = tournamentSequence.tournamentState();
+        view.matchStarted(tournamentState);
     }
 
 

@@ -89,8 +89,8 @@ public class RpsGame
 
 
     public static class TournamentState implements MutableTournamentStateTemplate<State, TournamentState> {
-        int firstScore;
-        int secondScore;
+        public int firstScore;
+        public int secondScore;
 
         TournamentState() {}
 
@@ -113,6 +113,13 @@ public class RpsGame
         @Override
         public int userPlayer() {
             return 0;
+        }
+
+        public int userScore() {
+            return firstScore;
+        }
+        public int botScore() {
+            return secondScore;
         }
     }
 }
