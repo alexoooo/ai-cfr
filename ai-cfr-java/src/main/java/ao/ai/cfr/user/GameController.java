@@ -85,7 +85,7 @@ public class GameController<TournamentState, GameState, InformationSet, Action>
 
         phase = GamePhase.SHOWING_BOT_ACTION;
 
-        view.botActed();
+        view.botActed(action, match.state());
     }
 
 
@@ -97,7 +97,7 @@ public class GameController<TournamentState, GameState, InformationSet, Action>
 
         phase = GamePhase.SHOWING_BOT_ACTION;
 
-        view.userActed();
+        view.userActed(action, match.state());
     }
 
 
@@ -126,7 +126,7 @@ public class GameController<TournamentState, GameState, InformationSet, Action>
 
             double userPayoff = match.node().asTerminal().payoff(userPlayer);
 
-            view.matchEnded(userPayoff);
+            view.matchEnded(userPayoff, match.node().asTerminal());
         }
     }
 
